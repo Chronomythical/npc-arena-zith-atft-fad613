@@ -139,7 +139,7 @@ function star4(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, c
 function drift(n: number, t: number, rate: number, seed: number, fn: (i: number, k: number, r1: number, r2: number) => void) {
   for (let i = 0; i < n; i++) {
     const r1 = hh(seed + i * 7.3), r2 = hh(seed + i * 3.7 + 1);
-    const k = (t * rate * (0.7 + r2 * 0.6) + r1) % 1;
+    const k = (((t * rate * (0.7 + r2 * 0.6) + r1) % 1) + 1) % 1;
     fn(i, k, r1, r2);
   }
 }

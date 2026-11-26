@@ -509,7 +509,7 @@ function overtoneBack(ctx: CanvasRenderingContext2D, r: BossRig, s: number, t: n
   // rings of sound pulsing off both sides of him, more of them and brighter when he plays
   const n = 2 + Math.round(loud * 2);
   for (let i = 0; i < n; i++) {
-    const q = (t * 1.2 + i / n) % 1;
+    const q = (((t * 1.2 + i / n) % 1) + 1) % 1;
     const rr = (18 + q * 52) * s;
     ctx.strokeStyle = al(i % 2 ? p.b : p.glow, (0.15 + loud * 0.45) * (1 - q));
     ctx.lineWidth = (2.6 - q * 1.6) * s;

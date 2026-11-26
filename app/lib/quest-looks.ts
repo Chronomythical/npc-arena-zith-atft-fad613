@@ -549,7 +549,7 @@ const LOOKS: Partial<Record<Power, Look>> = {
     },
     front: (ctx, r, s, face, t, alive, vx, p) => {
       // three lights on the belt stepping along with the beat
-      const beats = (t * 7.5) / TAU, step = Math.floor(beats) % 3;
+      const beats = (t * 7.5) / TAU, step = ((Math.floor(beats) % 3) + 3) % 3;
       for (let i = 0; i < 3; i++) {
         const x = r.hip.x + (i - 1) * 4.5 * s + face * s, y = r.hip.y - 2 * s, on = alive && i === step;
         ctx.beginPath();
@@ -568,7 +568,7 @@ const LOOKS: Partial<Record<Power, Look>> = {
       }
       if (!alive) return;
       // a ring rippling out along the floor on every beat
-      const k = beats % 1, fy = Math.max(r.fF.y, r.fB.y) + 1 * s;
+      const k = beats - Math.floor(beats), fy = Math.max(r.fF.y, r.fB.y) + 1 * s;
       ctx.globalCompositeOperation = "lighter";
       floorRing(ctx, (r.fF.x + r.fB.x) / 2, fy, (10 + k * 34) * s, al(p.glow, 0.5 * (1 - k)), 1.8 * s);
     },
@@ -783,7 +783,7 @@ const LOOKS: Partial<Record<Power, Look>> = {
       ctx.fillStyle = alive ? g : INK;
       ctx.fill();
       if (alive) {
-        const k = (t * 0.8) % 1;
+        const k = (((t * 0.8) % 1) + 1) % 1;
         ctx.strokeStyle = hsla(0, 0, 100, 0.6 * (1 - k));
         ctx.lineWidth = 1 * s;
         ctx.beginPath();
