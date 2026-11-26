@@ -360,6 +360,18 @@ export const CHAPTERS: Chapter[] = [
       { foes: [], boss: "coilvast" },
     ],
   },
+  {
+    // Book 4, chapter 5: The Forge at the Core
+    stages: [
+      st("gc", 0.78),
+      st("bcg", 0.47),
+      st("gbg", 0.42),
+      st("cbgc", 0.24),
+      st("egbcg", 0.14),
+      st("ecbgcb", 0.11),
+      { foes: [], boss: "anvilheart" },
+    ],
+  },
 ];
 
 /** The books of Story mode: where each starts in CHAPTERS and how many chapters it will have once it is all written. */

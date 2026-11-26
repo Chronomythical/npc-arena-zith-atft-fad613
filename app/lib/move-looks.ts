@@ -759,6 +759,19 @@ const QUEST_LOOKS: Record<string, Look> = {
   "old-blood": F("mend", "hsl(10 90% 50%)", "hsl(36 100% 80%)", "spark", true, -80, "sprout"),
   "tightening-ring": F("singularity", "hsl(232 30% 10%)", "hsl(20 100% 66%)", "dust", false, 80, "implode"),
   "the-world-turns": F("total-eclipse", "hsl(232 30% 12%)", "hsl(24 100% 72%)", "chunk", false, 400, "crater"),
+  // Anvilheart (Book 4): soot-black iron, and the orange-gold of metal in the forge
+  "world-hammer": F("hammer-fist", "hsl(18 22% 22%)", "hsl(38 100% 64%)", "ember", false, 300, "crater"),
+  "spark-shower": F("spread-shot", "hsl(28 100% 56%)", "hsl(48 100% 84%)", "spark", true, 200, "sparks"),
+  "iron-tongs": F("gold-chain", "hsl(18 14% 30%)", "hsl(34 100% 66%)", "spark", false, 100, "implode"),
+  "white-heat": F("calcine-ray", "hsl(40 100% 70%)", "hsl(50 100% 94%)", "ember", true, -60, "flare"),
+  "anvil-drop": F("meteor-drop", "hsl(18 16% 24%)", "hsl(30 100% 62%)", "chunk", false, 700, "crater"),
+  "slag-geyser": F("flame-pillar", "hsl(14 90% 42%)", "hsl(40 100% 70%)", "ember", true, -200, "splat"),
+  "bellows-breath": F("inferno-ring", "hsl(16 100% 50%)", "hsl(42 100% 78%)", "smoke", true, -160, "flare"),
+  "steam-step": F("afterimage", "hsl(200 14% 70%)", "hsl(36 100% 80%)", "smoke", false, -80, "slash"),
+  "temper": F("mend", "hsl(36 100% 58%)", "hsl(52 100% 90%)", "spark", true, -80, "sprout"),
+  "molten-pour": F("fallout-zone", "hsl(22 100% 46%)", "hsl(44 100% 74%)", "drop", true, -40, "splash"),
+  "hot-iron-rush": F("reactor-charge", "hsl(14 90% 44%)", "hsl(40 100% 74%)", "ember", true, 200, "crater"),
+  "the-last-strike": F("nova-burst", "hsl(18 22% 12%)", "hsl(44 100% 76%)", "chunk", false, 400, "crater"),
 };
 for (const [id, lk] of Object.entries(QUEST_LOOKS)) FORM_LOOKS[id] = lk;
 for (const [id, lk] of Object.entries(FORM_LOOKS)) {

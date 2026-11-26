@@ -1793,6 +1793,79 @@ const LOOKS: Look[] = [
       if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 260, "hsl(18 100% 56%)", 0.4);
     },
   },
+  {
+    // Book 4, 5. The Forge at the Core: a smithy as big as a country at the bottom of the world, chains and anvils,
+    // channels of molten metal across the floor, and the white glow of the core behind it all, brighter every stage
+    sky: [
+      ["hsl(14 40% 7%)", "hsl(14 50% 14%)", "hsl(22 80% 26%)"],
+      ["hsl(12 40% 6%)", "hsl(14 60% 14%)", "hsl(26 90% 32%)"],
+      ["hsl(10 40% 5%)", "hsl(12 70% 15%)", "hsl(30 100% 40%)"],
+      ["hsl(8 40% 4%)", "hsl(18 80% 18%)", "hsl(40 100% 52%)"],
+    ],
+    far: "hsl(16 26% 11%)",
+    near: "hsl(16 24% 8%)",
+    floor: ["hsl(18 20% 18%)", "hsl(16 24% 6%)"],
+    line: "hsl(36 100% 62% / 0.24)",
+    starsFrom: 9,
+    flat: true,
+    scene(ctx, stage, phase, rnd) {
+      // the core itself, far off: a white sun under the world, bigger as you get closer
+      const cr = 70 + stage * 10 + phase * 20;
+      glow(ctx, W * 0.5, 250, cr * 3, "hsl(36 100% 60%)", 0.35 + phase * 0.1);
+      glow(ctx, W * 0.5, 250, cr, "hsl(48 100% 88%)", 0.7);
+      // great chains hanging from the dark, the links glowing faintly from below
+      for (let i = 0; i < 4 + Math.min(3, stage); i++) {
+        const x = 40 + rnd() * (W - 80), len = 120 + rnd() * 140;
+        ctx.strokeStyle = "hsl(16 20% 10%)";
+        ctx.lineWidth = 5;
+        for (let y = 0; y < len; y += 18) {
+          ctx.beginPath();
+          ctx.ellipse(x, y + 9, 5, 9, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "hsl(30 100% 56% / 0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(x, len - 9, 5, 9, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      // the forge wall: dark brick chimneys and anvils on the far floor, black against the glow
+      for (let i = 0; i < 5; i++) {
+        const x = (i + 0.2 + rnd() * 0.6) * (W / 5), w = 40 + rnd() * 30, h = 120 + rnd() * 120;
+        ctx.fillStyle = "hsl(14 24% 9%)";
+        ctx.fillRect(x - w / 2, 380 - h, w, h);
+        glow(ctx, x, 380 - h - 10, 30, "hsl(24 100% 56%)", 0.3 + phase * 0.08);
+      }
+      ctx.fillStyle = "hsl(14 24% 7%)";
+      for (let i = 0; i < 3; i++) {
+        const x = 120 + rnd() * (W - 240), y = 372;
+        ctx.beginPath();
+        ctx.moveTo(x - 40, y);
+        ctx.lineTo(x + 30, y);
+        ctx.quadraticCurveTo(x + 56, y, x + 70, y - 10);
+        ctx.lineTo(x + 30, y - 14);
+        ctx.lineTo(x - 40, y - 14);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(x - 20, y, 30, 10);
+      }
+    },
+    front(ctx, stage, phase, rnd) {
+      // channels of molten metal cut across the floor, more of them nearer the lair
+      const channels = 2 + phase + (stage % 2);
+      for (let i = 0; i < channels; i++) {
+        const x = rnd() * W, w = 80 + rnd() * 140, y = FLOOR + 6 + rnd() * 24;
+        glow(ctx, x + w / 2, y, w * 0.7, "hsl(30 100% 56%)", 0.3 + phase * 0.06);
+        ctx.strokeStyle = "hsl(40 100% 66%)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + w / 2, y + 6 - rnd() * 12, x + w, y);
+        ctx.stroke();
+      }
+      if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 280, "hsl(40 100% 60%)", 0.42);
+    },
+  },
 ];
 
 /** What moves over each chapter's painting, by part of the chapter (0 dawn to 3 the lair). Indexed by global chapter. */
@@ -1845,6 +1918,8 @@ const AIRS: ((phase: number) => Air)[] = [
   (p) => ({ motes: "dust", hue: 42, heat: true, twinkle: true, amount: 0.7 + p * 0.2 }),
   // Book 4, 4. The Coiled Deep: embers rising from the cracks, heat haze thickening near the serpent's lair
   (p) => ({ mist: p >= 1 ? "hsl(232 30% 20%)" : undefined, motes: "embers", hue: 18, heat: p >= 2, amount: 0.5 + p * 0.25 }),
+  // Book 4, 5. The Forge at the Core: sparks flying up from the anvils, heat haze everywhere, smoke rolling in near the lair
+  (p) => ({ mist: p >= 2 ? "hsl(16 14% 18%)" : undefined, motes: "sparks", hue: 34, heat: true, amount: 0.6 + p * 0.25 }),
 ];
 
 function paint(ch: number, stage: number): HTMLCanvasElement {

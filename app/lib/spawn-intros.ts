@@ -3087,6 +3087,59 @@ export const BOSS_INTROS: Record<BossDesign, IntroSpec> = {
       ctx.restore();
     },
   },
+  // Anvilheart: the dark rings with three hammer blows, each one a flash and a fan of sparks off an unseen anvil, closer
+  // and brighter every time. On the third a pillar of white-hot metal pours up from the floor and cools into the Titan.
+  anvilheart: {
+    len: BOSS_LEN, hit: 0.66, shake: 15, wave: ["hsl(38 100% 66%)", "hsl(18 22% 22%)"],
+    body: (u) => base(u < 0.66 ? "rise" : settle(u, "flex", 0.8), {
+      alpha: seg(u, 0.58, 0.66),
+      solid: "hsl(44 100% 80%)", solidA: 1 - seg(u, 0.64, 0.9),
+    }),
+    bursts: [
+      { at: 0.66, n: 34, spd: 520, shape: "spark", a: "hsl(36 100% 62%)", b: "hsl(50 100% 88%)", grav: 700, add: true, from: "feet", dir: "up" },
+      { at: 0.66, n: 22, spd: 360, shape: "chunk", a: "hsl(18 22% 22%)", b: "hsl(18 14% 40%)", grav: 1000, add: false, from: "feet", dir: "up" },
+      { at: 0.68, n: 18, spd: 200, shape: "smoke", a: "hsl(20 10% 30%)", b: "hsl(20 8% 48%)", grav: -40, add: false, from: "feet", dir: "flat" },
+    ],
+    back: ({ ctx, x, y, s, u }) => {
+      const on = seg(u, 0, 0.1) * (1 - seg(u, 0.86, 1));
+      if (on <= 0) return;
+      ctx.save();
+      ctx.fillStyle = hsla(18, 30, 4, 0.6 * on);
+      ctx.fillRect(-400, -400, 2000, 1200);
+      // three hammer blows, each a flash and a fan of sparks, closer and brighter every time
+      for (let k = 0; k < 3; k++) {
+        const at = 0.14 + k * 0.16;
+        const v = seg(u, at, at + 0.14);
+        if (v <= 0 || v >= 1) continue;
+        const bx = x + (k === 1 ? 1 : -1) * (150 - k * 70) * s, by = y + 2 * s;
+        const flash = 1 - v;
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, bx, by - 10 * s, (60 + k * 40) * s, (30 + k * 20) * s, hsla(40, 100, 70, 0.9 * flash), hsla(24, 100, 50, 0));
+        ctx.strokeStyle = hsla(44, 100, 80, flash);
+        ctx.lineWidth = 2 * s;
+        ctx.beginPath();
+        for (let i = 0; i < 9; i++) {
+          const a = -Math.PI / 2 + (i - 4) * 0.28;
+          const r0 = 10 * s + v * 30 * s, r1 = r0 + (20 + k * 10) * s * flash;
+          ctx.moveTo(bx + Math.cos(a) * r0, by - 10 * s + Math.sin(a) * r0);
+          ctx.lineTo(bx + Math.cos(a) * r1, by - 10 * s + Math.sin(a) * r1);
+        }
+        ctx.stroke();
+        ctx.globalCompositeOperation = "source-over";
+      }
+      // the pillar of white-hot metal pouring up out of the floor, then cooling to red as it takes shape
+      const pour = easeOut(seg(u, 0.54, 0.66)) * (1 - seg(u, 0.7, 0.86));
+      if (pour > 0) {
+        const tall = 150 * s * pour;
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, x, y - tall / 2, 60 * s, tall / 2 + 20 * s, hsla(42, 100, 76, 0.8 * pour), hsla(24, 100, 50, 0));
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = hsla(46, 100, 88, pour);
+        ctx.fillRect(x - 14 * s, y - tall, 28 * s, tall);
+      }
+      ctx.restore();
+    },
+  },
   // Vela: everything goes dark, and far off a point of light starts to spin, two beams sweeping the arena like a
   // lighthouse, faster and faster. The beams fold in, the pulsar drops, and the floor rings with one huge beat.
   vela: {

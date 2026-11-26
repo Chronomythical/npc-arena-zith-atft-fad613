@@ -743,4 +743,31 @@ export const MINIONS: Crew[] = [
       surge: { from: "coil-rush", name: "Short Rush" },
     }),
   },
+  // Book 4, chapter 5: Anvilheart's forge hands, the sparks, smoke and iron of the smithy at the world's core
+  {
+    grunt: minion("grunt", "anvilheart", {
+      base: "pyro", name: "Cinderling", color: "hsl(14 40% 20%)", mark: "hsl(38 100% 60%)",
+      power: "Stray Spark", ability: "A spark that flew off the anvil when the world was being hammered and never came down. It is small and hot and very proud of both.",
+      tone: ["hsl(18 100% 54%)", "hsl(44 100% 78%)"], moves: ["Hot Poke", "Flicked Spark", "Little Flare"],
+      surge: { from: "spark-shower", name: "Stray Sparks" },
+    }),
+    caster: minion("caster", "anvilheart", {
+      base: "aero", name: "Bellows Keeper", color: "hsl(24 18% 28%)", mark: "hsl(38 100% 60%)",
+      power: "Forge Wind", ability: "A leathery thing made of old bellows, folded and patched. It breathes for the forge, and it can breathe for itself when it has to.",
+      tone: ["hsl(26 40% 46%)", "hsl(40 100% 76%)"], moves: ["Puff Kick", "Hot Draught", "Flue Lift", "Bellows Spin"],
+      surge: { from: "white-heat", name: "Warm Ray" },
+    }),
+    brute: minion("brute", "anvilheart", {
+      base: "magneto", name: "Ingot Ox", color: "hsl(16 14% 26%)", mark: "hsl(38 100% 60%)",
+      power: "Cast Iron", ability: "A bull cast in one pour from the first iron ever smelted. It hauls ore for the smith and has never once been told to stop.",
+      tone: ["hsl(14 16% 44%)", "hsl(34 100% 70%)"], moves: ["Iron Horn", "Filings Toss", "Ore Haul"],
+      surge: { from: "anvil-drop", name: "Dropped Ingot" },
+    }),
+    elite: minion("elite", "anvilheart", {
+      base: "hydro", name: "The Quenchblade", color: "hsl(210 14% 30%)", mark: "hsl(42 100% 66%)",
+      power: "Quench Steam", ability: "The first blade the smith ever made, plunged red-hot into the buried sea to cool. It came out hissing, and it has guarded the forge door in a cloud of its own steam ever since.",
+      tone: ["hsl(200 20% 66%)", "hsl(36 100% 74%)"], moves: ["Edge Tap", "Hissing Cut", "Steam Wave", "Quench Spout"],
+      surge: { from: "world-hammer", name: "Small Hammer" },
+    }),
+  },
 ];

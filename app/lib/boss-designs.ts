@@ -2105,6 +2105,125 @@ export function drawBossDesign(
       }
       break;
     }
+    // ----- Anvilheart: the world's smith, a furnace door in its chest and a hammer the size of a hill in its back hand -----
+    case "anvilheart": {
+      const iron = alive ? "hsl(18 22% 20%)" : "hsl(18 4% 30%)";
+      const heat = alive ? `hsl(${32 + 6 * Math.sin(t * 3)} 100% ${58 + 6 * Math.sin(t * 5)}%)` : "hsl(0 0% 50%)";
+      if (layer === "back") {
+        // the hammer, held along the back forearm: a long haft and a block of a head, glowing where it strikes
+        const dx = p.hB.x - p.eB.x, dy = p.hB.y - p.eB.y;
+        const L = Math.hypot(dx, dy) || 1;
+        const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+        const butt = { x: p.hB.x - ux * 14 * s, y: p.hB.y - uy * 14 * s };
+        const top = { x: p.hB.x + ux * 34 * s, y: p.hB.y + uy * 34 * s };
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 6 * s;
+        ctx.beginPath();
+        ctx.moveTo(butt.x, butt.y);
+        ctx.lineTo(top.x, top.y);
+        ctx.stroke();
+        ctx.strokeStyle = alive ? "hsl(26 40% 34%)" : "hsl(26 4% 40%)";
+        ctx.lineWidth = 3.4 * s;
+        ctx.stroke();
+        const hw = 18 * s, hh = 11 * s;
+        ctx.save();
+        ctx.translate(top.x + ux * 6 * s, top.y + uy * 6 * s);
+        ctx.rotate(Math.atan2(ny, nx));
+        ctx.fillStyle = iron;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 2 * s;
+        ctx.beginPath();
+        ctx.rect(-hw, -hh / 2, hw * 2, hh);
+        ctx.fill();
+        ctx.stroke();
+        // the striking faces, hot from the work
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          glow(ctx, hw, 0, 10 * s, "hsl(36 100% 66% / 0.8)", "hsl(24 100% 50% / 0)");
+          glow(ctx, -hw, 0, 10 * s, "hsl(36 100% 66% / 0.8)", "hsl(24 100% 50% / 0)");
+          ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.fillStyle = heat;
+        ctx.fillRect(hw - 3 * s, -hh / 2 + 1 * s, 3 * s, hh - 2 * s);
+        ctx.fillRect(-hw, -hh / 2 + 1 * s, 3 * s, hh - 2 * s);
+        ctx.restore();
+        // a chimney of smoke rising off its shoulders
+        if (alive) {
+          for (let i = 0; i < 4; i++) {
+            const k = (t * 0.4 + i / 4) % 1;
+            ctx.fillStyle = `hsl(20 10% 26% / ${0.4 * (1 - k)})`;
+            ctx.beginPath();
+            ctx.arc(neck.x - face * 6 * s + Math.sin(t + i) * 6 * s, neck.y - 10 * s - k * 46 * s, (5 + k * 10) * s, 0, TAU);
+            ctx.fill();
+          }
+        }
+      } else {
+        // a leather apron from the chest to below the hip, scorched at the hem
+        const top = shoulder.y + 8 * s, bot = hip.y + 16 * s;
+        const cx = lerp(shoulder.x, hip.x, 0.5) + face * 2 * s;
+        ctx.fillStyle = alive ? "hsl(24 34% 22%)" : "hsl(24 4% 32%)";
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.5 * s;
+        ctx.beginPath();
+        ctx.moveTo(cx - 9 * s, top);
+        ctx.lineTo(cx + 9 * s, top);
+        ctx.lineTo(cx + 12 * s, bot);
+        ctx.lineTo(cx - 12 * s, bot);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // the furnace door in its chest, a grate with the core's fire behind it
+        const fx = lerp(shoulder.x, hip.x, 0.25) + face * 2 * s, fy = lerp(shoulder.y, hip.y, 0.25);
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          glow(ctx, fx, fy, 18 * s, "hsl(36 100% 62% / 0.85)", "hsl(18 100% 50% / 0)");
+          ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.fillStyle = heat;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.6 * s;
+        ctx.beginPath();
+        ctx.rect(fx - 7 * s, fy - 6 * s, 14 * s, 12 * s);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        for (const k of [-3.5, 0, 3.5]) {
+          ctx.moveTo(fx + k * s, fy - 6 * s);
+          ctx.lineTo(fx + k * s, fy + 6 * s);
+        }
+        ctx.stroke();
+        // a square iron brow over two eyes like coals
+        ctx.fillStyle = iron;
+        ctx.beginPath();
+        ctx.rect(head.x - HEAD * s, head.y - HEAD * 1.05 * s, HEAD * 2 * s, HEAD * 0.7 * s);
+        ctx.fill();
+        ctx.stroke();
+        for (const dx of [2, 7]) {
+          const ex = head.x + face * dx * s, ey = head.y - 1 * s;
+          if (alive) glow(ctx, ex, ey, 5 * s, "hsl(30 100% 62% / 0.8)", "hsl(24 100% 50% / 0)");
+          ctx.fillStyle = alive ? "hsl(42 100% 72%)" : "hsl(0 0% 60%)";
+          ctx.fillRect(ex - 2 * s, ey - 1.2 * s, 4 * s, 2.4 * s);
+        }
+        // a beard of iron bars, glowing at the tips
+        ctx.strokeStyle = iron;
+        ctx.lineWidth = 2.2 * s;
+        ctx.beginPath();
+        for (const dx of [-4, 0, 4, 8]) {
+          ctx.moveTo(head.x + face * dx * s, head.y + HEAD * 0.5 * s);
+          ctx.lineTo(head.x + face * (dx + 1) * s, head.y + HEAD * 1.3 * s);
+        }
+        ctx.stroke();
+        if (alive) {
+          ctx.fillStyle = heat;
+          for (const dx of [-4, 0, 4, 8]) {
+            ctx.beginPath();
+            ctx.arc(head.x + face * (dx + 1) * s, head.y + HEAD * 1.3 * s, 1.3 * s, 0, TAU);
+            ctx.fill();
+          }
+        }
+      }
+      break;
+    }
     // ----- Vela: a pulsar, a burnt-out star spinning in its chest, two beams sweeping from it like a lighthouse -----
     case "vela": {
       const spin = alive ? t * 2.2 : 0;
@@ -3824,6 +3943,46 @@ function drawBossPhase(
       }
       break;
     }
+    case "anvilheart": {
+      // 2: red-hot rivets flung off it by the roaring bellows, tumbling round its body
+      ctx.globalCompositeOperation = "lighter";
+      orbit(6, 44, 12, mid.y, 1.6, (x, y) => {
+        glow(ctx, x, y, 6 * s, "hsl(18 100% 60% / 0.9)", "hsl(10 100% 46% / 0)");
+        ctx.fillStyle = "hsl(28 100% 70%)";
+        ctx.fillRect(x - 2 * s, y - 2 * s, 4 * s, 4 * s);
+      });
+      ctx.globalCompositeOperation = "source-over";
+      if (phase >= 3) {
+        // 3: white-hot drips running off its arms and falling from it like metal from a crucible
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < 6; i++) {
+          const k = (t * 0.9 + i / 6) % 1;
+          const x = mid.x + (i - 2.5) * 10 * s;
+          glow(ctx, x, shoulder.y + k * 70 * s, (4 - k * 2) * s, "hsl(48 100% 86% / 0.9)", "hsl(36 100% 56% / 0)");
+        }
+        ctx.globalCompositeOperation = "source-over";
+      }
+      if (phase >= 4 && !front) {
+        // 4: the world anvil under its feet, a great black horned block with the fire of the core round its edges
+        const ay = Math.max(p.fF.y, p.fB.y) + 4 * s;
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, mid.x, ay, 200 * s, "hsl(30 100% 54% / 0.22)", "hsl(30 100% 40% / 0)");
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "hsl(18 22% 8% / 0.92)";
+        ctx.strokeStyle = "hsl(38 100% 66% / 0.8)";
+        ctx.lineWidth = 2 * s;
+        ctx.beginPath();
+        ctx.moveTo(mid.x - 70 * s, ay);
+        ctx.lineTo(mid.x + 60 * s, ay);
+        ctx.quadraticCurveTo(mid.x + 100 * s, ay - 2 * s, mid.x + 120 * s, ay - 14 * s);
+        ctx.lineTo(mid.x + 60 * s, ay - 16 * s);
+        ctx.lineTo(mid.x - 70 * s, ay - 16 * s);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      break;
+    }
     case "vela": {
       // 2: splinters of glass flung round it by its spin
       orbit(6, 40, 10, mid.y, 3.2, (x, y, i) => {
@@ -4313,6 +4472,14 @@ function drawBossExtras(
         if (alive) motes(ctx, mid.x, hip.y + 20 * s, 90 * s, 150 * s, t * 0.5, 10, "hsl(20 100% 60%)", 1.8 * s);
       } else {
         fists("hsl(28 100% 70%)", "hsl(18 100% 50% / 0)");
+      }
+      break;
+    case "anvilheart":
+      if (layer === "back") {
+        // sparks jumping up off the ground round it with every breath of the forge
+        if (alive) motes(ctx, mid.x, hip.y + 20 * s, 90 * s, 140 * s, t * 0.7, 12, "hsl(36 100% 62%)", 1.6 * s);
+      } else {
+        fists("hsl(40 100% 72%)", "hsl(24 100% 50% / 0)");
       }
       break;
     case "vela":

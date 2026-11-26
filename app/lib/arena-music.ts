@@ -866,6 +866,37 @@ const CHAPTER_SONGS: Song[] = [
     fill: { kick: "x..x..x...x.x.x.", snare: "....x.......xxxx" },
     drums: 0.75,
   }),
+  // Book 4, 5. Anvilheart: a forge march in C minor, square chords like hot iron, a bass that pounds on the root
+  // and the octave, a hard kick and snare that land like hammer blows, and a hat that rings off the anvil.
+  song({
+    bpm: 112,
+    pad: ["C3 D#3 G3", "G#2 C3 D#3", "A#2 D3 F3", "G2 B2 D3", "C3 D#3 G3", "F2 G#2 C3", "G#2 C3 D#3", "G2 B2 D3"],
+    padWave: "square",
+    padCut: 820,
+    padAttack: 0.25,
+    bass: ["C2", "G#1", "A#1", "G1", "C2", "F1", "G#1", "G1"],
+    bassPat: "x.o.x...x.o.x...",
+    bassMax: 4,
+    bassCut: 480,
+    lead: [
+      "G4 - - G4 C5 - - -",
+      "D#5 - D5 - C5 - - -",
+      "D5 - - A#4 F4 - - -",
+      "G4 - B4 - D5 - - -",
+      "G5 - - - D#5 - C5 -",
+      "F5 - D#5 - C5 - - -",
+      "D#5 - - - C5 - G#4 -",
+      "B4 - - - D5 - G4 -",
+    ],
+    leadWave: "sawtooth",
+    leadVol: 0.055,
+    arp: "0.2.1.2.3.2.1.2.",
+    kick: "x...x...x...x...",
+    snare: "....x.......x..x",
+    hat: "..x...x...x...x.",
+    fill: { kick: "x...x...x.x.x.x.", snare: "....x...x.xxxxxx" },
+    drums: 0.8,
+  }),
 ];
 
 /** The theme for a Story chapter (0-based). */

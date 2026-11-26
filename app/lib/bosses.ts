@@ -4,7 +4,7 @@
 import type { BossDesign, FighterDef, Move } from "./fighters";
 import type { Form } from "./forms";
 
-export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast";
+export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart";
 
 const M = (m: Omit<Move, "wind" | "act" | "rec"> & Partial<Pick<Move, "wind" | "act" | "rec">>): Move => ({
   wind: 0.2,
@@ -363,6 +363,21 @@ export const BOSSES: Record<BossId, FighterDef> = {
       M({ id: "coil-rush", name: "Coil Rush", kind: "dash", anim: "lunge", range: 560, minRange: 90, cd: 4.6, dmg: 15, kb: 440, lift: -240, wind: 0.32 }),
       M({ id: "sunken-coils", name: "Sunken Coils", kind: "zone", anim: "slam", range: 420, cd: 9, dmg: 6, radius: 150, dur: 4.5, pullIn: 140, status: "slow", statusDur: 0.8, wind: 0.36 }),
       M({ id: "world-shrug", name: "World Shrug", kind: "burst", anim: "slam", range: 170, cd: 6.5, dmg: 15, radius: 190, kb: 440, lift: -320, status: "stun", statusDur: 0.3, wind: 0.36, rec: 0.36 }),
+    ],
+  },
+  // Book 4, chapter 5. The fifth Titan: the smith who forged the world. Its heart is the fire at the core, and the
+  // core is its forge. Coilvast's turning stirred the coals, and now it has picked its hammer back up to start again.
+  anvilheart: {
+    id: "pyro", boss: "anvilheart", name: "Anvilheart", power: "The First Forge", role: "attacker",
+    ability: "A Titan: the smith that hammered the world into shape, its chest a furnace and its hammer the size of a hill. Sparks fly off every blow, iron tongs drag you to the anvil, and slag bursts up through the floor.",
+    color: "hsl(18 22% 18%)", glow: "hsl(38 100% 60%)", hp: 800, speed: 90,
+    moves: [
+      M({ id: "world-hammer", name: "World Hammer", kind: "melee", anim: "slam", range: 112, cd: 1.2, dmg: 15, kb: 360, status: "burn", statusDur: 0.8, wind: 0.28 }),
+      M({ id: "spark-shower", name: "Spark Shower", kind: "projectile", anim: "thrust", range: 600, minRange: 80, cd: 2.6, dmg: 6, speed: 640, size: 9, count: 6, spread: 0.4, shape: "shard", status: "burn", statusDur: 0.8 }),
+      M({ id: "iron-tongs", name: "Iron Tongs", kind: "pull", anim: "cast", range: 520, minRange: 110, cd: 4.6, dmg: 10, status: "stun", statusDur: 0.4, wind: 0.28 }),
+      M({ id: "white-heat", name: "White Heat", kind: "beam", anim: "thrust", range: 580, minRange: 70, cd: 4.4, dmg: 13, act: 0.34, status: "burn", statusDur: 1, wind: 0.32 }),
+      M({ id: "anvil-drop", name: "Anvil Drop", kind: "rain", anim: "raise", range: 560, cd: 5.6, dmg: 10, count: 5, radius: 170, size: 14, shape: "rock", status: "stun", statusDur: 0.3, wind: 0.36, rec: 0.3 }),
+      M({ id: "slag-geyser", name: "Slag Geyser", kind: "eruption", anim: "slam", range: 600, minRange: 40, cd: 5.8, dmg: 12, radius: 46, count: 3, lift: -640, status: "burn", statusDur: 1, wind: 0.38 }),
     ],
   },
 };
@@ -1070,6 +1085,35 @@ export const BOSS_PHASES: Partial<Record<BossDesign, Form[]>> = {
       moves: [
         M({ id: "tightening-ring", name: "Tightening Ring", kind: "zone", anim: "raise", range: 440, cd: 10, dmg: 7, radius: 200, dur: 5, pullIn: 260, status: "slow", statusDur: 0.6, wind: 0.4 }),
         M({ id: "the-world-turns", name: "The World Turns", kind: "burst", anim: "slam", range: 480, cd: 12, dmg: 17, radius: 430, kb: 480, lift: -420, status: "stun", statusDur: 0.7, wind: 0.55, rec: 0.35 }),
+      ],
+    },
+  ],
+  anvilheart: [
+    {
+      ...P2, power: "pyro", title: "THE RED HEAT", dodge: 0.12,
+      blurb: "It works the great bellows in its chest and the furnace roars. Its iron glows cherry red, every breath it lets out is a blast of forge wind, and steam hisses off it whenever it moves.",
+      body: "hsl(10 50% 22%)", glow: "hsl(20 100% 58%)", a: "hsl(8 90% 46%)", b: "hsl(36 100% 74%)",
+      moves: [
+        M({ id: "bellows-breath", name: "Bellows Breath", kind: "burst", anim: "raise", range: 170, cd: 6.4, dmg: 14, radius: 200, kb: 420, lift: -260, status: "burn", statusDur: 1, wind: 0.36, rec: 0.34 }),
+        M({ id: "steam-step", name: "Steam Step", kind: "blink", anim: "kick", range: 560, minRange: 130, cd: 4.4, dmg: 13, kb: 320, lift: -240, status: "blind", statusDur: 0.5 }),
+      ],
+    },
+    {
+      ...P3, power: "pyro", title: "THE WHITE HEAT", drain: 0.1,
+      blurb: "Red turns to orange turns to white. It tempers itself in its own fire, plunging its arm into the core and pulling it out new, and the ground round it runs with liquid metal.",
+      body: "hsl(30 40% 30%)", glow: "hsl(48 100% 76%)", a: "hsl(30 100% 56%)", b: "hsl(52 100% 90%)",
+      moves: [
+        M({ id: "temper", name: "Temper", kind: "heal", anim: "raise", range: 2000, cd: 13, dmg: 0, heal: 30, below: 0.6, wind: 0.4, act: 0.3 }),
+        M({ id: "molten-pour", name: "Molten Pour", kind: "zone", anim: "slam", range: 420, cd: 9, dmg: 7, radius: 160, dur: 4.5, pullIn: 80, status: "burn", statusDur: 0.8, wind: 0.36 }),
+      ],
+    },
+    {
+      ...P4, power: "pyro", title: "THE WORLD ANVIL", guard: 0.84, regen: 1.4,
+      blurb: "It lays the whole arena on its anvil and raises the hammer that shaped the mountains. Hot Iron Rush carries it straight through you, and The Last Strike is the blow it means to remake the world with.",
+      body: "hsl(18 22% 8%)", glow: "hsl(42 100% 70%)", a: "hsl(18 22% 18%)", b: "hsl(40 100% 76%)", dark: "hsl(18 22% 4%)",
+      moves: [
+        M({ id: "hot-iron-rush", name: "Hot Iron Rush", kind: "dash", anim: "lunge", range: 580, minRange: 90, cd: 4.6, dmg: 16, kb: 460, lift: -260, status: "burn", statusDur: 0.8, wind: 0.32 }),
+        M({ id: "the-last-strike", name: "The Last Strike", kind: "burst", anim: "slam", range: 480, cd: 12, dmg: 18, radius: 430, kb: 500, lift: -440, status: "stun", statusDur: 0.7, wind: 0.6, rec: 0.36 }),
       ],
     },
   ],

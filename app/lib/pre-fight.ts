@@ -336,6 +336,7 @@ export const TAUNTS: Record<string, Taunt> = {
   gnarlroot: { open: "raise", reply: "beckon", shape: "leaf", grav: 120 },
   ambrel: { open: "beckon", reply: "bow", shape: "drop", grav: 300 },
   coilvast: { open: "fold", reply: "laugh", shape: "ember", grav: -80 },
+  anvilheart: { open: "flex", reply: "point", shape: "spark", grav: 400 },
   // one of a kind: any fused fighter, and the fighter you made
   hybrid: { open: "flex", reply: "shrug", shape: "spark" },
   own: { open: "wave", reply: "point", shape: "spark" },

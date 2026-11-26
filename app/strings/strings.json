@@ -187,6 +187,8 @@
       "ambrelReply": "Hush now. Stay like that for ever.",
       "coilvastOpen": "Feel the floor tilt? That's me, waking up.",
       "coilvastReply": "Come closer. I only squeeze a little.",
+      "anvilheartOpen": "Hold still. I'm measuring you for the fire.",
+      "anvilheartReply": "Bad work goes back in the forge. You're bad work.",
       "hybridOpen": "Two powers. Twice the trouble.",
       "hybridReply": "Just one power? Adorable.",
       "ownOpen": "I made myself for this fight.",
@@ -1800,6 +1802,47 @@
           "l2": "You're not. Get some sleep. We'll keep watch.",
           "l3": "Coilvast draws its coils tight round the heart of the world and lays its great head down, and above it the mountains settle and the rivers find their beds again. But the heat of the core is rising, and in it, something has started to burn."
         }
+      },
+      "c25": {
+        "intro": {
+          "l1": "Under the serpent's coils the dark turns red, then orange, then a white too bright to look at. This is the core of the world, and it is not a fire. It is a forge.",
+          "l2": "Its smith is Anvilheart, the fifth Titan, who hammered the mountains and the seas into shape when the world was new, then set down its tools and fell asleep beside them.",
+          "l3": "Coilvast's turning stirred the coals. The smith has woken, looked at what it made, and decided to start again. Every blow of its hammer shakes the ground above, and the next one could flatten everything."
+        },
+        "s1": {
+          "l1": "Visitors! Nobody visits the forge. Nobody ever visits. Stand still so I can set you on fire.",
+          "l2": "We'd rather not, thanks."
+        },
+        "s2": {
+          "l1": "In, out. In, out. The forge has to breathe. Stop me breathing and the fire goes out. Do you want the fire to go out?",
+          "l2": "Just the big one with the hammer."
+        },
+        "s3": {
+          "l1": "I carry ore. The smith says more ore. Always more ore. It is making something very big.",
+          "l2": "That's what we're worried about."
+        },
+        "s4": {
+          "l1": "Every time the hammer falls, a mountain somewhere gets a little flatter. Listen. There goes another one.",
+          "l2": "Then we'd better hurry."
+        },
+        "s5": {
+          "l1": "Hot enough for you? It gets hotter. It always gets hotter, the closer you get to the anvil.",
+          "l2": "We've come this far. A bit more heat won't stop us."
+        },
+        "s6": {
+          "l1": "I was the first thing it ever made. I was red-hot once, and plunged into the sea, and I came out hard. You have not been through the fire. Turn back.",
+          "l2": "We've been through four Titans. That's fire enough."
+        },
+        "s7": {
+          "l1": "Look at it. Lumpy mountains. Crooked rivers. Seas in all the wrong places. I made the world in a hurry, little ones, and I have hated the seams ever since.",
+          "l2": "People live in those seams.",
+          "l3": "Then they go back in the fire with the rest. Every smith knows it: when the work is bad, you melt it down and start again."
+        },
+        "outro": {
+          "l1": "You do not bend... you do not break... Perhaps the work was not so bad after all.",
+          "l2": "It's lumpy. We like it lumpy.",
+          "l3": "Anvilheart lays down its hammer, and the ringing in the deep slowly fades. In the quiet, your fighters hear what the forge had been drowning out all along: a heartbeat, slow and enormous, from the very middle of the world. The Titans were never the only ones down here. They were its guards."
+        }
       }
     },
     "skip": {
@@ -2064,6 +2107,18 @@
         "s5": "Warm Water",
         "s6": "The Long Road Down",
         "s7": "The Heart Coil"
+      }
+    },
+    "ch25": {
+      "title": "Chapter 5: The Forge at the Core",
+      "stages": {
+        "s1": "Under the Coils",
+        "s2": "The Bellows Hall",
+        "s3": "Ore Road",
+        "s4": "The Ringing Deep",
+        "s5": "Slag Rivers",
+        "s6": "The Quenching Pool",
+        "s7": "The World Anvil"
       }
     }
   },
