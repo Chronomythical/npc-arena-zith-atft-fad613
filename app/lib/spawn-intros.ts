@@ -1492,6 +1492,125 @@ export const INTROS: Record<Power, IntroSpec> = {
     },
   },
 
+  // Argent: beads of mercury roll in from both sides and run together into one silver puddle, the puddle swells upward
+  // into a body of liquid chrome, and the shine runs off it as Argent sets.
+  merc: {
+    len: 1.8, hit: 0.56, shake: 6, wave: ["hsl(210 12% 80%)", "hsl(196 100% 72%)"],
+    body: (u) => base(u < 0.56 ? "crouch" : settle(u, "flex", 0.76), {
+      alpha: seg(u, 0.3, 0.42),
+      sy: u < 0.56 ? 0.1 + 0.9 * easeOut(seg(u, 0.3, 0.56)) : 1,
+      sx: u < 0.56 ? 1.5 - 0.5 * easeOut(seg(u, 0.3, 0.56)) : 1,
+      solid: "hsl(210 14% 82%)", solidA: 1 - seg(u, 0.56, 0.9),
+    }),
+    bursts: [
+      { at: 0.56, n: 28, spd: 380, shape: "drop", a: "hsl(210 12% 78%)", b: "hsl(0 0% 100%)", grav: 900, add: false, from: "body", dir: "out" },
+      { at: 0.56, n: 16, spd: 260, shape: "spark", a: "hsl(196 100% 72%)", b: "hsl(0 0% 100%)", grav: 0, add: true, from: "feet", dir: "flat" },
+    ],
+    back: ({ ctx, x, ground, s, u, t }) => {
+      const fade = 1 - seg(u, 0.6, 0.8);
+      if (fade <= 0) return;
+      ctx.save();
+      // the beads rolling in from both sides, meeting in the middle
+      const roll = easeInOut(seg(u, 0, 0.3));
+      for (let i = 0; i < 10; i++) {
+        const side = i % 2 ? 1 : -1;
+        const start = (120 + (i >> 1) * 36) * s;
+        const bx = x + side * start * (1 - roll);
+        const r = (3 + (i % 3)) * s;
+        const g = ctx.createRadialGradient(bx - r * 0.3, ground - r * 1.3, 0, bx, ground - r, r);
+        g.addColorStop(0, `hsl(0 0% 100% / ${fade})`);
+        g.addColorStop(1, `hsl(212 10% 58% / ${fade})`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(bx, ground - r, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // the puddle they make, spreading, then drawn up into the body
+      const spread = easeOut(seg(u, 0.18, 0.34)) * (1 - 0.6 * seg(u, 0.36, 0.6));
+      if (spread > 0) {
+        const rx = 46 * s * spread;
+        const g = ctx.createLinearGradient(x - rx, ground, x + rx, ground);
+        g.addColorStop(0, hsla(212, 10, 52, 0.9 * fade));
+        g.addColorStop(0.45 + Math.sin(t * 3) * 0.1, hsla(0, 0, 100, 0.95 * fade));
+        g.addColorStop(1, hsla(212, 10, 48, 0.9 * fade));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(x, ground, rx, rx * 0.16, 0, 0, Math.PI * 2);
+        ctx.fill();
+        glow(ctx, x, ground, rx * 1.3, rx * 0.4, hsla(196, 100, 72, 0.25 * fade), hsla(196, 100, 72, 0));
+      }
+      ctx.restore();
+    },
+  },
+
+  // Crucible: an alchemy circle draws itself on the floor one ring and symbol at a time, flares gold, and Crucible
+  // rises out of the light as a statue of gold that warms into a living fighter.
+  alch: {
+    len: 1.9, hit: 0.58, shake: 7, wave: ["hsl(44 90% 60%)", "hsl(14 100% 62%)"],
+    body: (u) => base(u < 0.58 ? "rise" : settle(u, "flex", 0.78), {
+      dy: u < 0.58 ? (1 - easeOut(seg(u, 0.4, 0.58))) * 80 : 0,
+      alpha: seg(u, 0.4, 0.5),
+      clip: u < 0.6,
+      solid: "hsl(44 90% 58%)", solidA: 1 - seg(u, 0.6, 0.92),
+    }),
+    bursts: [
+      { at: 0.58, n: 32, spd: 380, shape: "spark", a: "hsl(44 100% 62%)", b: "hsl(50 100% 86%)", grav: 260, add: true, from: "feet", dir: "up" },
+      { at: 0.58, n: 14, spd: 300, shape: "chunk", a: "hsl(218 8% 36%)", b: "hsl(44 90% 60%)", grav: 900, add: false, from: "feet", dir: "out" },
+    ],
+    trickle: { rate: 26, until: 0.58, spd: 140, shape: "spark", a: "hsl(44 100% 62%)", b: "hsl(14 100% 66%)", grav: -60, add: true, from: "feet", dir: "up", life: 0.6 },
+    back: ({ ctx, x, ground, s, u, t }) => {
+      const draw = easeOut(seg(u, 0, 0.4));
+      const fade = 1 - seg(u, 0.66, 0.86);
+      if (draw <= 0 || fade <= 0) return;
+      ctx.save();
+      ctx.translate(x, ground);
+      ctx.scale(1, 0.24);
+      const flare = 1 + 1.4 * seg(u, 0.44, 0.58) * (1 - seg(u, 0.58, 0.7));
+      ctx.shadowColor = "hsl(40 100% 60%)";
+      ctx.shadowBlur = 12 * s * flare;
+      ctx.strokeStyle = hsla(44, 100, 64, Math.min(1, 0.8 * flare) * fade);
+      // two rings drawn round like a compass
+      for (const [r, w] of [[70, 2.6], [56, 1.6]] as const) {
+        ctx.lineWidth = w * s * 2.4;
+        ctx.beginPath();
+        ctx.arc(0, 0, r * s, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * draw);
+        ctx.stroke();
+      }
+      // a triangle and a square inside them, turning slowly
+      const turn = t * 0.6;
+      for (const sides of [3, 4]) {
+        if (draw < 0.5) break;
+        ctx.lineWidth = 1.6 * s * 2.4;
+        ctx.beginPath();
+        for (let i = 0; i <= sides; i++) {
+          const a = turn * (sides === 3 ? 1 : -1) + (i / sides) * Math.PI * 2;
+          const px = Math.cos(a) * 54 * s, py = Math.sin(a) * 54 * s;
+          if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py);
+        }
+        ctx.globalAlpha = seg(draw, 0.5, 1);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      // small marks round the outer ring
+      ctx.fillStyle = hsla(44, 100, 72, fade * seg(draw, 0.7, 1));
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2 - turn;
+        ctx.beginPath();
+        ctx.arc(Math.cos(a) * 63 * s, Math.sin(a) * 63 * s, 3 * s, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      // the column of light it raises
+      const col = seg(u, 0.4, 0.58) * (1 - seg(u, 0.62, 0.8));
+      if (col > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, x, ground - 60 * s, 34 * s, 110 * s, hsla(46, 100, 70, 0.5 * col), hsla(30, 100, 60, 0));
+        ctx.restore();
+      }
+    },
+  },
+
   // Volta: a small star streaks down out of the sky, slams into the spot in a flash of plasma, and Volta is crouched
   // in the scorch mark, still white-hot, before springing up grinning.
   plasma: {

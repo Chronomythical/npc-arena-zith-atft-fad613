@@ -305,6 +305,8 @@ export const TAUNTS: Record<string, Taunt> = {
   crys: { open: "fold", reply: "flex", shape: "shard", grav: 300 },
   sand: { open: "beckon", reply: "shrug", shape: "dust", grav: 300 },
   pastrift: { open: "point", reply: "laugh", shape: "star", a: RIFT_PURPLE, b: RIFT },
+  merc: { open: "beckon", reply: "flex", shape: "drop", grav: 600 },
+  alch: { open: "offer", reply: "bow", shape: "spark", grav: 200 },
   // the new generation
   plasma: { open: "raise", reply: "flex", shape: "spark", grav: -60 },
   flora: { open: "wave", reply: "bow", shape: "leaf", grav: 140 },

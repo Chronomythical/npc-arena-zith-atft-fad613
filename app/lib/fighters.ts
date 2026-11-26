@@ -1,4 +1,4 @@
-// The 17 fighters, the 10 quest fighters, the 3 new-generation fighters and their power moves. Shared by the arena engine and the Fighters page.
+// The 17 fighters, the 12 quest fighters, the 3 new-generation fighters and their power moves. Shared by the arena engine and the Fighters page.
 import { BOSSES, type BossId } from "./bosses";
 import {
   OWN_BURSTS, OWN_GLYPHS, OWN_MOTIONS, OWN_TRAILS, designLook,
@@ -9,7 +9,7 @@ export type Power =
   | "pyro" | "cryo" | "electro" | "terra" | "aero" | "hydro" | "umbra" | "lux"
   | "gravi" | "tele" | "vita" | "toxi" | "chrono" | "magneto" | "psy" | "shift" | "nova"
   // quest fighters, earned on the Quests page
-  | "spatio" | "hexizon" | "gamma" | "velo" | "portal" | "sono" | "paper" | "crys" | "sand" | "pastrift"
+  | "spatio" | "hexizon" | "gamma" | "velo" | "portal" | "sono" | "paper" | "crys" | "sand" | "pastrift" | "merc" | "alch"
   // new generation, a chance to join after any Story boss win
   | "plasma" | "flora" | "chaos";
 
@@ -542,6 +542,44 @@ export const QUESTERS: FighterDef[] = [
       M({ id: "undo", name: "Undo", kind: "heal", anim: "raise", range: 2000, cd: 12, dmg: 0, heal: 22, below: 0.55, wind: 0.34, rec: 0.3 }),
     ],
   },
+  {
+    id: "merc", name: "Argent", power: "Liquid Metal Manipulation", role: "attacker",
+    ability: "A body of living mercury. Arms that pour into blades and lances, spikes that burst from a silver puddle, a step that melts into the floor and comes up behind you, and wounds that simply flow shut.",
+    color: "hsl(210 10% 72%)", glow: "hsl(196 100% 72%)", hp: 305, speed: 106,
+    moves: [
+      M({ id: "chrome-jab", name: "Chrome Jab", kind: "melee", anim: "jab", range: 76, cd: 0.8, dmg: 10, kb: 240 }),
+      M({ id: "chrome-blade", name: "Chrome Blade", kind: "melee", anim: "lunge", range: 135, minRange: 30, cd: 1.2, dmg: 12, kb: 280 }),
+      M({ id: "hammer-fist", name: "Hammer Fist", kind: "melee", anim: "slam", range: 90, cd: 1.5, dmg: 14, kb: 220, lift: -460, wind: 0.22 }),
+      M({ id: "quicksilver-shot", name: "Quicksilver Shot", kind: "projectile", anim: "cast", range: 580, minRange: 70, cd: 2, dmg: 5, speed: 760, size: 9, count: 3, spread: 0.14, shape: "orb" }),
+      M({ id: "mercury-spear", name: "Mercury Spear", kind: "projectile", anim: "thrust", range: 620, minRange: 90, cd: 3, dmg: 13, speed: 640, size: 15, shape: "shard", pierce: true, kb: 280 }),
+      M({ id: "liquid-lance", name: "Liquid Lance", kind: "beam", anim: "thrust", range: 520, minRange: 70, cd: 3, dmg: 15, act: 0.26, kb: 260, wind: 0.26 }),
+      M({ id: "puddle-step", name: "Puddle Step", kind: "blink", anim: "uppercut", range: 620, minRange: 100, cd: 3, dmg: 13, lift: -540, kb: 180 }),
+      M({ id: "silver-surge", name: "Silver Surge", kind: "dash", anim: "lunge", range: 360, cd: 3.4, dmg: 13, dist: 360, act: 0.22, kb: 340, lift: -160 }),
+      M({ id: "spike-field", name: "Spike Field", kind: "eruption", anim: "slam", range: 520, minRange: 40, cd: 4.6, dmg: 13, radius: 44, count: 3, lift: -620, wind: 0.32 }),
+      M({ id: "mercury-pool", name: "Mercury Pool", kind: "zone", anim: "slam", range: 420, minRange: 40, cd: 8, dmg: 6, radius: 125, dur: 4, pullIn: 200, status: "slow", statusDur: 0.6, wind: 0.32 }),
+      M({ id: "chrome-burst", name: "Chrome Burst", kind: "burst", anim: "spin", range: 150, cd: 5.5, dmg: 15, radius: 170, kb: 500, lift: -300, wind: 0.28 }),
+      M({ id: "reform", name: "Reform", kind: "heal", anim: "raise", range: 2000, cd: 12, dmg: 0, heal: 24, below: 0.6, wind: 0.34, rec: 0.3 }),
+    ],
+  },
+  {
+    id: "alch", name: "Crucible", power: "Alchemy", role: "control",
+    ability: "Turns one thing into another. A touch that gilds an enemy for a heartbeat, lead that falls from the sky and drags them down, gold that spears up through the floor and a transmutation circle nobody walks out of quickly.",
+    color: "hsl(42 78% 52%)", glow: "hsl(14 100% 62%)", hp: 295, speed: 100,
+    moves: [
+      M({ id: "gilded-palm", name: "Gilded Palm", kind: "melee", anim: "thrust", range: 80, cd: 0.85, dmg: 10, kb: 250 }),
+      M({ id: "golden-touch", name: "Golden Touch", kind: "melee", anim: "lunge", range: 120, minRange: 30, cd: 2.2, dmg: 11, kb: 120, status: "freeze", statusDur: 0.5, wind: 0.22 }),
+      M({ id: "lead-knuckle", name: "Lead Knuckle", kind: "melee", anim: "slam", range: 88, cd: 1.5, dmg: 13, kb: 300, status: "slow", statusDur: 0.8, wind: 0.22 }),
+      M({ id: "transmute-bolt", name: "Transmute Bolt", kind: "projectile", anim: "cast", range: 600, minRange: 70, cd: 2.4, dmg: 9, speed: 620, size: 12, shape: "orb", status: "freeze", statusDur: 0.3 }),
+      M({ id: "coin-volley", name: "Coin Volley", kind: "projectile", anim: "thrust", range: 560, minRange: 70, cd: 2, dmg: 5, speed: 760, size: 9, count: 4, spread: 0.18, shape: "disc" }),
+      M({ id: "calcine-ray", name: "Calcine Ray", kind: "beam", anim: "thrust", range: 580, minRange: 70, cd: 3.2, dmg: 16, act: 0.3, kb: 240, status: "burn", statusDur: 1, wind: 0.3 }),
+      M({ id: "gilt-step", name: "Gilt Step", kind: "blink", anim: "kick", range: 600, minRange: 110, cd: 3.2, dmg: 13, kb: 300, lift: -240 }),
+      M({ id: "golden-spire", name: "Golden Spire", kind: "eruption", anim: "slam", range: 500, minRange: 40, cd: 4.4, dmg: 14, radius: 48, count: 2, lift: -660, wind: 0.3 }),
+      M({ id: "lead-rain", name: "Lead Rain", kind: "rain", anim: "raise", range: 540, cd: 5.5, dmg: 8, count: 6, radius: 160, shape: "rock", status: "slow", statusDur: 0.6, wind: 0.32 }),
+      M({ id: "transmutation-circle", name: "Transmutation Circle", kind: "zone", anim: "raise", range: 420, cd: 8, dmg: 5, radius: 130, dur: 4, pullIn: 240, status: "slow", statusDur: 0.6, wind: 0.32 }),
+      M({ id: "gold-chain", name: "Gold Chain", kind: "pull", anim: "cast", range: 470, minRange: 110, cd: 3.6, dmg: 10, status: "stun", statusDur: 0.35 }),
+      M({ id: "philosophers-stone", name: "Philosopher's Stone", kind: "heal", anim: "raise", range: 2000, cd: 12, dmg: 0, heal: 24, below: 0.6, wind: 0.36, rec: 0.3 }),
+    ],
+  },
   // ----- New generation: young fighters with a chance to join after any Story boss win (app/lib/quests.ts) -----
   {
     id: "plasma", name: "Volta", power: "Plasma Manipulation", role: "attacker",
@@ -631,6 +669,8 @@ const WINGS: Record<Power, Wing> = {
   crys: { word: "Crystal", shape: "shard", status: "slow", statusDur: 1 },
   sand: { word: "Dune", shape: "rock", status: "blind", statusDur: 0.8 },
   pastrift: { word: "Rift", shape: "shard", status: "slow", statusDur: 0.8 },
+  merc: { word: "Mercury", shape: "orb", status: "slow", statusDur: 0.8 },
+  alch: { word: "Gilded", shape: "disc", status: "freeze", statusDur: 0.3 },
   plasma: { word: "Plasma", shape: "orb", status: "burn", statusDur: 1.5 },
   flora: { word: "Thorn", shape: "shard", status: "poison", statusDur: 2, heal: 8 },
   chaos: { word: "Chaos", shape: "shard", status: "stun", statusDur: 0.15 },

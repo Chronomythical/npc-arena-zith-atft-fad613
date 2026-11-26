@@ -1,4 +1,4 @@
-// Quests: 10 long goals, each earning a quest fighter for good once it is complete and claimed.
+// Quests: 12 long goals, each earning a quest fighter for good once it is complete and claimed.
 // Progress is counted from finished fights and saved in this browser (localStorage), like Story progress.
 // The arena screen reports each finished fight with `recordFight` and each crowned champion with `recordTournament`.
 // The same save keeps the new-generation fighters won by luck after a Story boss win (`rollNewGen`).
@@ -30,6 +30,8 @@ export const QUESTS: Quest[] = [
   { id: "facet", reward: "crys", goals: [{ stat: "fights", need: 70 }, { stat: "kos", need: 280 }, { stat: "forms", need: 35 }, { stat: "bosses", need: 1 }] },
   { id: "dunes", reward: "sand", goals: [{ stat: "fights", need: 85 }, { stat: "kos", need: 320 }, { stat: "tournaments", need: 1 }, { stat: "bosses", need: 1 }] },
   { id: "before", reward: "pastrift", goals: [{ stat: "fights", need: 100 }, { stat: "kos", need: 380 }, { stat: "forms", need: 40 }, { stat: "bosses", need: 1 }] },
+  { id: "quicksilver", reward: "merc", goals: [{ stat: "fights", need: 115 }, { stat: "kos", need: 440 }, { stat: "tournaments", need: 1 }, { stat: "bosses", need: 1 }] },
+  { id: "gold", reward: "alch", goals: [{ stat: "fights", need: 130 }, { stat: "kos", need: 500 }, { stat: "forms", need: 50 }, { stat: "bosses", need: 1 }] },
 ];
 
 const KEY = "npc-arena-quests";

@@ -173,6 +173,10 @@ const QUEST_STANCE: Partial<Record<Power, Pose>> = {
   sand: { t: 0.26, aF1: 1.35, aF2: 1.1, aB1: 2.4, aB2: 2.9, lF1: 0.75, lF2: -0.05, lB1: -0.62, lB2: -0.45 },
   // Past Riftmaker: light on his feet and leaning in, front hand open as if holding a rift, back hand loose behind him
   pastrift: { t: 0.2, aF1: 1.5, aF2: 1.75, aB1: -0.6, aB2: -0.2, lF1: 0.55, lF2: -0.1, lB1: -0.5, lB2: -0.3 },
+  // Argent: square to the fight, front arm hanging long and loose like a blade about to pour out, back fist cocked
+  merc: { t: 0.16, aF1: 1.2, aF2: 1.3, aB1: 1.0, aB2: 2.5, lF1: 0.6, lF2: 0.05, lB1: -0.55, lB2: -0.25 },
+  // Crucible: upright and composed, front palm turned up as if weighing gold, back hand tucked behind
+  alch: { t: 0.06, aF1: 1.45, aF2: 2.0, aB1: -1.1, aB2: -2.2, lF1: 0.42, lF2: 0.02, lB1: -0.38, lB2: -0.1 },
   // Volta: young and cocky, bouncing forward on the front foot, both fists up and crackling
   plasma: { t: 0.18, aF1: 1.2, aF2: 2.5, aB1: 0.9, aB2: 2.3, lF1: 0.55, lF2: -0.02, lB1: -0.5, lB2: -0.35 },
   // Briar: low and rooted, front palm open to the floor as if feeling the roots, back hand up with a seed ready
@@ -230,8 +234,8 @@ function idlePose(f: Fighter, gt: number): Pose {
   if (QUEST_STANCE[f.def.id]) {
     // Parallax drifts slowly, Hexizon bobs on the balls of his feet, Halflife heaves, Redline can't stand still, Liminal sways,
     // Overtone nods to a beat, Vellum drifts like a sheet on the air, Facet barely moves, Sirocco sways like heat haze,
-    // Volta can't keep still, Briar sways like a plant in the wind, Turbo taps his foot waiting for the fight to start
-    const hz = ({ hexizon: 5.5, gamma: 2.6, velo: 9, portal: 1.4, sono: 7.5, paper: 1.2, crys: 1, sand: 3.4, pastrift: 4.6, plasma: 8, flora: 1.6, chaos: 7 } as Partial<Record<Power, number>>)[f.def.id] ?? 1.8;
+    // Argent ripples slowly like a liquid settling, Crucible barely sways, Volta can't keep still, Briar sways like a plant in the wind, Turbo taps his foot waiting for the fight to start
+    const hz = ({ hexizon: 5.5, gamma: 2.6, velo: 9, portal: 1.4, sono: 7.5, paper: 1.2, crys: 1, sand: 3.4, pastrift: 4.6, merc: 2.2, alch: 1.3, plasma: 8, flora: 1.6, chaos: 7 } as Partial<Record<Power, number>>)[f.def.id] ?? 1.8;
     const b = Math.sin(gt * hz + f.key);
     return { ...st, t: st.t + b * 0.03, aF2: st.aF2 + b * 0.06, aB2: st.aB2 + b * 0.06, lF1: st.lF1 + b * 0.04, lB1: st.lB1 - b * 0.04 };
   }
@@ -345,6 +349,8 @@ const FX: Record<Power, { shape: PShape; add: boolean; grav: number }> = {
   crys: { shape: "shard", add: true, grav: 300 },
   sand: { shape: "dust", add: false, grav: 420 },
   pastrift: { shape: "star", add: true, grav: 0 },
+  merc: { shape: "drop", add: true, grav: 600 },
+  alch: { shape: "spark", add: true, grav: 200 },
   plasma: { shape: "spark", add: true, grav: -60 },
   flora: { shape: "leaf", add: false, grav: 140 },
   chaos: { shape: "star", add: true, grav: -40 },

@@ -370,6 +370,28 @@ FORMS.pastrift = {
     M({ id: "unmaking", name: "Unmaking", kind: "burst", anim: "slam", range: 170, cd: 7, dmg: 22, radius: 210, kb: 560, lift: -420, status: "blind", statusDur: 1, wind: 0.34, rec: 0.35 }),
   ],
 };
+FORMS.merc = {
+  power: "merc", kind: "nightmare", title: "BLACK MERCURY", ...NIGHTMARE,
+  blurb: "The chrome tarnishes to black and its seams glow a poisonous blue. It comes apart into a thousand needles, flows up out of the floor behind you and closes round you like a cage of spikes.",
+  body: "hsl(220 14% 10%)", glow: "hsl(186 100% 56%)", a: "hsl(220 30% 28%)", b: "hsl(186 100% 70%)", dark: "hsl(220 30% 3%)",
+  dmg: 1.3, kb: 1.2, cd: 0.7, speed: 1.2, act: 1.2,
+  moves: [
+    M({ id: "thousand-needles", name: "Thousand Needles", kind: "projectile", anim: "cast", range: 640, minRange: 70, cd: 3.4, dmg: 5, speed: 820, size: 8, count: 8, spread: 0.26, shape: "shard", pierce: true, status: "slow", statusDur: 0.5 }),
+    M({ id: "liquid-ambush", name: "Liquid Ambush", kind: "blink", anim: "uppercut", range: 700, minRange: 90, cd: 4.5, dmg: 18, lift: -640, kb: 260, status: "stun", statusDur: 0.4 }),
+    M({ id: "iron-maiden", name: "Iron Maiden", kind: "burst", anim: "slam", range: 170, cd: 7, dmg: 22, radius: 200, kb: 560, lift: -400, status: "slow", statusDur: 1, wind: 0.34, rec: 0.35 }),
+  ],
+};
+FORMS.alch = {
+  power: "alch", kind: "nightmare", title: "NIGREDO", ...NIGHTMARE,
+  blurb: "The work runs backwards. Gold blackens into lead, its circle burns red, and everything it touches turns heavy and dark.",
+  body: "hsl(30 10% 9%)", glow: "hsl(8 100% 56%)", a: "hsl(14 80% 40%)", b: "hsl(44 100% 66%)", dark: "hsl(30 20% 3%)",
+  dmg: 1.3, kb: 1.25, cd: 0.7, speed: 1.15, act: 1.2,
+  moves: [
+    M({ id: "nigredo-ray", name: "Nigredo Ray", kind: "beam", anim: "thrust", range: 860, minRange: 60, cd: 5, dmg: 24, act: 0.4, kb: 400, status: "slow", statusDur: 1, wind: 0.4 }),
+    M({ id: "lead-tomb", name: "Lead Tomb", kind: "eruption", anim: "slam", range: 620, minRange: 40, cd: 6.5, dmg: 13, radius: 46, count: 4, lift: -560, status: "freeze", statusDur: 0.5, wind: 0.36 }),
+    M({ id: "molten-chain", name: "Molten Chain", kind: "pull", anim: "raise", range: 560, minRange: 100, cd: 5, dmg: 16, status: "burn", statusDur: 1.5, wind: 0.34 }),
+  ],
+};
 // ----- Surge Mode: the new generation's own form -----
 // Built like Nightmare Mode (the same passives, and it can't be stunned or frozen) but it carries 12 original moves of its own.
 const SURGE = NIGHTMARE;

@@ -190,7 +190,11 @@
       "hybridOpen": "Two powers. Twice the trouble.",
       "hybridReply": "Just one power? Adorable.",
       "ownOpen": "I made myself for this fight.",
-      "ownReply": "I was made for this."
+      "ownReply": "I was made for this.",
+      "mercOpen": "Hit me as hard as you like. I just pour back.",
+      "mercReply": "Good. I was getting bored of holding one shape.",
+      "alchOpen": "Everything can be turned into something better. Even you.",
+      "alchReply": "Lead or gold. You choose how this ends."
     },
     "canvasAria": "Battle arena",
     "alive": {
@@ -2150,6 +2154,16 @@
         "title": "Before the Fall",
         "reward": "Earns Past Riftmaker, Reality Warping",
         "story": "A small warm rift keeps opening above the arena. Through it is a bright purple fighter in a long scarf: the Riftmaker as he was, before the Axiom corrupted him."
+      },
+      "quicksilver": {
+        "title": "Quicksilver",
+        "reward": "Earns Argent, Liquid Metal Manipulation",
+        "story": "Beads of silver keep rolling across the arena floor after every fight, all toward the same spot, as if something is putting itself back together."
+      },
+      "gold": {
+        "title": "The Great Work",
+        "reward": "Earns Crucible, Alchemy",
+        "story": "Pieces of the arena keep turning to gold: a rail, a step, the footprint of a fighter who just went down. Each time it happens a little closer to the middle."
       }
     },
     "cutscene": {

@@ -15,6 +15,10 @@
 // Briar (new generation): big young eyes, a flower on the chest, vines up the limbs and a cape of leaves.
 // Turbo (new generation): a black stick figure outlined in blue (body and outline are set on his fighter), with only a long
 // orange scarf that sways behind him and streams flat when he runs. Super Form turns him gold, Hyper Form pale and shimmering.
+// Argent: liquid chrome with a shine that slides over the head, a visor slit of cold blue, a seam down the chest, drips
+// falling from the hands and an arm that pours out into a blade when it strikes.
+// Crucible: a gold body with one lead-grey arm, a half mask of gold, a red philosopher's stone in the chest and an
+// alchemy circle turning slowly behind the shoulders.
 // Past Riftmaker: magenta-purple with yellow eyes and a long yellow-orange scarf; the Axiom's third eye in Nightmare Mode.
 // Nova (an original fighter) also draws her hair and scarf from here: drawNovaLook.
 import type { Power } from "./fighters";
@@ -1558,6 +1562,200 @@ export function drawNovaLook(ctx: CanvasRenderingContext2D, layer: "back" | "fro
   ctx.restore();
 }
 
+// ---------- Argent ----------
+
+const ARGENT_HI = "hsl(0 0% 100%)";
+const ARGENT_LO = "hsl(214 12% 46%)";
+
+/** A bead of mercury: a dark rim, a bright body and a pin of light. */
+function bead(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number, lo: string, hi: string, a = 1) {
+  const g = ctx.createRadialGradient(x - rad * 0.35, y - rad * 0.35, 0, x, y, rad);
+  g.addColorStop(0, al(hi, a));
+  g.addColorStop(1, al(lo, a));
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x, y, rad, 0, TAU);
+  ctx.fill();
+}
+
+function argentBack(ctx: CanvasRenderingContext2D, r: BossRig, s: number, face: number, t: number, alive: boolean, act: QuestAct | undefined, p: QuestPaint) {
+  if (!alive) return;
+  ctx.save();
+  const lo = p.nightmare ? p.a : ARGENT_LO, hi = p.nightmare ? p.b : ARGENT_HI;
+  // drips falling from both hands and landing in a small puddle under it
+  for (const [hand, off] of [[r.hF, 0], [r.hB, 0.5]] as const) {
+    const k = (t * 0.9 + off) % 1;
+    const y = hand.y + 3 * s + k * k * (Math.max(r.fF.y, r.fB.y) - hand.y);
+    bead(ctx, hand.x, y, (1.8 - k * 0.6) * s, lo, hi, 1 - k * 0.3);
+  }
+  const floor = Math.max(r.fF.y, r.fB.y);
+  ctx.fillStyle = al(lo, 0.55);
+  ctx.beginPath();
+  ctx.ellipse(r.hip.x, floor + 1 * s, (16 + Math.sin(t * 2) * 2) * s, 2.6 * s, 0, 0, TAU);
+  ctx.fill();
+  ctx.fillStyle = al(hi, 0.45);
+  ctx.beginPath();
+  ctx.ellipse(r.hip.x - face * 4 * s, floor, 6 * s, 1 * s, 0, 0, TAU);
+  ctx.fill();
+  // a blade poured out of the front arm while a cutting move strikes
+  const cut = act && act.phase !== "after" && (act.kind === "melee" || act.kind === "beam" || act.kind === "dash");
+  if (cut) {
+    const grow = act.phase === "wind" ? act.u * 0.4 : 0.4 + 0.6 * Math.min(1, act.u * 3);
+    const dx = r.hF.x - r.eF.x, dy = r.hF.y - r.eF.y, len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+    const L = 30 * s * grow, w = 3.2 * s;
+    const g = ctx.createLinearGradient(r.hF.x + nx * w, r.hF.y + ny * w, r.hF.x - nx * w, r.hF.y - ny * w);
+    g.addColorStop(0, hi);
+    g.addColorStop(0.5, p.nightmare ? p.glow : "hsl(210 10% 74%)");
+    g.addColorStop(1, lo);
+    ctx.fillStyle = g;
+    ctx.strokeStyle = al(p.glow, 0.8);
+    ctx.lineWidth = 1 * s;
+    ctx.beginPath();
+    ctx.moveTo(r.hF.x + nx * w, r.hF.y + ny * w);
+    ctx.lineTo(r.hF.x + ux * L, r.hF.y + uy * L);
+    ctx.lineTo(r.hF.x - nx * w, r.hF.y - ny * w);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function argentFront(ctx: CanvasRenderingContext2D, r: BossRig, s: number, face: number, t: number, alive: boolean, p: QuestPaint) {
+  ctx.save();
+  ctx.lineCap = "round";
+  const h = r.head;
+  const hi = p.nightmare ? p.b : ARGENT_HI;
+  // a band of light sliding slowly over the chrome head
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(h.x, h.y, HEAD * s - 0.5 * s, 0, TAU);
+  ctx.clip();
+  const sweep = ((t * 0.35) % 1.6) - 0.3;
+  const bx = h.x - face * HEAD * s + face * sweep * HEAD * 2 * s;
+  const g = ctx.createLinearGradient(bx - 5 * s, h.y, bx + 5 * s, h.y);
+  g.addColorStop(0, al(hi, 0));
+  g.addColorStop(0.5, al(hi, alive ? 0.75 : 0.3));
+  g.addColorStop(1, al(hi, 0));
+  ctx.fillStyle = g;
+  ctx.fillRect(h.x - HEAD * s, h.y - HEAD * s, HEAD * 2 * s, HEAD * 2 * s);
+  ctx.restore();
+  // a seam of light down the chest
+  ctx.strokeStyle = al(p.glow, alive ? 0.7 : 0.25);
+  ctx.lineWidth = 1.2 * s;
+  ctx.beginPath();
+  ctx.moveTo(r.neck.x + face * 1 * s, r.neck.y + 3 * s);
+  ctx.quadraticCurveTo(r.neck.x + face * 2.5 * s, (r.neck.y + r.hip.y) / 2, r.hip.x + face * 1 * s, r.hip.y - 3 * s);
+  ctx.stroke();
+  // the visor slit
+  if (alive) {
+    ctx.globalCompositeOperation = "lighter";
+    glowDot(ctx, h.x + face * 5 * s, h.y - 0.5 * s, 7 * s, p.glow, 0.6);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = p.nightmare ? p.glow : "hsl(196 100% 82%)";
+    ctx.lineWidth = 1.8 * s;
+    ctx.beginPath();
+    ctx.moveTo(h.x + face * 1 * s, h.y - 1 * s);
+    ctx.lineTo(h.x + face * 9 * s, h.y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ---------- Crucible ----------
+
+const CRUCIBLE_LEAD = "hsl(218 8% 42%)";
+const CRUCIBLE_STONE = "hsl(354 90% 52%)";
+
+function crucibleBack(ctx: CanvasRenderingContext2D, r: BossRig, s: number, face: number, t: number, alive: boolean, act: QuestAct | undefined, p: QuestPaint) {
+  ctx.save();
+  // an alchemy circle turning behind the shoulders, brighter while a move is being worked
+  const cx = r.shoulder.x - face * 4 * s, cy = r.shoulder.y - 4 * s;
+  const work = act && act.phase !== "after" ? 0.35 : 0;
+  const a = alive ? 0.45 + work + Math.sin(t * 2) * 0.08 : 0.15;
+  ctx.strokeStyle = al(p.nightmare ? p.glow : "hsl(46 100% 62%)", a);
+  ctx.lineWidth = 1.4 * s;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 24 * s, 0, TAU);
+  ctx.stroke();
+  ctx.lineWidth = 1 * s;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 19 * s, 0, TAU);
+  ctx.stroke();
+  const turn = alive ? t * 0.5 : 0;
+  for (const [sides, dir] of [[3, 1], [3, -1]] as const) {
+    ctx.beginPath();
+    for (let i = 0; i <= sides; i++) {
+      const an = turn * dir + (dir < 0 ? Math.PI : 0) + (i / sides) * TAU - Math.PI / 2;
+      const x = cx + Math.cos(an) * 19 * s, y = cy + Math.sin(an) * 19 * s;
+      if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+  }
+  // gold flecks rising off the circle
+  if (alive) {
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < 5; i++) {
+      const k = (t * 0.5 + i / 5) % 1;
+      const an = i * 1.9 + turn;
+      glowDot(ctx, cx + Math.cos(an) * 24 * s, cy + Math.sin(an) * 24 * s - k * 22 * s, 2.2 * s, p.nightmare ? p.b : "hsl(48 100% 70%)", 0.7 * (1 - k));
+    }
+  }
+  ctx.restore();
+}
+
+function crucibleFront(ctx: CanvasRenderingContext2D, r: BossRig, s: number, face: number, t: number, alive: boolean, p: QuestPaint) {
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  const h = r.head;
+  // the back arm is lead, drawn over in grey from shoulder to hand
+  ctx.strokeStyle = p.nightmare ? "hsl(30 8% 20%)" : CRUCIBLE_LEAD;
+  ctx.lineWidth = 4.2 * s;
+  strokePath(ctx, [r.shoulder, r.eB, r.hB]);
+  ctx.fillStyle = p.nightmare ? "hsl(30 8% 24%)" : "hsl(218 8% 52%)";
+  ctx.beginPath();
+  ctx.arc(r.hB.x, r.hB.y, 3.4 * s, 0, TAU);
+  ctx.fill();
+  // a half mask of brighter gold over the face side, with an eye cut into it
+  ctx.fillStyle = p.nightmare ? "hsl(30 10% 14%)" : "hsl(48 100% 66%)";
+  ctx.strokeStyle = "hsl(30 60% 22% / 0.8)";
+  ctx.lineWidth = 1 * s;
+  ctx.beginPath();
+  ctx.arc(h.x, h.y, HEAD * s - 1 * s, -Math.PI / 2, Math.PI / 2, face < 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  if (alive) {
+    const ex = h.x + face * 5 * s, ey = h.y - 0.5 * s;
+    glowDot(ctx, ex, ey, 5 * s, p.nightmare ? p.glow : "hsl(20 100% 62%)", 0.6);
+    ctx.fillStyle = p.nightmare ? p.glow : "hsl(30 100% 92%)";
+    ctx.beginPath();
+    ctx.ellipse(ex, ey, 2 * s, 1.2 * s, 0, 0, TAU);
+    ctx.fill();
+  }
+  // the philosopher's stone set in the chest, pulsing
+  const sx = r.neck.x + (r.hip.x - r.neck.x) * 0.32 + face * 1.5 * s, sy = r.neck.y + (r.hip.y - r.neck.y) * 0.32;
+  if (alive) {
+    ctx.globalCompositeOperation = "lighter";
+    glowDot(ctx, sx, sy, (7 + Math.sin(t * 3) * 1.5) * s, p.nightmare ? p.glow : CRUCIBLE_STONE, 0.6);
+    ctx.globalCompositeOperation = "source-over";
+  }
+  ctx.fillStyle = p.nightmare ? "hsl(8 80% 30%)" : CRUCIBLE_STONE;
+  ctx.strokeStyle = "hsl(40 80% 30%)";
+  ctx.lineWidth = 1 * s;
+  ctx.beginPath();
+  ctx.moveTo(sx, sy - 3.4 * s);
+  ctx.lineTo(sx + 2.6 * s, sy);
+  ctx.lineTo(sx, sy + 3.4 * s);
+  ctx.lineTo(sx - 2.6 * s, sy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
 export function drawQuestDesign(
   ctx: CanvasRenderingContext2D, id: Power, layer: "back" | "front", r: BossRig, s: number, face: number, t: number,
   alive: boolean, act: QuestAct | undefined, p: QuestPaint, vx = 0,
@@ -1574,5 +1772,7 @@ export function drawQuestDesign(
   if (id === "plasma") return layer === "back" ? voltaBack(ctx, r, s, face, t, alive, act, p) : voltaFront(ctx, r, s, face, t, alive, p);
   if (id === "flora") return layer === "back" ? briarBack(ctx, r, s, face, t, alive, act, p) : briarFront(ctx, r, s, face, t, alive, p);
   if (id === "chaos") return layer === "back" ? turboBack(ctx, r, s, face, t, alive, vx) : turboFront(ctx, r, s, face, t, alive, p);
+  if (id === "merc") return layer === "back" ? argentBack(ctx, r, s, face, t, alive, act, p) : argentFront(ctx, r, s, face, t, alive, p);
+  if (id === "alch") return layer === "back" ? crucibleBack(ctx, r, s, face, t, alive, act, p) : crucibleFront(ctx, r, s, face, t, alive, p);
   if (id === "pastrift") return layer === "back" ? pastriftBack(ctx, r, s, face, t, alive, p, vx) : pastriftFront(ctx, r, s, face, t, alive, p);
 }

@@ -497,6 +497,40 @@ const MARKS: Partial<Record<Power, MarkDraw>> = {
       ctx.fillRect((r() * 2 - 1) * m.w * 0.55, -r() * 3, 2, 2);
     }
   },
+  merc: (ctx, m, k, r) => {
+    // a bright silver splash on the floor with loose beads still rolling off it
+    flat(ctx, () => {
+      ctx.fillStyle = withA(m.a, 0.75 * k);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, m.w * 0.45, m.w * 0.12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = withA(m.b, 0.5 * k);
+      ctx.beginPath();
+      ctx.ellipse(-m.w * 0.1, -1, m.w * 0.18, m.w * 0.04, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    for (let i = 0; i < 7; i++) {
+      const sz = 1.5 + r() * 2.5;
+      ctx.fillStyle = withA(i % 3 === 0 ? m.b : m.a, 0.85 * k);
+      ctx.beginPath();
+      ctx.arc((r() * 2 - 1) * m.w * 0.8, -sz, sz, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  },
+  alch: (ctx, m, k, r) => {
+    // a ring of a transmutation circle burnt into the floor, with flecks of gold left in it
+    flat(ctx, () => {
+      ctx.strokeStyle = withA(m.a, 0.75 * k);
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, m.w * 0.5, m.w * 0.14, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    for (let i = 0; i < 9; i++) {
+      ctx.fillStyle = withA(i % 3 === 0 ? m.b : m.a, 0.85 * k);
+      ctx.fillRect((r() * 2 - 1) * m.w * 0.5, -r() * 3, 2, 2);
+    }
+  },
   plasma: (ctx, m, k, r) => {
     // a scorch with a few arcs of plasma still crackling across it
     pool(ctx, m.w, withA(m.a, 0.3 * k), withA(m.a, 0));

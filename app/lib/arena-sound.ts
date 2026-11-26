@@ -274,6 +274,18 @@ const CAST: Record<Power, Voice> = {
     s.noise(5200 * p, 900 * p, 0.32 * len, 0.35, { type: "bandpass", q: 1.5, delay: 0.14 * len });
     s.noise(320 * p, 180 * p, 0.4 * len, 0.25, { type: "lowpass", q: 3 + v, attack: 0.12 * len });
   },
+  // Argent: a wet metallic slosh that rings out like struck steel
+  merc: (s, p, len, v) => {
+    s.noise(600 * p, 1800 * p, 0.16 * len, 0.3, { type: "bandpass", q: 4, attack: 0.03 });
+    s.fm((v === 1 ? 523 : v === 2 ? 587 : 466) * p, 2.76, 3, 0.45 * len, 0.12, 0.08 * len);
+    s.tone(220 * p, 160 * p, 0.3 * len, 0.08, { type: "triangle", vib: [5, 6], delay: 0.06 * len });
+  },
+  // Crucible: a low furnace roar, then a warm golden bell as the metal turns
+  alch: (s, p, len, v) => {
+    s.noise(240 * p, 900 * p, 0.3 * len, 0.3, { type: "lowpass", q: 2, attack: 0.08 * len });
+    s.fm((v === 1 ? 740 : v === 2 ? 831 : 659) * p, 3.5, 1.6, 0.5 * len, 0.12, 0.14 * len);
+    s.tone(1318 * p, 1318 * p, 0.2 * len, 0.05, { type: "sine", delay: 0.22 * len });
+  },
   // Volta: a fast rising crackle of charge, then a bright electric zap with a buzzing tail
   plasma: (s, p, len, v) => {
     s.tone(300 * p, 1800 * p, 0.16 * len, 0.1, { type: "sawtooth", vib: [40, 18] });
@@ -380,6 +392,18 @@ const IMPACT: Record<Power, Voice> = {
     s.tone(110 * p, 45, 0.14, 0.5, { type: "sine" });
     s.noise(2600 * p, 700, 0.2, 0.5, { type: "bandpass", q: 1 });
     s.noise(6000, 4000, 0.12, 0.2, { type: "highpass", delay: 0.05 });
+  },
+  // a clang of metal and a splash of beads
+  merc: (s, p) => {
+    s.fm(392 * p, 2.76, 2.5, 0.25, 0.4, 0);
+    s.noise(1800 * p, 500, 0.14, 0.4, { type: "bandpass", q: 3 });
+    s.noise(7000, 5000, 0.1, 0.18, { type: "highpass", delay: 0.05 });
+  },
+  // a heavy thud of lead and a bright golden ping
+  alch: (s, p) => {
+    s.tone(120 * p, 50, 0.16, 0.5, { type: "sine" });
+    s.noise(1400 * p, 400, 0.14, 0.35, { type: "lowpass", q: 1.5 });
+    s.fm(1661 * p, 3.5, 1.2, 0.24, 0.1, 0.04);
   },
   // a hard plasma crack and a sizzle
   plasma: (s, p) => {
