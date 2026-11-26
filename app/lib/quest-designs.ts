@@ -4,7 +4,7 @@
 // for the other eye, and a large bone carried like a monk's staff.
 // Parallax: a body of deep space with glowing seams, a visor slit, and wireframe cubes of folded space orbiting him.
 // Halflife: a heavy body cracked with green light, a reactor core turning in his chest and radiation drifting off him.
-// Redline: red and gold, goggles, hair whipping back, chevrons on the chest and afterimages that trail him the faster he runs.
+// Redline: red and gold, goggles with straps streaming back, chevrons on the chest and afterimages that trail him the faster he runs.
 // Liminal: a great ring door behind its shoulders, a small door at each hand, orbiting bits of matter and a keyhole for a face.
 // Overtone: headphones, an equalizer for a face, a speaker cone thumping in his chest and rings of sound pulsing off him on the beat.
 // Vellum: a paper body with fold creases, a red ink seal on the brow, a long scroll trailing from the shoulders and origami cranes circling.
@@ -390,7 +390,7 @@ function redlineFront(ctx: CanvasRenderingContext2D, r: BossRig, s: number, face
   }
   if (alive) {
     const h = r.head;
-    // a streak of flame-coloured hair whipping back off the head, longer when he runs
+    // the goggle strap's loose ends streaming back off the head, longer when he runs
     const run = Math.min(1, Math.abs(vx) / 260);
     const back = -face;
     for (let i = 0; i < 3; i++) {

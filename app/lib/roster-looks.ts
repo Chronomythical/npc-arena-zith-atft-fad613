@@ -1,10 +1,10 @@
 // How the 17 starting fighters look, idle, charge their moves and arrive. The engine calls these on top of the
 // stickman body, like the quest fighters' designs:
 // - drawRosterLook: what each one wears ("back" behind the limbs, "front" over them) plus what drifts off them at rest.
-//   Pyro: flame hair and burning cuffs. Cryo: an ice crown, a crystal pauldron and frosty breath. Electro: lightning
-//   hair and sparks jumping hand to hand. Terra: a stone helm, a boulder pauldron and rock gauntlets. Aero: a headband
-//   with two long tails and wind curling round the legs. Hydro: a flowing water ponytail and a ring of water round the
-//   waist. Umbra: a pointed hood with one violet eye and a tattered shadow cloak. Lux: a halo and wings of light.
+//   Pyro: burning cuffs and rising embers. Cryo: an ice crown, a crystal pauldron and frosty breath. Electro: sparks
+//   jumping hand to hand and crackling arcs. Terra: a stone helm, a boulder pauldron and rock gauntlets. Aero: a headband
+//   with two long tails and wind curling round the legs. Hydro: a ring of water round the waist, drips falling from the
+//   hands. Umbra: a pointed hood with one violet eye and a tattered shadow cloak. Lux: a halo and wings of light.
 //   Gravi: two moons orbiting the head and a heavy belt. Tele: a visor and a small portal hovering at the back.
 //   Vita: a leaf crown with a flower and a vine up the arm. Toxi: a gas mask, a tank on the back and dripping hands.
 //   Chrono: a clockwork cog behind the shoulders and a monocle. Magneto: a horseshoe helmet and iron bits round the
@@ -152,29 +152,6 @@ type Look = { back?: LookFn; front?: LookFn };
 
 const LOOKS: Partial<Record<Power, Look>> = {
   pyro: {
-    back: (ctx, r, s, face, t, alive, vx, p) => {
-      const h = r.head, back = -face, sp = Math.min(1, Math.abs(vx) / 300);
-      ctx.save();
-      // flame hair: tongues licking up and back from the crown
-      const tongues: [number, number, number][] = [[-0.35, 30, 7], [0.1, 26, 6], [0.55, 22, 5.5], [0.95, 16, 4.5]];
-      for (const [j, [off, len, w]] of tongues.entries()) {
-        const ang = -Math.PI / 2 + back * (off + sp * 0.7);
-        const bx = h.x + back * (2 + off * 5) * s, by = h.y - HEAD * 0.55 * s;
-        const g = ctx.createLinearGradient(bx, by, bx + Math.cos(ang) * len * s, by + Math.sin(ang) * len * s);
-        g.addColorStop(0, p.a);
-        g.addColorStop(1, al(p.glow, 0.85));
-        ctx.strokeStyle = INK;
-        ctx.lineWidth = 2.2 * s;
-        flame(ctx, bx, by, ang, (alive ? len : len * 0.4) * s, w * s, t, j, g);
-        ctx.stroke();
-      }
-      ctx.globalCompositeOperation = "lighter";
-      for (const [j, [off, len, w]] of tongues.slice(0, 2).entries()) {
-        const ang = -Math.PI / 2 + back * (off + sp * 0.7);
-        flame(ctx, h.x + back * (2 + off * 5) * s, h.y - HEAD * 0.4 * s, ang, (alive ? len * 0.55 : 4) * s, w * 0.45 * s, t, j + 9, al(p.glow, 0.8));
-      }
-      ctx.restore();
-    },
     front: (ctx, r, s, face, t, alive, vx, p) => {
       if (!alive) return;
       ctx.save();
@@ -234,31 +211,6 @@ const LOOKS: Partial<Record<Power, Look>> = {
   },
 
   electro: {
-    back: (ctx, r, s, face, t, alive, vx, p) => {
-      const h = r.head, back = -face;
-      ctx.save();
-      // lightning hair: zigzag spikes swept back
-      ctx.lineJoin = "miter";
-      for (const [j, [off, len]] of ([[-0.6, 20], [-0.15, 24], [0.3, 22], [0.75, 17], [1.15, 12]] as const).entries()) {
-        const a = -Math.PI / 2 + back * (off + 0.35);
-        const bx = h.x + Math.cos(a) * HEAD * 0.7 * s, by = h.y + Math.sin(a) * HEAD * 0.7 * s;
-        const L = (alive ? len : len * 0.5) * s * (1 + Math.sin(t * 25 + j) * 0.05);
-        const nx = -Math.sin(a), ny = Math.cos(a);
-        ctx.beginPath();
-        ctx.moveTo(bx + nx * 5 * s, by + ny * 5 * s);
-        ctx.lineTo(bx + Math.cos(a) * L * 0.5 - nx * 1 * s, by + Math.sin(a) * L * 0.5 - ny * 1 * s);
-        ctx.lineTo(bx + Math.cos(a) * L * 0.45 + nx * 4 * s, by + Math.sin(a) * L * 0.45 + ny * 4 * s);
-        ctx.lineTo(bx + Math.cos(a) * L, by + Math.sin(a) * L);
-        ctx.lineTo(bx - nx * 5 * s, by - ny * 5 * s);
-        ctx.closePath();
-        ctx.fillStyle = j % 2 ? p.a : p.glow;
-        ctx.fill();
-        ctx.strokeStyle = INK;
-        ctx.lineWidth = 2 * s;
-        ctx.stroke();
-      }
-      ctx.restore();
-    },
     front: (ctx, r, s, face, t, alive, vx, p) => {
       if (!alive) return;
       ctx.save();
@@ -426,30 +378,7 @@ const LOOKS: Partial<Record<Power, Look>> = {
 
   hydro: {
     back: (ctx, r, s, face, t, alive, vx, p) => {
-      const h = r.head, back = -face, sp = Math.min(1, Math.abs(vx) / 300);
       ctx.save();
-      // a ponytail of running water
-      const pts: Pt[] = [];
-      for (let i = 0; i <= 7; i++) {
-        const k = i / 7;
-        pts.push({
-          x: h.x + back * (HEAD * 0.8 + k * (26 + sp * 16)) * s + Math.sin(t * 4 - k * 3) * 3 * k * s,
-          y: h.y - 6 * s + k * k * (alive ? 34 - sp * 16 : 40) * s,
-        });
-      }
-      for (let i = 0; i < pts.length; i++) {
-        const w = (7 - i * 0.75) * s;
-        glowDot(ctx, pts[i].x, pts[i].y, w * 1.6, p.glow, 0.35);
-        ctx.beginPath();
-        ctx.arc(pts[i].x, pts[i].y, Math.max(1, w), 0, TAU);
-        ctx.fillStyle = al(p.a, 0.75);
-        ctx.fill();
-      }
-      ctx.beginPath();
-      pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
-      ctx.strokeStyle = al(p.glow, 0.8);
-      ctx.lineWidth = 1.6 * s;
-      ctx.stroke();
       // the far half of the waist ring
       ctx.beginPath();
       ctx.ellipse(r.hip.x, r.hip.y - 6 * s, 20 * s, 6 * s, 0, Math.PI, TAU);
