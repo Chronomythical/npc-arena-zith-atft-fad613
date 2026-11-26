@@ -9,6 +9,7 @@ import { drawNovaLook, drawQuestDesign, type QuestAct } from "./quest-designs";
 import { FORMS, formShout, formsOf, type Form, type FormKind } from "./forms";
 import { BOSS_PHASES } from "./bosses";
 import { preFightFor, type PreFight, type PrePose } from "./pre-fight";
+import { ROSTER_LOOK, drawRosterLook, drawCharge, arrivalOf } from "./roster-looks";
 
 export const W = 960;
 export const H = 600;
@@ -190,6 +191,65 @@ const QUEST_STANCE: Partial<Record<Power, Pose>> = {
   // Turbo: leaning into a sprint start, weight on the front foot, front hand out loose, back arm swung behind
   chaos: { t: 0.3, aF1: 1.3, aF2: 1.9, aB1: -0.9, aB2: -0.3, lF1: 0.65, lF2: -0.1, lB1: -0.55, lB2: -0.4 },
 };
+/** The starting fighters each stand their own way too, matching their power. */
+const ROSTER_STANCE: Partial<Record<Power, Pose>> = {
+  // Pyro: a boxer leaning in, both burning fists up
+  pyro: { t: 0.26, aF1: 1.2, aF2: 2.5, aB1: 0.8, aB2: 2.3, lF1: 0.62, lF2: -0.05, lB1: -0.52, lB2: -0.4 },
+  // Cryo: upright and cold, front palm held out flat, back arm low
+  cryo: { t: 0.04, aF1: 1.5, aF2: 1.6, aB1: -0.3, aB2: -0.6, lF1: 0.34, lF2: 0.02, lB1: -0.3, lB2: -0.1 },
+  // Electro: wide and twitchy, fists low and crackling
+  electro: { t: 0.2, aF1: 0.9, aF2: 2.0, aB1: 0.6, aB2: 2.2, lF1: 0.58, lF2: -0.05, lB1: -0.5, lB2: -0.35 },
+  // Terra: a sumo's stance, heavy stone fists hanging low
+  terra: { t: 0.16, aF1: 0.6, aF2: 1.05, aB1: -0.55, aB2: -1.0, lF1: 0.7, lF2: 0.1, lB1: -0.66, lB2: -0.2 },
+  // Aero: light like a dancer, one arm forward, the other swept back
+  aero: { t: 0.1, aF1: 1.6, aF2: 1.9, aB1: -1.2, aB2: -0.8, lF1: 0.4, lF2: 0.0, lB1: -0.25, lB2: -0.4 },
+  // Hydro: both hands at chest height as if holding a ball of water
+  hydro: { t: 0.14, aF1: 1.2, aF2: 2.0, aB1: 1.0, aB2: 2.1, lF1: 0.5, lF2: 0.02, lB1: -0.42, lB2: -0.22 },
+  // Umbra: crouched low, the blade arm drawn back
+  umbra: { t: 0.34, aF1: 0.95, aF2: 0.55, aB1: -1.25, aB2: -0.7, lF1: 0.72, lF2: -0.2, lB1: -0.6, lB2: -0.55 },
+  // Lux: tall, the back hand raised to the sky
+  lux: { t: -0.02, aF1: 1.35, aF2: 1.6, aB1: 2.4, aB2: 2.85, lF1: 0.28, lF2: 0.0, lB1: -0.26, lB2: -0.08 },
+  // Gravi: weighed down, both palms pressing at the floor
+  gravi: { t: 0.18, aF1: 0.9, aF2: 0.5, aB1: -0.9, aB2: -0.5, lF1: 0.6, lF2: 0.05, lB1: -0.58, lB2: -0.2 },
+  // Tele: side-on, pointing where he is about to be
+  tele: { t: 0.14, aF1: 1.7, aF2: 1.8, aB1: -0.8, aB2: 0.6, lF1: 0.42, lF2: 0.0, lB1: -0.36, lB2: -0.16 },
+  // Vita: both palms open in front, ready to mend
+  vita: { t: 0.04, aF1: 1.3, aF2: 1.75, aB1: 1.0, aB2: 1.5, lF1: 0.32, lF2: 0.0, lB1: -0.28, lB2: -0.1 },
+  // Toxi: hunched forward, dripping claws out
+  toxi: { t: 0.36, aF1: 1.1, aF2: 1.4, aB1: 0.7, aB2: 1.2, lF1: 0.55, lF2: -0.15, lB1: -0.5, lB2: -0.35 },
+  // Chrono: precise and upright, front forearm held level like a clock hand
+  chrono: { t: 0.02, aF1: 1.0, aF2: 2.6, aB1: -0.4, aB2: -0.4, lF1: 0.3, lF2: 0.0, lB1: -0.3, lB2: -0.05 },
+  // Magneto: square to the fight, both fists clenched in front of the chest
+  magneto: { t: 0.12, aF1: 1.0, aF2: 2.6, aB1: 0.7, aB2: 2.5, lF1: 0.58, lF2: 0.08, lB1: -0.56, lB2: -0.2 },
+  // Psy: front palm out, two fingers of the back hand at the temple
+  psy: { t: 0.0, aF1: 1.5, aF2: 1.55, aB1: 1.95, aB2: 3.5, lF1: 0.25, lF2: -0.1, lB1: -0.2, lB2: -0.3 },
+  // Shift: loose and uneven, arms hanging at odd angles
+  shift: { t: 0.22, aF1: 0.7, aF2: 0.3, aB1: 0.2, aB2: 1.6, lF1: 0.48, lF2: -0.1, lB1: -0.42, lB2: -0.4 },
+  // Nova: confident, front fist up, back hand on the hip
+  nova: { t: 0.1, aF1: 1.3, aF2: 2.2, aB1: -0.5, aB2: -0.9, lF1: 0.44, lF2: 0.0, lB1: -0.36, lB2: -0.12 },
+};
+/** How each starting fighter moves at rest: speed, torso, arms (front, back), knees, and whether it ticks instead of flowing. */
+const ROSTER_IDLE: Partial<Record<Power, { hz: number; t: number; aF: number; aB: number; l: number; alt?: boolean; tick?: boolean; jitter?: boolean }>> = {
+  pyro: { hz: 6.5, t: 0.03, aF: 0.1, aB: 0.1, l: 0.05 },
+  cryo: { hz: 1.3, t: 0.015, aF: 0.04, aB: 0.03, l: 0.01 },
+  electro: { hz: 7, t: 0.03, aF: 0.1, aB: 0.1, l: 0.04, jitter: true },
+  terra: { hz: 1.6, t: 0.04, aF: 0.05, aB: 0.05, l: 0.04 },
+  aero: { hz: 2.2, t: 0.05, aF: 0.12, aB: 0.14, l: 0.03, alt: true },
+  hydro: { hz: 1.9, t: 0.04, aF: 0.12, aB: 0.12, l: 0.03, alt: true },
+  umbra: { hz: 3, t: 0.03, aF: 0.06, aB: 0.08, l: 0.03 },
+  lux: { hz: 1.2, t: 0.02, aF: 0.05, aB: 0.08, l: 0.015 },
+  gravi: { hz: 1.4, t: 0.03, aF: 0.08, aB: 0.08, l: 0.04 },
+  tele: { hz: 4.5, t: 0.02, aF: 0.05, aB: 0.08, l: 0.02, tick: true },
+  vita: { hz: 1.6, t: 0.03, aF: 0.1, aB: 0.1, l: 0.02, alt: true },
+  toxi: { hz: 2.4, t: 0.05, aF: 0.12, aB: 0.1, l: 0.03 },
+  chrono: { hz: 3.14, t: 0.02, aF: 0.12, aB: 0.04, l: 0.015, tick: true },
+  magneto: { hz: 2, t: 0.03, aF: 0.05, aB: 0.05, l: 0.03 },
+  psy: { hz: 1, t: 0.02, aF: 0.06, aB: 0.04, l: 0.02 },
+  shift: { hz: 3.5, t: 0.05, aF: 0.14, aB: 0.12, l: 0.04, jitter: true },
+  nova: { hz: 3, t: 0.03, aF: 0.08, aB: 0.05, l: 0.03 },
+};
+/** A starting fighter in its own colours, not a hybrid, a made fighter, a boss or a minion carrying its power. */
+const isRosterSelf = (def: FighterDef) => ROSTER_LOOK.has(def.id) && !def.parents && !def.boss && !def.minion && !def.custom;
 /** The fighter you made stands by its main power's role: how that kind of fighter would square up. */
 const CUSTOM_STANCE: Record<FighterDef["role"], Pose> = {
   // attacker: leaning in, fists up and ready to throw
@@ -217,6 +277,7 @@ function stanceOf(def: FighterDef): Pose {
   const qs = QUEST_STANCE[def.id];
   if (qs && !def.parents) return qs;
   if (def.parents) return HYBRID_STANCES[pairHash(def.parents[0], def.parents[1]) % HYBRID_STANCES.length];
+  if (isRosterSelf(def)) return ROSTER_STANCE[def.id] ?? STANCE;
   return STANCE;
 }
 /** The rest stance with this fighter's own breathing on top. */
@@ -245,6 +306,17 @@ function idlePose(f: Fighter, gt: number): Pose {
     const b = Math.sin(gt * hz + f.key);
     return { ...st, t: st.t + b * 0.03, aF2: st.aF2 + b * 0.06, aB2: st.aB2 + b * 0.06, lF1: st.lF1 + b * 0.04, lB1: st.lB1 - b * 0.04 };
   }
+  const ri = isRosterSelf(f.def) ? ROSTER_IDLE[f.def.id] : undefined;
+  if (ri) {
+    // Pyro bounces like a boxer, Cryo barely moves, Electro twitches, Terra heaves, Aero and Hydro flow, Tele and Chrono tick,
+    // Shift never moves the same way twice
+    const ph = gt * ri.hz + f.key;
+    let b = Math.sin(ph);
+    if (ri.tick) b = Math.tanh(Math.sin(ph) * 5);
+    if (ri.jitter) b = Math.sin(ph) * 0.7 + Math.sin(ph * 2.7 + 1) * 0.3;
+    const c = ri.alt ? Math.cos(ph) : b;
+    return { ...st, t: st.t + b * ri.t, aF2: st.aF2 + b * ri.aF, aB2: st.aB2 + c * ri.aB, lF1: st.lF1 + b * ri.l, lB1: st.lB1 - b * ri.l };
+  }
   const b = Math.sin(gt * 4 + f.key);
   return { ...STANCE, t: STANCE.t + b * 0.03, aF2: STANCE.aF2 + b * 0.08, aB2: STANCE.aB2 - b * 0.06 };
 }
@@ -269,7 +341,29 @@ function introOf(def: FighterDef): IntroSpec {
     }
     return sp;
   }
+  if (isRosterSelf(def)) return rosterIntro(def.id);
   return INTROS[def.id];
+}
+const arrivalCache = new Map<Power, IntroSpec>();
+/** A starting fighter's own entrance with its floor sigil and landing flourish (roster-looks.ts) laid on top. */
+function rosterIntro(id: Power): IntroSpec {
+  let sp = arrivalCache.get(id);
+  if (sp) return sp;
+  const base = INTROS[id], ar = arrivalOf(id);
+  if (!ar) return base;
+  sp = {
+    ...base,
+    back: (d) => {
+      if (ar.back) { d.ctx.save(); ar.back(d, base.hit); d.ctx.restore(); }
+      base.back?.(d);
+    },
+    front: (d) => {
+      base.front?.(d);
+      if (ar.front) { d.ctx.save(); ar.front(d, base.hit); d.ctx.restore(); }
+    },
+  };
+  arrivalCache.set(id, sp);
+  return sp;
 }
 const introLen = (f: Fighter) => introOf(f.def).len ?? INTRO_LEN;
 
@@ -3831,7 +3925,11 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
   // Nova wears her own long hair and long pink scarf in place of the usual short one
   const nova = f.def.id === "nova" && !f.def.parents && !f.def.boss && !f.def.minion && !f.def.custom && !o.solid;
   if (nova) drawNovaLook(ctx, "back", bossPts, s, face, bt, f.alive, f.vx, rg?.power === "nova");
-  if (!f.def.boss && !quest && !nova && !f.def.minion && (!gear || gear === "scarf")) {
+  // a starting fighter wears its own look in place of the scarf
+  const rosterLook = isRosterSelf(f.def) && !o.solid;
+  const rosterPaint = { a: rg?.a ?? f.def.color, b: rg?.b ?? f.def.glow, glow: rg?.glow ?? f.def.glow };
+  if (rosterLook) drawRosterLook(ctx, f.def.id, "back", bossPts, s, face, bt, f.alive, f.vx, rosterPaint);
+  if (!f.def.boss && !quest && !nova && !rosterLook && !f.def.minion && (!gear || gear === "scarf")) {
   const sx = -face * (16 + Math.abs(f.vx) * 0.03) * s;
   ctx.beginPath();
   ctx.moveTo(neck.x, neck.y + 2 * s);
@@ -3854,6 +3952,12 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
   if (f.act && f.alive) {
     const lk = LOOKS[f.act.move.id];
     const pc = rg ? { glow: rg.b, color: rg.a } : lk ? { glow: lk.b, color: lk.a } : DEF_BY_ID[f.act.power];
+    // a starting fighter's element gathers in the hand in its own shape
+    const m = f.act.move, at = f.act.t;
+    const chargeK = at < m.wind ? at / Math.max(0.01, m.wind) : 1 - clamp((at - m.wind - m.act) / Math.max(0.1, m.rec), 0, 1) * 0.7;
+    const release = at >= m.wind ? (at - m.wind) / 0.25 : 0;
+    const charged = !f.def.boss && !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release);
+    if (!charged) {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
     const r = (10 + Math.sin(g.t * 30) * 2) * s;
@@ -3865,6 +3969,7 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     ctx.arc(hF.x, hF.y, r * 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
+    }
   }
   // fists
   for (const hp of [hB, hF]) {
@@ -3912,6 +4017,7 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     ctx.fill();
   }
   if (nova) drawNovaLook(ctx, "front", bossPts, s, face, bt, f.alive, f.vx, rg?.power === "nova");
+  if (rosterLook) drawRosterLook(ctx, f.def.id, "front", bossPts, s, face, bt, f.alive, f.vx, rosterPaint);
   if ((gear === "headband" || gear === "mask") && !o.solid) drawHeadGear(ctx, gear, head, face, wave, f.vx, s, rg?.glow ?? f.def.glow, ink, f.alive && !blind);
   if (f.def.minion && !o.solid) drawMinionGear(ctx, f.def.minion, "front", { head, neck, hip, shoulder }, s, face, wave, f.vx, ink, col);
   if (f.def.boss && !o.solid) drawBossDesign(ctx, f.def.boss, "front", bossPts, s, face, bt, f.alive, f.vx, bossAct, bossPhase);
