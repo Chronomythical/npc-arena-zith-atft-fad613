@@ -1886,3 +1886,7 @@ const ARRIVAL: Partial<Record<Power, Arrival>> = {
 export function arrivalOf(id: Power): Arrival | undefined {
   return ARRIVAL[id];
 }
+
+// Shared with the quest fighters' looks (quest-looks.ts), so both draw their elements the same way.
+export { glowDot, flame, crystal, zig, rock, leaf, star4, drift, floorRing, sigilK, flare, spokes, fp, hh, al, hsla, clamp, seg, easeOut, mid };
+export type { Arrival };

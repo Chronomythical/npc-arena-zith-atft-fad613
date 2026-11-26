@@ -9,7 +9,8 @@ import { drawNovaLook, drawQuestDesign, type QuestAct } from "./quest-designs";
 import { FORMS, formShout, formsOf, type Form, type FormKind } from "./forms";
 import { BOSS_PHASES } from "./bosses";
 import { preFightFor, type PreFight, type PrePose } from "./pre-fight";
-import { ROSTER_LOOK, drawRosterLook, drawCharge, arrivalOf } from "./roster-looks";
+import { ROSTER_LOOK, drawRosterLook, drawCharge, arrivalOf, type Arrival } from "./roster-looks";
+import { QUEST_LOOK, drawQuestLook, drawQuestCharge, drawQuestImpact, questArrivalOf } from "./quest-looks";
 
 export const W = 960;
 export const H = 600;
@@ -229,7 +230,8 @@ const ROSTER_STANCE: Partial<Record<Power, Pose>> = {
   nova: { t: 0.1, aF1: 1.3, aF2: 2.2, aB1: -0.5, aB2: -0.9, lF1: 0.44, lF2: 0.0, lB1: -0.36, lB2: -0.12 },
 };
 /** How each starting fighter moves at rest: speed, torso, arms (front, back), knees, and whether it ticks instead of flowing. */
-const ROSTER_IDLE: Partial<Record<Power, { hz: number; t: number; aF: number; aB: number; l: number; alt?: boolean; tick?: boolean; jitter?: boolean }>> = {
+type Idle = { hz: number; t: number; aF: number; aB: number; l: number; alt?: boolean; tick?: boolean; jitter?: boolean; step?: boolean; beat?: boolean };
+const ROSTER_IDLE: Partial<Record<Power, Idle>> = {
   pyro: { hz: 6.5, t: 0.03, aF: 0.1, aB: 0.1, l: 0.05 },
   cryo: { hz: 1.3, t: 0.015, aF: 0.04, aB: 0.03, l: 0.01 },
   electro: { hz: 7, t: 0.03, aF: 0.1, aB: 0.1, l: 0.04, jitter: true },
@@ -248,6 +250,23 @@ const ROSTER_IDLE: Partial<Record<Power, { hz: number; t: number; aF: number; aB
   shift: { hz: 3.5, t: 0.05, aF: 0.14, aB: 0.12, l: 0.04, jitter: true },
   nova: { hz: 3, t: 0.03, aF: 0.08, aB: 0.05, l: 0.03 },
 };
+/** How the 12 quest fighters move at rest; `step` moves in 8-bit steps, `beat` nods on a beat. */
+const QUEST_IDLE: Partial<Record<Power, Idle>> = {
+  spatio: { hz: 1.2, t: 0.02, aF: 0.05, aB: 0.09, l: 0.02, alt: true },
+  hexizon: { hz: 5.5, t: 0.03, aF: 0.07, aB: 0.07, l: 0.04, step: true },
+  gamma: { hz: 2.2, t: 0.05, aF: 0.05, aB: 0.05, l: 0.05 },
+  velo: { hz: 9, t: 0.03, aF: 0.1, aB: 0.12, l: 0.05, jitter: true },
+  portal: { hz: 1.4, t: 0.02, aF: 0.1, aB: 0.1, l: 0.02, alt: true },
+  sono: { hz: 7.5, t: 0.04, aF: 0.08, aB: 0.02, l: 0.04, beat: true },
+  paper: { hz: 1.2, t: 0.03, aF: 0.1, aB: 0.12, l: 0.02, alt: true },
+  crys: { hz: 1, t: 0.008, aF: 0.02, aB: 0.02, l: 0.008 },
+  sand: { hz: 2.6, t: 0.04, aF: 0.08, aB: 0.1, l: 0.03, alt: true },
+  pastrift: { hz: 4.6, t: 0.03, aF: 0.1, aB: 0.08, l: 0.04, jitter: true },
+  merc: { hz: 2.2, t: 0.04, aF: 0.1, aB: 0.1, l: 0.03, alt: true },
+  alch: { hz: 1.3, t: 0.015, aF: 0.06, aB: 0.02, l: 0.01 },
+};
+/** One of the 12 quest fighters as itself, not a hybrid, a made fighter, a boss or a minion carrying its power. */
+const isQuestSelf = (def: FighterDef) => QUEST_LOOK.has(def.id) && !def.parents && !def.boss && !def.minion && !def.custom;
 /** A starting fighter in its own colours, not a hybrid, a made fighter, a boss or a minion carrying its power. */
 const isRosterSelf = (def: FighterDef) => ROSTER_LOOK.has(def.id) && !def.parents && !def.boss && !def.minion && !def.custom;
 /** The fighter you made stands by its main power's role: how that kind of fighter would square up. */
@@ -298,6 +317,10 @@ function idlePose(f: Fighter, gt: number): Pose {
     const b = Math.sin(gt * 5 + f.key), c = Math.cos(gt * 5 + f.key);
     return { ...st, t: st.t + b * 0.025, aF2: st.aF2 + b * 0.12, aB2: st.aB2 + c * 0.12 };
   }
+  const qi = isQuestSelf(f.def) ? QUEST_IDLE[f.def.id] : undefined;
+  // Parallax drifts, Hexizon bobs in 8-bit steps, Halflife heaves, Redline and Past Riftmaker can't keep still, Liminal, Vellum,
+  // Sirocco and Argent flow, Overtone nods on the beat, Facet barely moves, Crucible weighs the air in his palm
+  if (qi) return idleWith(st, qi, gt * qi.hz + f.key);
   if (QUEST_STANCE[f.def.id]) {
     // Parallax drifts slowly, Hexizon bobs on the balls of his feet, Halflife heaves, Redline can't stand still, Liminal sways,
     // Overtone nods to a beat, Vellum drifts like a sheet on the air, Facet barely moves, Sirocco sways like heat haze,
@@ -307,18 +330,21 @@ function idlePose(f: Fighter, gt: number): Pose {
     return { ...st, t: st.t + b * 0.03, aF2: st.aF2 + b * 0.06, aB2: st.aB2 + b * 0.06, lF1: st.lF1 + b * 0.04, lB1: st.lB1 - b * 0.04 };
   }
   const ri = isRosterSelf(f.def) ? ROSTER_IDLE[f.def.id] : undefined;
-  if (ri) {
-    // Pyro bounces like a boxer, Cryo barely moves, Electro twitches, Terra heaves, Aero and Hydro flow, Tele and Chrono tick,
-    // Shift never moves the same way twice
-    const ph = gt * ri.hz + f.key;
-    let b = Math.sin(ph);
-    if (ri.tick) b = Math.tanh(Math.sin(ph) * 5);
-    if (ri.jitter) b = Math.sin(ph) * 0.7 + Math.sin(ph * 2.7 + 1) * 0.3;
-    const c = ri.alt ? Math.cos(ph) : b;
-    return { ...st, t: st.t + b * ri.t, aF2: st.aF2 + b * ri.aF, aB2: st.aB2 + c * ri.aB, lF1: st.lF1 + b * ri.l, lB1: st.lB1 - b * ri.l };
-  }
+  // Pyro bounces like a boxer, Cryo barely moves, Electro twitches, Terra heaves, Aero and Hydro flow, Tele and Chrono tick,
+  // Shift never moves the same way twice
+  if (ri) return idleWith(st, ri, gt * ri.hz + f.key);
   const b = Math.sin(gt * 4 + f.key);
   return { ...STANCE, t: STANCE.t + b * 0.03, aF2: STANCE.aF2 + b * 0.08, aB2: STANCE.aB2 - b * 0.06 };
+}
+/** A stance breathing in its own rhythm at phase `ph`. */
+function idleWith(st: Pose, m: Idle, ph: number): Pose {
+  let b = Math.sin(ph);
+  if (m.tick) b = Math.tanh(Math.sin(ph) * 5);
+  if (m.jitter) b = Math.sin(ph) * 0.7 + Math.sin(ph * 2.7 + 1) * 0.3;
+  if (m.step) b = Math.round(Math.sin(ph) * 2) / 2;
+  if (m.beat) b = Math.pow(Math.max(0, Math.sin(ph)), 6) * 1.6 - 0.4;
+  const c = m.alt ? Math.cos(ph) : b;
+  return { ...st, t: st.t + b * m.t, aF2: st.aF2 + b * m.aF, aB2: st.aB2 + c * m.aB, lF1: st.lF1 + b * m.l, lB1: st.lB1 - b * m.l };
 }
 /** A pose an entrance names; "stance" means the fighter's own. */
 const introPose = (def: FighterDef, p: IntroPose): Pose => (p === "stance" ? stanceOf(def) : INTRO_POSES[p]);
@@ -341,15 +367,16 @@ function introOf(def: FighterDef): IntroSpec {
     }
     return sp;
   }
-  if (isRosterSelf(def)) return rosterIntro(def.id);
+  if (isRosterSelf(def)) return arrivalIntro(def.id, arrivalOf(def.id));
+  if (isQuestSelf(def)) return arrivalIntro(def.id, questArrivalOf(def.id));
   return INTROS[def.id];
 }
 const arrivalCache = new Map<Power, IntroSpec>();
-/** A starting fighter's own entrance with its floor sigil and landing flourish (roster-looks.ts) laid on top. */
-function rosterIntro(id: Power): IntroSpec {
+/** A fighter's own entrance with its floor sign and landing flourish (roster-looks.ts, quest-looks.ts) laid on top. */
+function arrivalIntro(id: Power, ar: Arrival | undefined): IntroSpec {
   let sp = arrivalCache.get(id);
   if (sp) return sp;
-  const base = INTROS[id], ar = arrivalOf(id);
+  const base = INTROS[id];
   if (!ar) return base;
   sp = {
     ...base,
@@ -3915,6 +3942,9 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     const u = phase === "wind" ? at / Math.max(0.01, m.wind) : phase === "strike" ? (at - m.wind) / strikeLen : 1;
     questAct = { kind: m.kind, id: m.id, phase, u: clamp(u, 0, 1) };
   }
+  // the 12 quest fighters wear a second layer round their design (quest-looks.ts)
+  const questLook = quest && isQuestSelf(f.def);
+  if (questLook) drawQuestLook(ctx, f.def.id, "back", bossPts, s, face, bt, f.alive, f.vx, questPaint);
   if (quest) drawQuestDesign(ctx, f.def.id, "back", bossPts, s, face, bt, f.alive, questAct, questPaint, f.vx);
 
   // scarf trailing from the neck (a boss wears its own design instead)
@@ -3956,7 +3986,9 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     const m = f.act.move, at = f.act.t;
     const chargeK = at < m.wind ? at / Math.max(0.01, m.wind) : 1 - clamp((at - m.wind - m.act) / Math.max(0.1, m.rec), 0, 1) * 0.7;
     const release = at >= m.wind ? (at - m.wind) / 0.25 : 0;
-    const charged = !f.def.boss && !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release);
+    const charged = !f.def.boss && (questLook
+      ? QUEST_LOOK.has(f.act.power) && drawQuestCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release)
+      : !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release));
     if (!charged) {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
@@ -4022,6 +4054,7 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
   if (f.def.minion && !o.solid) drawMinionGear(ctx, f.def.minion, "front", { head, neck, hip, shoulder }, s, face, wave, f.vx, ink, col);
   if (f.def.boss && !o.solid) drawBossDesign(ctx, f.def.boss, "front", bossPts, s, face, bt, f.alive, f.vx, bossAct, bossPhase);
   if (quest) drawQuestDesign(ctx, f.def.id, "front", bossPts, s, face, bt, f.alive, questAct, questPaint, f.vx);
+  if (questLook) drawQuestLook(ctx, f.def.id, "front", bossPts, s, face, bt, f.alive, f.vx, questPaint);
   ctx.globalAlpha = 1;
 
   if (!f.alive) return;
@@ -5081,7 +5114,11 @@ export function drawScene(ctx: CanvasRenderingContext2D, g: Game, backdrop: HTML
     ctx.fillStyle = `hsl(255 45% 6% / ${0.3 * ((frame.life / frame.max - 0.72) / 0.28)})`;
     ctx.fillRect(-W, -H, W * 3, H * 3);
   }
-  for (const x of g.fx) drawFx(ctx, x, g.t);
+  for (const x of g.fx) {
+    drawFx(ctx, x, g.t);
+    // a quest fighter's own mark where its move lands
+    if (x.hit) drawQuestImpact(ctx, x);
+  }
   for (const x of g.impacts) drawImpact(ctx, x);
   for (const w of g.waves) drawWave(ctx, w);
   for (const p of g.particles) drawParticle(ctx, p);
