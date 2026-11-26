@@ -11,6 +11,7 @@ import { BOSS_PHASES } from "./bosses";
 import { preFightFor, type PreFight, type PrePose } from "./pre-fight";
 import { ROSTER_LOOK, drawRosterLook, drawCharge, arrivalOf, type Arrival } from "./roster-looks";
 import { QUEST_LOOK, drawQuestLook, drawQuestCharge, drawQuestImpact, questArrivalOf } from "./quest-looks";
+import { drawBossLook, drawBossCharge, drawBossImpact, bossArrivalOf } from "./boss-looks";
 
 export const W = 960;
 export const H = 600;
@@ -119,34 +120,60 @@ const BOSS_STANCE: Record<BossDesign, Pose> = {
   // Primeva: tall and calm, one open hand held out in front as if feeling for a pulse, the other cupped over her heart
   primeva: { t: -0.03, aF1: 1.3, aF2: 1.75, aB1: 0.5, aB2: 2.3, lF1: 0.18, lF2: -0.02, lB1: -0.18, lB2: -0.02 },
 };
-/** How each boss breathes at rest: speed, torso sway, arm sway (front, back) and knee bob. */
-const BOSS_IDLE: Record<BossDesign, { hz: number; t: number; aF: number; aB: number; l: number }> = {
-  antimatter: { hz: 1.6, t: 0.02, aF: 0.12, aB: -0.12, l: 0 },
-  maelstrom: { hz: 3.2, t: 0.05, aF: 0.08, aB: 0.1, l: 0.06 },
-  magmaw: { hz: 2.0, t: 0.07, aF: 0.1, aB: 0.1, l: 0.05 },
-  everwinter: { hz: 1.2, t: 0.015, aF: 0.05, aB: 0.02, l: 0 },
-  riftmaker: { hz: 4.5, t: 0.03, aF: 0.14, aB: -0.12, l: 0.02 },
-  hollow: { hz: 1.8, t: 0.05, aF: 0.05, aB: 0.05, l: 0.03 },
-  blacksun: { hz: 1.4, t: 0.02, aF: 0.03, aB: 0.03, l: 0 },
-  axiom: { hz: 1.1, t: 0.02, aF: 0.1, aB: -0.1, l: 0.03 },
-  lanternmaw: { hz: 1.3, t: 0.06, aF: 0.12, aB: 0.06, l: 0.03 },
-  sporemother: { hz: 1.0, t: 0.05, aF: 0.14, aB: 0.12, l: 0.02 },
-  mnemovore: { hz: 0.6, t: 0.02, aF: 0.03, aB: 0.03, l: 0.01 },
-  dustmoth: { hz: 2.6, t: 0.03, aF: 0.05, aB: 0.05, l: 0.04 },
-  somnarch: { hz: 0.5, t: 0.05, aF: 0.08, aB: 0.08, l: 0.02 },
-  hush: { hz: 0.4, t: 0.01, aF: 0.01, aB: 0.01, l: 0 },
-  elderdark: { hz: 0.8, t: 0.05, aF: 0.14, aB: 0.14, l: 0.03 },
-  perihelion: { hz: 1.8, t: 0.04, aF: 0.08, aB: 0.12, l: 0.03 },
-  asterion: { hz: 1.2, t: 0.03, aF: 0.04, aB: 0.08, l: 0.04 },
-  carina: { hz: 0.45, t: 0.05, aF: 0.16, aB: 0.16, l: 0.02 },
-  vela: { hz: 2.4, t: 0.01, aF: 0.03, aB: 0.03, l: 0.01 },
-  aeon: { hz: 0.35, t: 0.03, aF: 0.06, aB: 0.1, l: 0.02 },
-  orogen: { hz: 0.7, t: 0.03, aF: 0.05, aB: 0.05, l: 0.03 },
-  gnarlroot: { hz: 0.5, t: 0.05, aF: 0.12, aB: 0.1, l: 0.01 },
+/** How each boss moves at rest: speed, torso sway, arm sway (front, back), knee bob, and its own rhythm (see Idle). */
+const BOSS_IDLE: Record<BossDesign, Idle> = {
+  // Nullshade's hands drift in opposition, matter against antimatter
+  antimatter: { hz: 1.6, t: 0.02, aF: 0.12, aB: 0.12, l: 0.01, alt: true },
+  // Maelstrom rolls like a swell
+  maelstrom: { hz: 2.6, t: 0.06, aF: 0.1, aB: 0.12, l: 0.06, alt: true },
+  // Magmaw rumbles, never quite still
+  magmaw: { hz: 2.2, t: 0.06, aF: 0.1, aB: 0.1, l: 0.05, jitter: true },
+  // Everwinter ticks like a stopped clock trying to start
+  everwinter: { hz: 1.6, t: 0.015, aF: 0.06, aB: 0.02, l: 0.01, tick: true },
+  // the Riftmaker glitches
+  riftmaker: { hz: 4.5, t: 0.03, aF: 0.14, aB: 0.12, l: 0.03, jitter: true },
+  // the Hollow King sways like a hanged cloak
+  hollow: { hz: 1.2, t: 0.05, aF: 0.06, aB: 0.06, l: 0.03, alt: true },
+  // the Black Sun barely moves, heavy as a dead star
+  blacksun: { hz: 1.0, t: 0.025, aF: 0.04, aB: 0.04, l: 0.01 },
+  // the Axiom turns its hands like orbits
+  axiom: { hz: 1.1, t: 0.02, aF: 0.1, aB: 0.1, l: 0.03, alt: true },
+  // the Lanternmaw drifts like something underwater
+  lanternmaw: { hz: 1.1, t: 0.07, aF: 0.12, aB: 0.1, l: 0.04, alt: true },
+  // the Sporemother breathes slowly in and out
+  sporemother: { hz: 0.9, t: 0.06, aF: 0.14, aB: 0.12, l: 0.02, alt: true },
+  // the Mnemovore skips like a memory with frames missing
+  mnemovore: { hz: 1.4, t: 0.03, aF: 0.05, aB: 0.05, l: 0.015, step: true },
+  // the Dustmoth flutters
+  dustmoth: { hz: 3.2, t: 0.03, aF: 0.06, aB: 0.06, l: 0.04, jitter: true },
+  // the Somnarch nods off and jerks awake
+  somnarch: { hz: 0.5, t: 0.07, aF: 0.08, aB: 0.08, l: 0.02, beat: true },
+  // the Hush is almost perfectly still
+  hush: { hz: 0.4, t: 0.012, aF: 0.015, aB: 0.015, l: 0 },
+  // the Elder Dark's arms curl and uncurl
+  elderdark: { hz: 0.8, t: 0.05, aF: 0.16, aB: 0.16, l: 0.03, alt: true },
+  // Perihelion burns restlessly
+  perihelion: { hz: 2.2, t: 0.04, aF: 0.08, aB: 0.12, l: 0.03, jitter: true },
+  // Asterion holds its aim, breathing steady
+  asterion: { hz: 1.2, t: 0.03, aF: 0.03, aB: 0.08, l: 0.04 },
+  // Carina floats like gas
+  carina: { hz: 0.45, t: 0.05, aF: 0.16, aB: 0.16, l: 0.02, alt: true },
+  // Vela keeps time with its pulse
+  vela: { hz: 7.5, t: 0.012, aF: 0.04, aB: 0.04, l: 0.012, beat: true },
+  // Aeon has all the time there is
+  aeon: { hz: 0.35, t: 0.03, aF: 0.06, aB: 0.1, l: 0.02, alt: true },
+  // Orogen heaves like the ground before a quake
+  orogen: { hz: 0.7, t: 0.035, aF: 0.05, aB: 0.05, l: 0.035 },
+  // Gnarlroot sways like a tree in the wind
+  gnarlroot: { hz: 0.55, t: 0.06, aF: 0.12, aB: 0.12, l: 0.01, alt: true },
+  // Ambrel is set and still, a slow golden glow
   ambrel: { hz: 0.9, t: 0.02, aF: 0.04, aB: 0.04, l: 0.01 },
-  coilvast: { hz: 1.5, t: 0.06, aF: 0.1, aB: 0.08, l: 0.03 },
-  anvilheart: { hz: 0.8, t: 0.04, aF: 0.06, aB: 0.12, l: 0.02 },
-  primeva: { hz: 1.1, t: 0.03, aF: 0.06, aB: 0.03, l: 0.015 },
+  // Coilvast slithers in place
+  coilvast: { hz: 1.5, t: 0.07, aF: 0.1, aB: 0.1, l: 0.03, alt: true },
+  // Anvilheart's hammer arm keeps the forge's beat
+  anvilheart: { hz: 4.2, t: 0.03, aF: 0.04, aB: 0.14, l: 0.02, beat: true },
+  // Primeva moves with the world's heartbeat, lub-dub
+  primeva: { hz: 6.9, t: 0.03, aF: 0.06, aB: 0.04, l: 0.015, heart: true },
 };
 /** Hybrids pick one of these by their pair, so the same pair always stands the same way: two powers held ready at once. */
 const HYBRID_STANCES: Pose[] = [
@@ -230,7 +257,7 @@ const ROSTER_STANCE: Partial<Record<Power, Pose>> = {
   nova: { t: 0.1, aF1: 1.3, aF2: 2.2, aB1: -0.5, aB2: -0.9, lF1: 0.44, lF2: 0.0, lB1: -0.36, lB2: -0.12 },
 };
 /** How each starting fighter moves at rest: speed, torso, arms (front, back), knees, and whether it ticks instead of flowing. */
-type Idle = { hz: number; t: number; aF: number; aB: number; l: number; alt?: boolean; tick?: boolean; jitter?: boolean; step?: boolean; beat?: boolean };
+type Idle = { hz: number; t: number; aF: number; aB: number; l: number; alt?: boolean; tick?: boolean; jitter?: boolean; step?: boolean; beat?: boolean; heart?: boolean };
 const ROSTER_IDLE: Partial<Record<Power, Idle>> = {
   pyro: { hz: 6.5, t: 0.03, aF: 0.1, aB: 0.1, l: 0.05 },
   cryo: { hz: 1.3, t: 0.015, aF: 0.04, aB: 0.03, l: 0.01 },
@@ -304,8 +331,7 @@ function idlePose(f: Fighter, gt: number): Pose {
   const st = stanceOf(f.def);
   if (f.def.boss) {
     const m = BOSS_IDLE[f.def.boss];
-    const b = Math.sin(gt * m.hz + f.key);
-    return { ...st, t: st.t + b * m.t, aF2: st.aF2 + b * m.aF, aB2: st.aB2 + b * m.aB, lF1: st.lF1 + b * m.l, lB1: st.lB1 - b * m.l };
+    return idleWith(st, m, gt * m.hz + f.key);
   }
   if (f.def.custom) {
     const hz = CUSTOM_IDLE_HZ[f.def.role];
@@ -343,6 +369,11 @@ function idleWith(st: Pose, m: Idle, ph: number): Pose {
   if (m.jitter) b = Math.sin(ph) * 0.7 + Math.sin(ph * 2.7 + 1) * 0.3;
   if (m.step) b = Math.round(Math.sin(ph) * 2) / 2;
   if (m.beat) b = Math.pow(Math.max(0, Math.sin(ph)), 6) * 1.6 - 0.4;
+  if (m.heart) {
+    // lub-dub: two beats close together, then a rest
+    const p = (((ph / (Math.PI * 2)) % 1) + 1) % 1;
+    b = Math.max(Math.exp(-p * 30), Math.exp(-Math.abs(p - 0.22) * 30) * 0.7) * 1.6 - 0.4;
+  }
   const c = m.alt ? Math.cos(ph) : b;
   return { ...st, t: st.t + b * m.t, aF2: st.aF2 + b * m.aF, aB2: st.aB2 + c * m.aB, lF1: st.lF1 + b * m.l, lB1: st.lB1 - b * m.l };
 }
@@ -353,7 +384,7 @@ const introPose = (def: FighterDef, p: IntroPose): Pose => (p === "stance" ? sta
 const fusionCache = new Map<string, IntroSpec>();
 /** The entrance this fighter plays: a boss its own, a hybrid the fusion of both parents, anyone else its element's. */
 function introOf(def: FighterDef): IntroSpec {
-  if (def.boss) return BOSS_INTROS[def.boss];
+  if (def.boss) return bossIntro(def.boss);
   // the fighter you made: with two powers or more, the first two arrive fused like a hybrid's
   const two = def.parents ?? (def.custom && customElements(def.custom).length > 1 ? [customElements(def.custom)[0], customElements(def.custom)[1]] as const : null);
   if (two) {
@@ -371,14 +402,18 @@ function introOf(def: FighterDef): IntroSpec {
   if (isQuestSelf(def)) return arrivalIntro(def.id, questArrivalOf(def.id));
   return INTROS[def.id];
 }
-const arrivalCache = new Map<Power, IntroSpec>();
-/** A fighter's own entrance with its floor sign and landing flourish (roster-looks.ts, quest-looks.ts) laid on top. */
-function arrivalIntro(id: Power, ar: Arrival | undefined): IntroSpec {
-  let sp = arrivalCache.get(id);
+const bossIntroCache = new Map<BossDesign, IntroSpec>();
+/** A boss's own entrance with its floor sign and landing flourish (boss-looks.ts) laid on top. */
+function bossIntro(design: BossDesign): IntroSpec {
+  let sp = bossIntroCache.get(design);
   if (sp) return sp;
-  const base = INTROS[id];
+  sp = withArrival(BOSS_INTROS[design], bossArrivalOf(design));
+  bossIntroCache.set(design, sp);
+  return sp;
+}
+function withArrival(base: IntroSpec, ar: Arrival | undefined): IntroSpec {
   if (!ar) return base;
-  sp = {
+  return {
     ...base,
     back: (d) => {
       if (ar.back) { d.ctx.save(); ar.back(d, base.hit); d.ctx.restore(); }
@@ -389,6 +424,15 @@ function arrivalIntro(id: Power, ar: Arrival | undefined): IntroSpec {
       if (ar.front) { d.ctx.save(); ar.front(d, base.hit); d.ctx.restore(); }
     },
   };
+}
+const arrivalCache = new Map<Power, IntroSpec>();
+/** A fighter's own entrance with its floor sign and landing flourish (roster-looks.ts, quest-looks.ts) laid on top. */
+function arrivalIntro(id: Power, ar: Arrival | undefined): IntroSpec {
+  let sp = arrivalCache.get(id);
+  if (sp) return sp;
+  const base = INTROS[id];
+  if (!ar) return base;
+  sp = withArrival(base, ar);
   arrivalCache.set(id, sp);
   return sp;
 }
@@ -3930,6 +3974,8 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     const u = phase === "wind" ? at / Math.max(0.01, m.wind) : phase === "strike" ? (at - m.wind) / strikeLen : (at - m.wind - strikeLen) / Math.max(0.1, m.rec * 0.5);
     bossAct = { kind: m.kind, id: m.id, phase, u: clamp(u, 0, 1) };
   }
+  // every Story boss wears a second layer round its design (boss-looks.ts)
+  if (f.def.boss && !o.solid) drawBossLook(ctx, f.def.boss, "back", bossPts, s, face, bt, f.alive, f.vx);
   if (f.def.boss && !o.solid) drawBossDesign(ctx, f.def.boss, "back", bossPts, s, face, bt, f.alive, f.vx, bossAct, bossPhase);
   // a quest fighter (not a hybrid carrying its power) wears its own design
   const quest = isQuester(f.def.id) && !f.def.parents && !f.def.boss && !f.def.custom && !o.solid;
@@ -3986,7 +4032,9 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     const m = f.act.move, at = f.act.t;
     const chargeK = at < m.wind ? at / Math.max(0.01, m.wind) : 1 - clamp((at - m.wind - m.act) / Math.max(0.1, m.rec), 0, 1) * 0.7;
     const release = at >= m.wind ? (at - m.wind) / 0.25 : 0;
-    const charged = !f.def.boss && (questLook
+    const charged = f.def.boss
+      ? !o.solid && drawBossCharge(ctx, f.def.boss, hF, s, g.t, chargeK, face, release)
+      : (questLook
       ? QUEST_LOOK.has(f.act.power) && drawQuestCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release)
       : !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release));
     if (!charged) {
@@ -4053,6 +4101,7 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
   if ((gear === "headband" || gear === "mask") && !o.solid) drawHeadGear(ctx, gear, head, face, wave, f.vx, s, rg?.glow ?? f.def.glow, ink, f.alive && !blind);
   if (f.def.minion && !o.solid) drawMinionGear(ctx, f.def.minion, "front", { head, neck, hip, shoulder }, s, face, wave, f.vx, ink, col);
   if (f.def.boss && !o.solid) drawBossDesign(ctx, f.def.boss, "front", bossPts, s, face, bt, f.alive, f.vx, bossAct, bossPhase);
+  if (f.def.boss && !o.solid) drawBossLook(ctx, f.def.boss, "front", bossPts, s, face, bt, f.alive, f.vx);
   if (quest) drawQuestDesign(ctx, f.def.id, "front", bossPts, s, face, bt, f.alive, questAct, questPaint, f.vx);
   if (questLook) drawQuestLook(ctx, f.def.id, "front", bossPts, s, face, bt, f.alive, f.vx, questPaint);
   ctx.globalAlpha = 1;
@@ -5117,7 +5166,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, g: Game, backdrop: HTML
   for (const x of g.fx) {
     drawFx(ctx, x, g.t);
     // a quest fighter's own mark where its move lands
-    if (x.hit) drawQuestImpact(ctx, x);
+    if (x.hit) { drawQuestImpact(ctx, x); drawBossImpact(ctx, x); }
   }
   for (const x of g.impacts) drawImpact(ctx, x);
   for (const w of g.waves) drawWave(ctx, w);
