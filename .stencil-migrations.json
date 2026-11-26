@@ -1,0 +1,80 @@
+{
+  "migrations": [
+    {
+      "id": "route-discovery-initial",
+      "at": 1795703154438
+    },
+    {
+      "id": "source-tagger",
+      "at": 1795703154462
+    },
+    {
+      "id": "source-tagger-tsconfig",
+      "at": 1795703154465
+    },
+    {
+      "id": "remotion-route",
+      "at": 1795703154478
+    },
+    {
+      "id": "events-file",
+      "at": 1795703154478
+    },
+    {
+      "id": "app-hook-files",
+      "at": 1795703154478
+    },
+    {
+      "id": "prerender-gate",
+      "at": 1795703154481
+    },
+    {
+      "id": "library-css",
+      "at": 1795703154482
+    },
+    {
+      "id": "server-error-handler",
+      "at": 1795703154483
+    },
+    {
+      "id": "wrangler-pin",
+      "at": 1795703154483
+    },
+    {
+      "id": "pointer-cursor",
+      "at": 1795703154483
+    },
+    {
+      "id": "typecheck-force",
+      "at": 1795703154484
+    },
+    {
+      "id": "test-files-excluded",
+      "at": 1795703154484
+    },
+    {
+      "id": "remotion:4.0.522",
+      "at": 1795703154484
+    },
+    {
+      "id": "ai-sdk-anthropic:3.0.128",
+      "at": 1795703154485
+    },
+    {
+      "id": "ai-sdk-provider:3.0.18",
+      "at": 1795703154485
+    },
+    {
+      "id": "leaflet",
+      "at": 1795703154485
+    },
+    {
+      "id": "layer-config",
+      "at": 1795703154486
+    },
+    {
+      "id": "typescript-7",
+      "at": 1795703154486
+    }
+  ]
+}
