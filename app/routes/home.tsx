@@ -90,10 +90,12 @@ const HINTS: Record<Mode, StringKey> = {
   juggernaut: "arena.pick.juggHint",
 };
 const ALL: RosterId[] = FIGHTERS.map((f) => f.id);
+/** A full line-up: every starting fighter up to the most a fight takes, so Start is ready straight away. */
+const FULL: RosterId[] = ALL.slice(0, MAX_PICKS);
 /** Picks are roster ids: an original fighter or a saved hybrid. */
 const defsOf = (ids: RosterId[]) => ids.map(defOf);
 const defaultPicks = (m: Mode, jugg: RosterId): RosterId[] =>
-  m === "duel" ? ["pyro", "cryo"] : m === "tournament" || m === "teamTournament" ? ALL.slice(0, 8) : m === "juggernaut" ? ALL.filter((id) => id !== jugg).slice(0, CHALLENGERS) : ALL;
+  m === "duel" ? ["pyro", "cryo"] : m === "tournament" || m === "teamTournament" ? ALL.slice(0, 8) : m === "juggernaut" ? ALL.filter((id) => id !== jugg).slice(0, CHALLENGERS) : FULL;
 
 function shuffled<T>(xs: T[]): T[] {
   const a = [...xs];
@@ -107,7 +109,7 @@ function shuffled<T>(xs: T[]): T[] {
 export default function Home() {
   const [screen, setScreen] = useState<"title" | "arena" | "free">("title");
   const [mode, setMode] = useState<Mode>("ffa");
-  const [picked, setPicked] = useState<RosterId[]>(ALL);
+  const [picked, setPicked] = useState<RosterId[]>(FULL);
   const hybrids = useHybrids();
   // the character you made in Free World; an edited one replaces the old one wherever it was picked
   const me = useMyFighter();
@@ -771,7 +773,7 @@ export default function Home() {
               action={mode === "story" ? undefined :
                 <div className="flex gap-2">
                   {mode !== "duel" && mode !== "juggernaut" && (
-                    <Button size="sm" variant="ghost" disabled={locked} onClick={() => setPicked(ALL)}><Text id="arena.pick.all" /></Button>
+                    <Button size="sm" variant="ghost" disabled={locked} onClick={() => setPicked(FULL)}><Text id="arena.pick.all" /></Button>
                   )}
                   <Button size="sm" variant="ghost" disabled={locked} onClick={() => setPicked([])}><Text id="arena.pick.clear" /></Button>
                 </div>
