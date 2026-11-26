@@ -1989,6 +1989,122 @@ export function drawBossDesign(
       }
       break;
     }
+    // ----- Coilvast: a serpent Titan, its long tail coiled behind it, scales split by seams of the core's heat -----
+    case "coilvast": {
+      const back = -face;
+      const scale = alive ? "hsl(232 30% 26%)" : "hsl(232 4% 30%)";
+      const seam = alive ? `hsl(${18 + 8 * Math.sin(t * 2)} 100% 62%)` : "hsl(0 0% 50%)";
+      if (layer === "back") {
+        // the tail: a thick coil that loops round behind its legs and lifts off the floor, swaying
+        const sway = Math.sin(t * 1.6) * 8 * s;
+        const fy = Math.max(p.fF.y, p.fB.y);
+        const path = () => {
+          ctx.beginPath();
+          ctx.moveTo(hip.x, hip.y);
+          ctx.bezierCurveTo(hip.x + back * 40 * s, fy + 4 * s, hip.x + back * 90 * s, fy + 2 * s, hip.x + back * 80 * s + sway, fy - 30 * s);
+          ctx.bezierCurveTo(hip.x + back * 70 * s + sway, fy - 60 * s, hip.x + back * 30 * s, fy - 40 * s, hip.x + back * 46 * s + sway, fy - 18 * s);
+        };
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 17 * s;
+        path();
+        ctx.stroke();
+        ctx.strokeStyle = scale;
+        ctx.lineWidth = 13 * s;
+        path();
+        ctx.stroke();
+        ctx.strokeStyle = seam;
+        ctx.lineWidth = 1.6 * s;
+        ctx.setLineDash([4 * s, 7 * s]);
+        ctx.lineDashOffset = -t * 20 * s;
+        path();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // a hood of scales flared behind its head, like a cobra's
+        const hx = head.x + back * 4 * s, hy = head.y + 4 * s;
+        ctx.fillStyle = scale;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.6 * s;
+        ctx.beginPath();
+        ctx.moveTo(hx, hy - 22 * s);
+        ctx.quadraticCurveTo(hx + 24 * s, hy - 10 * s, hx + 12 * s, hy + 20 * s);
+        ctx.lineTo(hx - 12 * s, hy + 20 * s);
+        ctx.quadraticCurveTo(hx - 24 * s, hy - 10 * s, hx, hy - 22 * s);
+        ctx.fill();
+        ctx.stroke();
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          ctx.strokeStyle = "hsl(20 100% 60% / 0.7)";
+          ctx.lineWidth = 1.4 * s;
+          for (const dx of [-10, 0, 10]) {
+            ctx.beginPath();
+            ctx.moveTo(hx + dx * 0.4 * s, hy - 14 * s);
+            ctx.lineTo(hx + dx * s, hy + 16 * s);
+            ctx.stroke();
+          }
+          ctx.globalCompositeOperation = "source-over";
+        }
+      } else {
+        // its belly: overlapping scale plates from chest to hip, the core's heat glowing in the seams
+        const top = shoulder.y + 2 * s, bot = hip.y - 2 * s;
+        for (let i = 0; i < 5; i++) {
+          const y = lerp(top, bot, i / 4);
+          const x = lerp(shoulder.x, hip.x, i / 4) + face * 1 * s;
+          ctx.fillStyle = scale;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 1.3 * s;
+          ctx.beginPath();
+          ctx.moveTo(x - 9 * s, y - 3 * s);
+          ctx.quadraticCurveTo(x, y + 6 * s, x + 9 * s, y - 3 * s);
+          ctx.lineTo(x + 7 * s, y - 7 * s);
+          ctx.lineTo(x - 7 * s, y - 7 * s);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.strokeStyle = seam;
+          ctx.lineWidth = 1.2 * s;
+          ctx.beginPath();
+          ctx.moveTo(x - 8 * s, y - 2 * s);
+          ctx.quadraticCurveTo(x, y + 5 * s, x + 8 * s, y - 2 * s);
+          ctx.stroke();
+        }
+        // the head: a long wedge, jaw forward, two slit eyes burning orange
+        ctx.fillStyle = scale;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.6 * s;
+        ctx.beginPath();
+        ctx.moveTo(head.x - face * (HEAD - 2) * s, head.y - HEAD * 0.8 * s);
+        ctx.quadraticCurveTo(head.x + face * HEAD * 0.6 * s, head.y - HEAD * 1.1 * s, head.x + face * (HEAD + 9) * s, head.y + 2 * s);
+        ctx.lineTo(head.x + face * (HEAD + 6) * s, head.y + 6 * s);
+        ctx.quadraticCurveTo(head.x, head.y + HEAD * 1.05 * s, head.x - face * (HEAD - 2) * s, head.y + HEAD * 0.6 * s);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        for (const dx of [3, 9]) {
+          const ex = head.x + face * dx * s, ey = head.y - 3 * s;
+          if (alive) glow(ctx, ex, ey, 5 * s, "hsl(24 100% 62% / 0.8)", "hsl(24 100% 50% / 0)");
+          ctx.fillStyle = alive ? "hsl(36 100% 70%)" : "hsl(0 0% 60%)";
+          ctx.beginPath();
+          ctx.ellipse(ex, ey, 2.4 * s, 1.6 * s, 0, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = INK;
+          ctx.fillRect(ex - 0.5 * s, ey - 1.6 * s, 1 * s, 3.2 * s);
+        }
+        // a forked tongue that flicks out now and then
+        if (alive && Math.sin(t * 2.3) > 0.6) {
+          const tx = head.x + face * (HEAD + 8) * s, ty = head.y + 4 * s;
+          ctx.strokeStyle = "hsl(8 90% 56%)";
+          ctx.lineWidth = 1.3 * s;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(tx + face * 8 * s, ty);
+          ctx.lineTo(tx + face * 12 * s, ty - 3 * s);
+          ctx.moveTo(tx + face * 8 * s, ty);
+          ctx.lineTo(tx + face * 12 * s, ty + 3 * s);
+          ctx.stroke();
+        }
+      }
+      break;
+    }
     // ----- Vela: a pulsar, a burnt-out star spinning in its chest, two beams sweeping from it like a lighthouse -----
     case "vela": {
       const spin = alive ? t * 2.2 : 0;
@@ -3663,6 +3779,51 @@ function drawBossPhase(
       }
       break;
     }
+    case "coilvast": {
+      // 2: shed scales tumbling round it, grey and sharp
+      orbit(6, 46, 12, mid.y - 4 * s, 1.3, (x, y, i) => {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(t * 3 + i);
+        ctx.fillStyle = "hsl(220 14% 62% / 0.9)";
+        ctx.strokeStyle = "hsl(232 30% 14%)";
+        ctx.lineWidth = 1 * s;
+        ctx.beginPath();
+        ctx.moveTo(0, -5 * s);
+        ctx.quadraticCurveTo(5 * s, 0, 0, 5 * s);
+        ctx.quadraticCurveTo(-5 * s, 0, 0, -5 * s);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+      if (phase >= 3) {
+        // 3: the core's heat pouring up through it, embers rising off its shoulders
+        ctx.globalCompositeOperation = "lighter";
+        orbit(5, 26, 8, shoulder.y - 4 * s, -0.9, (x, y, i) => {
+          const k = (t * 0.8 + i * 0.2) % 1;
+          glow(ctx, x, y - k * 30 * s, (4 - k * 3) * s, "hsl(30 100% 70% / 0.9)", "hsl(14 100% 50% / 0)");
+        });
+        ctx.globalCompositeOperation = "source-over";
+      }
+      if (phase >= 4 && !front) {
+        // 4: one great ring of its own body round the whole arena, scales glowing at every seam
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, mid.x, mid.y, 220 * s, "hsl(18 100% 54% / 0.2)", "hsl(18 100% 40% / 0)");
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = "hsl(232 30% 18% / 0.85)";
+        ctx.lineWidth = 16 * s;
+        ctx.beginPath();
+        ctx.ellipse(mid.x, mid.y + 10 * s, 120 * s, 80 * s, 0, 0, TAU);
+        ctx.stroke();
+        ctx.strokeStyle = "hsl(20 100% 64% / 0.8)";
+        ctx.lineWidth = 2 * s;
+        ctx.setLineDash([8 * s, 12 * s]);
+        ctx.lineDashOffset = t * 40 * s;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      break;
+    }
     case "vela": {
       // 2: splinters of glass flung round it by its spin
       orbit(6, 40, 10, mid.y, 3.2, (x, y, i) => {
@@ -4144,6 +4305,14 @@ function drawBossExtras(
         cape(40, alive ? "hsl(34 90% 40% / 0.82)" : "hsl(34 8% 36% / 0.8)", alive ? "hsl(46 100% 70% / 0.9)" : "hsl(0 0% 56% / 0.6)", 6);
       } else {
         fists("hsl(46 100% 76%)", "hsl(44 100% 56% / 0)");
+      }
+      break;
+    case "coilvast":
+      if (layer === "back") {
+        // heat shimmering up from the ground it lies on
+        if (alive) motes(ctx, mid.x, hip.y + 20 * s, 90 * s, 150 * s, t * 0.5, 10, "hsl(20 100% 60%)", 1.8 * s);
+      } else {
+        fists("hsl(28 100% 70%)", "hsl(18 100% 50% / 0)");
       }
       break;
     case "vela":

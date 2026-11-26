@@ -716,4 +716,31 @@ export const MINIONS: Crew[] = [
       surge: { from: "honey-lance", name: "Honey Ray" },
     }),
   },
+  // Book 4, chapter 4: Coilvast's deep things, the blind creatures of the dark sea under the amber
+  {
+    grunt: minion("grunt", "coilvast", {
+      base: "hydro", name: "Gloweel", color: "hsl(226 30% 22%)", mark: "hsl(18 100% 62%)",
+      power: "Live Wire", ability: "A blind eel from the buried sea, with a light on its nose and no idea what the light is for. It bites first and wonders later.",
+      tone: ["hsl(190 70% 46%)", "hsl(30 100% 74%)"], moves: ["Eel Bite", "Spark Spit", "Wriggle"],
+      surge: { from: "scale-shed", name: "Loose Scale" },
+    }),
+    caster: minion("caster", "coilvast", {
+      base: "psy", name: "Geode Oracle", color: "hsl(268 24% 26%)", mark: "hsl(18 100% 62%)",
+      power: "Hollow Crystal", ability: "A stone that was split open by the serpent's turning and found to be full of violet crystal. It hums with the serpent's dreams, and now it says them out loud.",
+      tone: ["hsl(276 60% 56%)", "hsl(290 100% 84%)"], moves: ["Crystal Tap", "Dream Lift", "Deep Hum", "Geode Crush"],
+      surge: { from: "constrict", name: "Little Squeeze" },
+    }),
+    brute: minion("brute", "coilvast", {
+      base: "terra", name: "Shellback", color: "hsl(16 24% 26%)", mark: "hsl(18 100% 62%)",
+      power: "Cave Shell", ability: "A crab as wide as a cart that has lived its whole life in the dark beside the serpent's coils. Its shell is made of the scales the serpent shed.",
+      tone: ["hsl(16 40% 40%)", "hsl(28 100% 70%)"], moves: ["Claw Crunch", "Shell Toss", "Sideways Stomp"],
+      surge: { from: "world-shrug", name: "Little Shrug" },
+    }),
+    elite: minion("elite", "coilvast", {
+      base: "magneto", name: "The First Scale", color: "hsl(232 24% 34%)", mark: "hsl(22 100% 66%)",
+      power: "Shed Skin", ability: "The very first scale the serpent ever shed, back when the world was new. It lay in the dark so long beside its maker that it learned to stand up and guard the way down.",
+      tone: ["hsl(220 20% 60%)", "hsl(24 100% 72%)"], moves: ["Scale Edge", "Iron Turn", "Heavy Coil", "Old Skin"],
+      surge: { from: "coil-rush", name: "Short Rush" },
+    }),
+  },
 ];

@@ -2904,6 +2904,70 @@ export const BOSS_INTROS: Record<BossDesign, IntroSpec> = {
       ctx.restore();
     },
   },
+  // Coilvast: the floor splits with a red glow from far below. A great loop of scaled body rolls up out of the crack and
+  // back down again, then another, closer each time; the last loop rears up and the crack closes over the Titan.
+  coilvast: {
+    len: BOSS_LEN, hit: 0.64, shake: 14, wave: ["hsl(20 100% 66%)", "hsl(232 30% 24%)"],
+    body: (u) => base(u < 0.64 ? "rise" : settle(u, "guard", 0.8), {
+      alpha: seg(u, 0.56, 0.64),
+      solid: "hsl(232 30% 30%)", solidA: 1 - seg(u, 0.62, 0.88),
+    }),
+    bursts: [
+      { at: 0.64, n: 30, spd: 380, shape: "chunk", a: "hsl(232 20% 28%)", b: "hsl(232 14% 44%)", grav: 1000, add: false, from: "feet", dir: "up" },
+      { at: 0.64, n: 26, spd: 460, shape: "ember", a: "hsl(18 100% 60%)", b: "hsl(40 100% 80%)", grav: -60, add: true, from: "feet", dir: "up" },
+      { at: 0.66, n: 16, spd: 220, shape: "dust", a: "hsl(232 14% 40%)", b: "hsl(232 10% 60%)", grav: -20, add: false, from: "feet", dir: "flat" },
+    ],
+    back: ({ ctx, x, y, s, u, t }) => {
+      const on = seg(u, 0, 0.12) * (1 - seg(u, 0.86, 1));
+      if (on <= 0) return;
+      ctx.save();
+      ctx.fillStyle = hsla(232, 40, 5, 0.55 * on);
+      ctx.fillRect(-400, -400, 2000, 1200);
+      // the crack in the floor, glowing with the heat of the core
+      const open = easeOut(seg(u, 0.04, 0.2)) * (1 - seg(u, 0.66, 0.84));
+      if (open > 0) {
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, x, y, 280 * s * open, 24 * s * open, hsla(18, 100, 56, 0.7 * open), hsla(18, 100, 40, 0));
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = hsla(30, 100, 70, open);
+        ctx.lineWidth = 3 * s;
+        ctx.beginPath();
+        for (let i = 0; i <= 12; i++) {
+          const px = x + (i - 6) * 26 * s * open;
+          const py = y + 2 * s + (i % 2 ? -3 : 3) * s;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+      // three loops of the serpent's body rolling up out of the crack and back under, each one closer and taller
+      for (let k = 0; k < 3; k++) {
+        const v = seg(u, 0.12 + k * 0.15, 0.3 + k * 0.15);
+        if (v <= 0 || v >= 1) continue;
+        const span = (190 - k * 40) * s, tall = (70 + k * 40) * s * Math.sin(v * Math.PI);
+        const cx = x + (k === 1 ? -1 : 1) * (120 - k * 50) * s + (v - 0.5) * 80 * s;
+        const thick = (20 + k * 4) * s;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = hsla(232, 30, 16, 0.95);
+        ctx.lineWidth = thick + 4 * s;
+        ctx.beginPath();
+        ctx.moveTo(cx - span / 2, y + 6 * s);
+        ctx.quadraticCurveTo(cx, y - tall * 2, cx + span / 2, y + 6 * s);
+        ctx.stroke();
+        ctx.strokeStyle = hsla(232, 26, 28, 1);
+        ctx.lineWidth = thick;
+        ctx.stroke();
+        // the glowing seams between the scales, sliding along as it moves
+        ctx.strokeStyle = hsla(20, 100, 62, 0.85);
+        ctx.lineWidth = 2 * s;
+        ctx.setLineDash([6 * s, 10 * s]);
+        ctx.lineDashOffset = -t * 120 * s;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+    },
+  },
   // Vela: everything goes dark, and far off a point of light starts to spin, two beams sweeping the arena like a
   // lighthouse, faster and faster. The beams fold in, the pulsar drops, and the floor rings with one huge beat.
   vela: {

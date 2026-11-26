@@ -110,6 +110,8 @@ const BOSS_STANCE: Record<BossDesign, Pose> = {
   gnarlroot: { t: -0.08, aF1: 2.2, aF2: 1.4, aB1: -2.0, aB2: -1.2, lF1: 0.22, lF2: 0.04, lB1: -0.22, lB2: 0.04 },
   // Ambrel: poised and still, one palm held out flat as if offering something to keep, the other at its side
   ambrel: { t: 0.02, aF1: 1.5, aF2: 1.65, aB1: -0.25, aB2: -0.4, lF1: 0.2, lF2: -0.02, lB1: -0.2, lB2: -0.02 },
+  // Coilvast: low and coiled, head pushed forward like a snake about to strike, both arms drawn back along its body
+  coilvast: { t: 0.3, aF1: 0.7, aF2: 1.2, aB1: -0.9, aB2: -0.6, lF1: 0.42, lF2: -0.3, lB1: -0.4, lB2: -0.3 },
 };
 /** How each boss breathes at rest: speed, torso sway, arm sway (front, back) and knee bob. */
 const BOSS_IDLE: Record<BossDesign, { hz: number; t: number; aF: number; aB: number; l: number }> = {
@@ -136,6 +138,7 @@ const BOSS_IDLE: Record<BossDesign, { hz: number; t: number; aF: number; aB: num
   orogen: { hz: 0.7, t: 0.03, aF: 0.05, aB: 0.05, l: 0.03 },
   gnarlroot: { hz: 0.5, t: 0.05, aF: 0.12, aB: 0.1, l: 0.01 },
   ambrel: { hz: 0.9, t: 0.02, aF: 0.04, aB: 0.04, l: 0.01 },
+  coilvast: { hz: 1.5, t: 0.06, aF: 0.1, aB: 0.08, l: 0.03 },
 };
 /** Hybrids pick one of these by their pair, so the same pair always stands the same way: two powers held ready at once. */
 const HYBRID_STANCES: Pose[] = [

@@ -712,6 +712,19 @@ const QUEST_LOOKS: Record<string, Look> = {
   "fresh-resin": F("mend", "hsl(40 100% 54%)", "hsl(50 100% 86%)", "drop", true, -80, "sprout"),
   "still-gold": F("mach-rush", "hsl(32 80% 30%)", "hsl(46 100% 74%)", "drop", false, 200, "clock"),
   "sealed-for-ever": F("total-eclipse", "hsl(30 80% 16%)", "hsl(46 100% 76%)", "shard", true, 0, "shatter"),
+  // Coilvast (Book 4): dark indigo scales and the red-orange heat of the world's core between them
+  "fang-snap": F("shade-slash", "hsl(232 30% 26%)", "hsl(18 100% 66%)", "spark", false, 120, "bite"),
+  "scale-shed": F("ice-shard-volley", "hsl(226 20% 50%)", "hsl(24 100% 72%)", "shard", false, 300, "bite"),
+  "constrict": F("water-whip", "hsl(232 30% 24%)", "hsl(18 100% 64%)", "dust", false, 100, "implode"),
+  "coil-rush": F("mach-rush", "hsl(232 30% 22%)", "hsl(20 100% 64%)", "dust", false, 300, "crater"),
+  "sunken-coils": F("stasis-field", "hsl(232 30% 16%)", "hsl(18 100% 62%)", "dust", false, 100, "implode"),
+  "world-shrug": F("quake-stomp", "hsl(232 24% 26%)", "hsl(22 100% 68%)", "chunk", false, 600, "crater"),
+  "molt-rain": F("shard-storm", "hsl(220 14% 60%)", "hsl(28 100% 76%)", "shard", false, 400, "shatter"),
+  "coil-whip": F("shadow-step", "hsl(232 30% 20%)", "hsl(22 100% 70%)", "dust", false, 200, "slash"),
+  "core-breath": F("railgun", "hsl(14 100% 54%)", "hsl(40 100% 84%)", "spark", true, 0, "flare"),
+  "old-blood": F("mend", "hsl(10 90% 50%)", "hsl(36 100% 80%)", "spark", true, -80, "sprout"),
+  "tightening-ring": F("singularity", "hsl(232 30% 10%)", "hsl(20 100% 66%)", "dust", false, 80, "implode"),
+  "the-world-turns": F("total-eclipse", "hsl(232 30% 12%)", "hsl(24 100% 72%)", "chunk", false, 400, "crater"),
 };
 for (const [id, lk] of Object.entries(QUEST_LOOKS)) FORM_LOOKS[id] = lk;
 for (const [id, lk] of Object.entries(FORM_LOOKS)) {

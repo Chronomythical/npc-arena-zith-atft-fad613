@@ -4,7 +4,7 @@
 import type { BossDesign, FighterDef, Move } from "./fighters";
 import type { Form } from "./forms";
 
-export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel";
+export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast";
 
 const M = (m: Omit<Move, "wind" | "act" | "rec"> & Partial<Pick<Move, "wind" | "act" | "rec">>): Move => ({
   wind: 0.2,
@@ -348,6 +348,21 @@ export const BOSSES: Record<BossId, FighterDef> = {
       M({ id: "fossil-step", name: "Fossil Step", kind: "blink", anim: "kick", range: 560, minRange: 130, cd: 4.2, dmg: 13, kb: 300, lift: -240, status: "freeze", statusDur: 0.4 }),
       M({ id: "amber-pool", name: "Amber Pool", kind: "zone", anim: "slam", range: 400, cd: 9, dmg: 5, radius: 145, dur: 4.5, status: "slow", statusDur: 0.8, wind: 0.36 }),
       M({ id: "set-in-stone", name: "Set in Stone", kind: "burst", anim: "raise", range: 160, cd: 8, dmg: 12, radius: 180, kb: 300, status: "freeze", statusDur: 1, wind: 0.42, rec: 0.36 }),
+    ],
+  },
+  // Book 4, chapter 4. The fourth Titan: a serpent as long as the world, coiled round its burning heart deep under the
+  // amber. Its coils hold the ground together. Woken, it has begun to uncoil, and everything above it is starting to slide.
+  coilvast: {
+    id: "gravi", boss: "coilvast", name: "Coilvast", power: "The Coil", role: "tank",
+    ability: "A Titan: a serpent wrapped round the heart of the world, its scales hot from the core. It snaps, it sheds razor scales, and its coils drag you in and squeeze until the ground itself gives way.",
+    color: "hsl(232 30% 20%)", glow: "hsl(18 100% 62%)", hp: 780, speed: 92,
+    moves: [
+      M({ id: "fang-snap", name: "Fang Snap", kind: "melee", anim: "lunge", range: 108, cd: 1.1, dmg: 13, kb: 280, status: "poison", statusDur: 1 }),
+      M({ id: "scale-shed", name: "Scale Shed", kind: "projectile", anim: "thrust", range: 620, minRange: 80, cd: 2.5, dmg: 6, speed: 620, size: 10, count: 5, spread: 0.34, shape: "shard", status: "burn", statusDur: 0.8 }),
+      M({ id: "constrict", name: "Constrict", kind: "pull", anim: "cast", range: 520, minRange: 110, cd: 4.6, dmg: 10, status: "stun", statusDur: 0.45, wind: 0.28 }),
+      M({ id: "coil-rush", name: "Coil Rush", kind: "dash", anim: "lunge", range: 560, minRange: 90, cd: 4.6, dmg: 15, kb: 440, lift: -240, wind: 0.32 }),
+      M({ id: "sunken-coils", name: "Sunken Coils", kind: "zone", anim: "slam", range: 420, cd: 9, dmg: 6, radius: 150, dur: 4.5, pullIn: 140, status: "slow", statusDur: 0.8, wind: 0.36 }),
+      M({ id: "world-shrug", name: "World Shrug", kind: "burst", anim: "slam", range: 170, cd: 6.5, dmg: 15, radius: 190, kb: 440, lift: -320, status: "stun", statusDur: 0.3, wind: 0.36, rec: 0.36 }),
     ],
   },
 };
@@ -1026,6 +1041,35 @@ export const BOSS_PHASES: Partial<Record<BossDesign, Form[]>> = {
       moves: [
         M({ id: "still-gold", name: "Still Gold", kind: "dash", anim: "lunge", range: 560, minRange: 90, cd: 4.6, dmg: 15, kb: 420, lift: -260, status: "slow", statusDur: 1, wind: 0.3 }),
         M({ id: "sealed-for-ever", name: "Sealed for Ever", kind: "burst", anim: "raise", range: 480, cd: 12, dmg: 16, radius: 430, kb: 460, lift: -380, status: "freeze", statusDur: 0.9, wind: 0.55, rec: 0.35 }),
+      ],
+    },
+  ],
+  coilvast: [
+    {
+      ...P2, power: "gravi", title: "THE SHED SKIN", dodge: 0.12,
+      blurb: "Its old skin splits from head to tail and peels away in a storm of grey scales. Underneath it is new and bright and faster, and the tail it left behind still whips about on its own.",
+      body: "hsl(230 30% 24%)", glow: "hsl(22 100% 66%)", a: "hsl(200 20% 60%)", b: "hsl(30 100% 76%)",
+      moves: [
+        M({ id: "molt-rain", name: "Molt Rain", kind: "rain", anim: "raise", range: 540, cd: 5.4, dmg: 8, count: 7, radius: 180, size: 10, shape: "shard", status: "burn", statusDur: 0.8, wind: 0.34 }),
+        M({ id: "coil-whip", name: "Coil Whip", kind: "blink", anim: "kick", range: 560, minRange: 130, cd: 4.4, dmg: 13, kb: 320, lift: -260, status: "stun", statusDur: 0.35 }),
+      ],
+    },
+    {
+      ...P3, power: "gravi", title: "THE CORE FIRE", drain: 0.12,
+      blurb: "The seams between its scales glow red, then orange, then white: the heat of the world's heart, the heat it has been lying round since the beginning. It breathes it out in a beam, and drinks the warmth back from every wound.",
+      body: "hsl(14 40% 16%)", glow: "hsl(28 100% 64%)", a: "hsl(10 90% 48%)", b: "hsl(40 100% 78%)",
+      moves: [
+        M({ id: "core-breath", name: "Core Breath", kind: "beam", anim: "thrust", range: 600, minRange: 70, cd: 3.6, dmg: 14, act: 0.36, status: "burn", statusDur: 1, wind: 0.32 }),
+        M({ id: "old-blood", name: "Old Blood", kind: "heal", anim: "raise", range: 2000, cd: 13, dmg: 0, heal: 30, below: 0.6, wind: 0.4, act: 0.3 }),
+      ],
+    },
+    {
+      ...P4, power: "gravi", title: "THE WORLD COIL", guard: 0.82, regen: 1.4,
+      blurb: "It wraps the whole arena in one great ring of itself and starts to squeeze. The Tightening Ring drags everyone toward its jaws, and when The World Turns, so does the floor.",
+      body: "hsl(232 30% 9%)", glow: "hsl(20 100% 72%)", a: "hsl(232 30% 20%)", b: "hsl(24 100% 74%)", dark: "hsl(232 30% 4%)",
+      moves: [
+        M({ id: "tightening-ring", name: "Tightening Ring", kind: "zone", anim: "raise", range: 440, cd: 10, dmg: 7, radius: 200, dur: 5, pullIn: 260, status: "slow", statusDur: 0.6, wind: 0.4 }),
+        M({ id: "the-world-turns", name: "The World Turns", kind: "burst", anim: "slam", range: 480, cd: 12, dmg: 17, radius: 430, kb: 480, lift: -420, status: "stun", statusDur: 0.7, wind: 0.55, rec: 0.35 }),
       ],
     },
   ],

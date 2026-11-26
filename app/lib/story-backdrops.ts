@@ -1716,6 +1716,83 @@ const LOOKS: Look[] = [
       if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 240, "hsl(44 100% 60%)", 0.4);
     },
   },
+  {
+    // Book 4, 4. The Coiled Deep: a black cavern below the amber, a buried sea, the serpent's coils arching through the dark
+    sky: [
+      ["hsl(236 40% 8%)", "hsl(230 34% 16%)", "hsl(220 30% 24%)"],
+      ["hsl(236 40% 6%)", "hsl(232 34% 13%)", "hsl(12 50% 22%)"],
+      ["hsl(240 40% 5%)", "hsl(250 30% 11%)", "hsl(14 70% 26%)"],
+      ["hsl(240 40% 3%)", "hsl(10 50% 10%)", "hsl(18 90% 34%)"],
+    ],
+    far: "hsl(232 30% 12%)",
+    near: "hsl(232 30% 9%)",
+    floor: ["hsl(232 24% 20%)", "hsl(232 30% 7%)"],
+    line: "hsl(20 100% 62% / 0.22)",
+    starsFrom: 9,
+    flat: true,
+    scene(ctx, stage, phase, rnd) {
+      // geodes in the cavern wall, split open and full of violet crystal
+      for (let i = 0; i < 7 + stage; i++) {
+        const x = rnd() * W, y = 40 + rnd() * 200, r = 8 + rnd() * 14;
+        glow(ctx, x, y, r * 3, "hsl(280 100% 70%)", 0.3);
+        ctx.fillStyle = "hsl(276 60% 56%)";
+        ctx.beginPath();
+        for (let k = 0; k < 7; k++) {
+          const a = (k / 7) * Math.PI * 2, rr = r * (0.7 + rnd() * 0.4);
+          if (k === 0) ctx.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+          else ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      // the buried sea, flat and black, a long way off
+      ctx.fillStyle = "hsl(230 40% 10%)";
+      ctx.fillRect(0, 300, W, 90);
+      ctx.strokeStyle = "hsl(20 100% 62% / 0.18)";
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 10; i++) {
+        const y = 310 + rnd() * 70, x = rnd() * W;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 40 + rnd() * 80, y);
+        ctx.stroke();
+      }
+      // the serpent's coils arching up out of the sea and back under it, bigger the deeper the chapter goes
+      const coils = 2 + Math.min(3, stage);
+      for (let i = 0; i < coils; i++) {
+        const cx = 80 + (i + rnd() * 0.6) * (W / coils), span = 120 + rnd() * 80 + phase * 30, tall = 90 + phase * 30 + rnd() * 40;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "hsl(232 30% 6%)";
+        ctx.lineWidth = 34 + phase * 6;
+        ctx.beginPath();
+        ctx.moveTo(cx - span / 2, 350);
+        ctx.quadraticCurveTo(cx, 350 - tall * 2, cx + span / 2, 350);
+        ctx.stroke();
+        ctx.strokeStyle = `hsl(20 100% 60% / ${0.25 + phase * 0.15})`;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([10, 16]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    },
+    front(ctx, stage, phase, rnd) {
+      // stalactites hanging from the dark, and cracks in the floor glowing with the heat of the core
+      ctx.fillStyle = "hsl(232 30% 6%)";
+      for (let i = 0; i < 10 + stage; i++) {
+        const x = rnd() * W, len = 30 + rnd() * 80, w = 10 + rnd() * 16;
+        ctx.beginPath();
+        ctx.moveTo(x - w, 0);
+        ctx.lineTo(x, len);
+        ctx.lineTo(x + w, 0);
+        ctx.fill();
+      }
+      for (let i = 0; i < 2 + phase; i++) {
+        const x = 60 + rnd() * (W - 120);
+        glow(ctx, x, FLOOR - 2, 60 + phase * 20, "hsl(18 100% 56%)", 0.25 + phase * 0.08);
+      }
+      if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 260, "hsl(18 100% 56%)", 0.4);
+    },
+  },
 ];
 
 /** What moves over each chapter's painting, by part of the chapter (0 dawn to 3 the lair). Indexed by global chapter. */
@@ -1766,6 +1843,8 @@ const AIRS: ((phase: number) => Air)[] = [
   (p) => ({ mist: "hsl(100 30% 30%)", motes: "spores", hue: 90, twinkle: p >= 2, amount: 0.6 + p * 0.25 }),
   // Book 4, 3. The Amber Hollow: gold motes hanging in the thick warm air
   (p) => ({ motes: "dust", hue: 42, heat: true, twinkle: true, amount: 0.7 + p * 0.2 }),
+  // Book 4, 4. The Coiled Deep: embers rising from the cracks, heat haze thickening near the serpent's lair
+  (p) => ({ mist: p >= 1 ? "hsl(232 30% 20%)" : undefined, motes: "embers", hue: 18, heat: p >= 2, amount: 0.5 + p * 0.25 }),
 ];
 
 function paint(ch: number, stage: number): HTMLCanvasElement {

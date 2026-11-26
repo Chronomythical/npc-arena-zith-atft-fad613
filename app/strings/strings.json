@@ -185,6 +185,8 @@
       "gnarlrootReply": "Then I'll pull you up by the roots.",
       "ambrelOpen": "Hold still. You'll look lovely in gold.",
       "ambrelReply": "Hush now. Stay like that for ever.",
+      "coilvastOpen": "Feel the floor tilt? That's me, waking up.",
+      "coilvastReply": "Come closer. I only squeeze a little.",
       "hybridOpen": "Two powers. Twice the trouble.",
       "hybridReply": "Just one power? Adorable.",
       "ownOpen": "I made myself for this fight.",
@@ -1753,6 +1755,47 @@
           "l2": "We'll remember you. Promise.",
           "l3": "Ambrel's amber softens and lets go: the leaf, the feather, the hive, the old bird's song drifting free into the dark. The hollow dims to a gentle glow. But far below it, past the last of the gold, something enormous turns over in its sleep."
         }
+      },
+      "c24": {
+        "intro": {
+          "l1": "Below the amber there is no more gold, only dark: a cavern so wide its far wall is out of sight, and a sea that has never once seen the sun.",
+          "l2": "This is the home of Coilvast, the fourth Titan, a serpent as long as the world. It lies coiled round the burning heart of everything, and its coils are what hold the ground together.",
+          "l3": "Now it has woken, and it has started to uncoil. Up above, mountains lean and rivers spill their banks. To stop it, your fighters will have to go down into the dark and wake it the rest of the way."
+        },
+        "s1": {
+          "l1": "Light! Who brought light down here? Put it out. Put it out at once.",
+          "l2": "Sorry. We'll be quick."
+        },
+        "s2": {
+          "l1": "I have seen the serpent dream. It dreams of letting go. It dreams of everything falling.",
+          "l2": "Then it's time somebody woke it up."
+        },
+        "s3": {
+          "l1": "I live beside the coils. I eat what falls off them. Lately a great deal has been falling off them.",
+          "l2": "We'll try not to add to the pile."
+        },
+        "s4": {
+          "l1": "Every time it turns, a city up there shakes. It is turning more and more. Can you feel it?",
+          "l2": "We can. That's why we're here."
+        },
+        "s5": {
+          "l1": "The water down here is warm. It never used to be. The heart is close now, and so is he.",
+          "l2": "Good. We were getting cold."
+        },
+        "s6": {
+          "l1": "I was the first scale it ever shed. I have guarded this road for the whole life of the world. You will not reach its head.",
+          "l2": "We just need a word with it. A short one."
+        },
+        "s7": {
+          "l1": "For longer than there have been days, I have held this world together in my coils. Never once loosened. Never once slept well. I am tired, little ones.",
+          "l2": "Then rest. But don't let go.",
+          "l3": "Rest? The only rest I have ever wanted is to stretch out, all of me, just once. If the world falls apart when I do, that is the world's problem."
+        },
+        "outro": {
+          "l1": "You held on... the way I always have. Perhaps I am not the only one holding things together any more.",
+          "l2": "You're not. Get some sleep. We'll keep watch.",
+          "l3": "Coilvast draws its coils tight round the heart of the world and lays its great head down, and above it the mountains settle and the rivers find their beds again. But the heat of the core is rising, and in it, something has started to burn."
+        }
       }
     },
     "skip": {
@@ -2005,6 +2048,18 @@
         "s5": "The Bone Garden",
         "s6": "The Setting Gold",
         "s7": "Ambrel's Heart"
+      }
+    },
+    "ch24": {
+      "title": "Chapter 4: The Coiled Deep",
+      "stages": {
+        "s1": "Below the Gold",
+        "s2": "Geode Hall",
+        "s3": "The Shed Skins",
+        "s4": "The Buried Shore",
+        "s5": "Warm Water",
+        "s6": "The Long Road Down",
+        "s7": "The Heart Coil"
       }
     }
   },

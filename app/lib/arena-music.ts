@@ -835,6 +835,37 @@ const CHAPTER_SONGS: Song[] = [
     fill: { kick: "x.......x...x.x.", snare: "........x.x.xxxx" },
     drums: 0.6,
   }),
+  // Book 4, 4. Coilvast: low and slithering in E Phrygian, a bass that winds up and down the half step like a body
+  // uncoiling, dark square chords, and a lead that slides between close notes with a heavy, rolling kick under it.
+  song({
+    bpm: 100,
+    pad: ["E3 G3 B3", "F3 A3 C4", "E3 G3 B3", "D3 F3 A3", "C3 E3 G3", "F3 A3 C4", "D3 F3 A3", "E3 G#3 B3"],
+    padWave: "square",
+    padCut: 760,
+    padAttack: 0.4,
+    bass: ["E1", "F1", "E1", "D2", "C2", "F1", "D2", "E1"],
+    bassPat: "x..x..x.x..x..x.",
+    bassMax: 4,
+    bassCut: 420,
+    lead: [
+      "E4 - F4 - E4 - - B3",
+      "C4 - - - F4 - E4 -",
+      "G4 - - F4 E4 - - -",
+      "D4 - F4 - A4 - - -",
+      "G4 - E4 - C4 - - -",
+      "A4 - - G4 F4 - E4 -",
+      "F4 - D4 - A3 - - -",
+      "G#4 - - - B4 - - -",
+    ],
+    leadWave: "triangle",
+    leadVol: 0.07,
+    arp: "0.1.0.2.0.1.0.2.",
+    kick: "x..x..x...x..x..",
+    snare: "....x.......x...",
+    hat: "..x...x...x...x.",
+    fill: { kick: "x..x..x...x.x.x.", snare: "....x.......xxxx" },
+    drums: 0.75,
+  }),
 ];
 
 /** The theme for a Story chapter (0-based). */
