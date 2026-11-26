@@ -13,8 +13,9 @@
 // - drawCharge: the power gathering in the hand while a move winds up and leaves it, one shape per element.
 // - ARRIVAL: an extra layer on each fighter's entrance (spawn-intros.ts): a sigil on the floor before it lands
 //   and a finishing flourish of its element when it does.
-import type { Power } from "./fighters";
+import { FIGHTERS, type Power } from "./fighters";
 import type { BossRig } from "./boss-designs";
+import type { Fx } from "./move-looks";
 import type { IntroDraw } from "./spawn-intros";
 
 type Pt = { x: number; y: number };
@@ -1324,14 +1325,220 @@ export function drawCharge(ctx: CanvasRenderingContext2D, power: Power, h: Pt, s
   fn(ctx, h, s, t, clamp(k, 0.05, 1), a, b, face);
   if (release > 0 && release < 1) {
     ctx.globalCompositeOperation = "lighter";
-    ctx.beginPath();
-    ctx.arc(h.x, h.y, (10 + easeOut(release) * 34) * s, 0, TAU);
-    ctx.strokeStyle = al(b, 0.8 * (1 - release));
-    ctx.lineWidth = 3 * s * (1 - release) + 0.5;
-    ctx.stroke();
+    mark(ctx, power, h.x, h.y, 34 * s, release, a, b, face, 0.4);
   }
   ctx.restore();
   return true;
+}
+
+// ---------- each element's mark: thrown off the hand as a move leaves it, left on whoever it hits ----------
+function mark(ctx: CanvasRenderingContext2D, id: Power, x: number, y: number, R: number, k: number, a: string, b: string, face: number, seed: number) {
+  const e = easeOut(k), fade = 1 - k, rr = R * (0.35 + e * 0.65), sc = R / 40;
+  ctx.lineWidth = 3 * sc * fade + 0.5;
+  ctx.strokeStyle = al(b, fade);
+  switch (id) {
+    case "pyro":
+      // tongues of flame bursting outward
+      glowDot(ctx, x, y, rr, a, 0.6 * fade);
+      for (let i = 0; i < 6; i++) flame(ctx, x, y, (i / 6) * TAU + seed, rr * 0.9, 4 * sc * fade + 0.5, k * 2, i, al(i % 2 ? a : b, 0.85 * fade));
+      break;
+    case "cryo":
+      // a snowflake of ice shards opening out
+      for (let i = 0; i < 6; i++) crystal(ctx, x, y, (i / 6) * TAU + Math.PI / 6, rr, 3.5 * sc, al(b, 0.75 * fade), al(a, fade), 1 * sc);
+      break;
+    case "electro":
+      // forked bolts jumping out from the point
+      for (let i = 0; i < 5; i++) {
+        const ang = (i / 5) * TAU + hh(seed + i) * 0.6;
+        zig(ctx, { x, y }, { x: x + Math.cos(ang) * rr * 1.1, y: y + Math.sin(ang) * rr * 1.1 }, 4, 5 * sc, seed * 10 + i + Math.floor(k * 12));
+        ctx.stroke();
+      }
+      glowDot(ctx, x, y, rr * 0.5, b, 0.7 * fade);
+      break;
+    case "terra":
+      // chips of stone flung off
+      for (let i = 0; i < 6; i++) {
+        const ang = (i / 6) * TAU + hh(seed + i), d = rr * (0.6 + hh(seed + i * 2) * 0.5);
+        rock(ctx, x + Math.cos(ang) * d, y + Math.sin(ang) * d + e * e * 10 * sc, 4.5 * sc * (0.6 + fade * 0.4), seed + i, k * 4);
+        ctx.fillStyle = al(a, fade);
+        ctx.fill();
+        ctx.stroke();
+      }
+      break;
+    case "aero":
+      // three gusts curling round the point
+      for (let i = 0; i < 3; i++) {
+        const a0 = (i / 3) * TAU + e * 2.4 * face;
+        ctx.beginPath();
+        ctx.arc(x, y, rr * (0.6 + i * 0.2), a0, a0 + 1.6);
+        ctx.stroke();
+      }
+      break;
+    case "hydro":
+      // a splash: a ring and drops thrown up and out
+      ctx.beginPath();
+      ctx.ellipse(x, y, rr, rr * 0.4, 0, 0, TAU);
+      ctx.stroke();
+      for (let i = 0; i < 7; i++) {
+        const ang = -Math.PI / 2 + (i - 3) * 0.4;
+        const d = rr * (0.8 + hh(seed + i) * 0.4);
+        ctx.beginPath();
+        ctx.arc(x + Math.cos(ang) * d, y + Math.sin(ang) * d + e * e * 14 * sc, 2.4 * sc * fade + 0.4, 0, TAU);
+        ctx.fillStyle = al(b, fade);
+        ctx.fill();
+      }
+      break;
+    case "umbra":
+      // two shadow slashes crossing and an eye closing between them
+      for (const sgn of [-1, 1]) {
+        ctx.beginPath();
+        ctx.moveTo(x - rr * 0.8, y + sgn * rr * 0.8);
+        ctx.quadraticCurveTo(x, y + sgn * rr * 0.2, x + rr * 0.8, y - sgn * rr * 0.8);
+        ctx.stroke();
+      }
+      glowDot(ctx, x, y, 6 * sc * fade + 0.5, "hsl(276 100% 75%)", fade);
+      break;
+    case "lux":
+      // a bright star and rays
+      star4(ctx, x, y, rr, al(b, 0.9 * fade));
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * TAU + Math.PI / 8;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(ang) * rr * 0.5, y + Math.sin(ang) * rr * 0.5);
+        ctx.lineTo(x + Math.cos(ang) * rr * 1.2, y + Math.sin(ang) * rr * 1.2);
+        ctx.stroke();
+      }
+      break;
+    case "gravi": {
+      // a ring falling in on a dark point
+      const ri = R * (1 - e * 0.85);
+      ctx.beginPath();
+      ctx.arc(x, y, ri, 0, TAU);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, ri * 0.55, e * 4, e * 4 + 4);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 4 * sc, 0, TAU);
+      ctx.fillStyle = `hsl(260 40% 8% / ${fade})`;
+      ctx.fill();
+      break;
+    }
+    case "tele":
+      // two portal frames turning against each other
+      for (const [sgn, sz] of [[1, 1], [-1, 0.6]] as const) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(sgn * e * 2 + Math.PI / 4);
+        ctx.strokeRect(-rr * 0.6 * sz, -rr * 0.6 * sz, rr * 1.2 * sz, rr * 1.2 * sz);
+        ctx.restore();
+      }
+      break;
+    case "vita":
+      // leaves scattering in a ring
+      for (let i = 0; i < 6; i++) {
+        const ang = (i / 6) * TAU + e;
+        leaf(ctx, x + Math.cos(ang) * rr * 0.4, y + Math.sin(ang) * rr * 0.4, ang, 12 * sc, 4 * sc, al(a, 0.85 * fade), al(b, fade), 1 * sc);
+      }
+      break;
+    case "toxi":
+      // bubbles of poison rising and popping
+      for (let i = 0; i < 7; i++) {
+        const ang = hh(seed + i) * TAU, d = rr * hh(seed + i * 5) * 0.9;
+        ctx.beginPath();
+        ctx.arc(x + Math.cos(ang) * d, y + Math.sin(ang) * d - e * 16 * sc, (2 + hh(seed + i * 3) * 4) * sc * (0.5 + e * 0.5), 0, TAU);
+        ctx.fillStyle = al(a, 0.4 * fade);
+        ctx.fill();
+        ctx.stroke();
+      }
+      break;
+    case "chrono": {
+      // a clock face with its hand sweeping round
+      ctx.beginPath();
+      ctx.arc(x, y, rr, 0, TAU);
+      ctx.stroke();
+      for (let i = 0; i < 12; i++) {
+        const ang = (i / 12) * TAU;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(ang) * rr * 0.82, y + Math.sin(ang) * rr * 0.82);
+        ctx.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr);
+        ctx.stroke();
+      }
+      const hand = -Math.PI / 2 + e * TAU;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.cos(hand) * rr * 0.75, y + Math.sin(hand) * rr * 0.75);
+      ctx.stroke();
+      break;
+    }
+    case "magneto":
+      // red and silver poles snapping apart
+      for (const [sgn, c] of [[-1, "hsl(0 90% 62%)"], [1, "hsl(210 25% 88%)"]] as const) {
+        ctx.beginPath();
+        ctx.arc(x + sgn * rr * 0.35, y, rr * 0.55, sgn < 0 ? Math.PI / 2 : -Math.PI / 2, sgn < 0 ? Math.PI * 1.5 : Math.PI / 2);
+        ctx.strokeStyle = al(c, fade);
+        ctx.stroke();
+      }
+      break;
+    case "psy":
+      // ripples of thought going out
+      for (let i = 0; i < 3; i++) {
+        const kk = clamp(e - i * 0.15, 0, 1);
+        ctx.beginPath();
+        ctx.arc(x, y, R * (0.25 + kk * 0.85), 0, TAU);
+        ctx.strokeStyle = al(i === 1 ? a : b, fade * (1 - i * 0.2));
+        ctx.stroke();
+      }
+      break;
+    case "shift": {
+      // a shape that keeps changing how many sides it has
+      const n = 3 + Math.floor(k * 5);
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) {
+        const ang = (i / n) * TAU + e * 2;
+        const px = x + Math.cos(ang) * rr, py = y + Math.sin(ang) * rr;
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.strokeStyle = `hsl(${(k * 360 + seed * 100) % 360} 90% 72% / ${fade})`;
+      ctx.stroke();
+      break;
+    }
+    case "nova":
+      // a star and four small ones flung out from it
+      star4(ctx, x, y, rr * 0.9, al(b, 0.9 * fade));
+      for (let i = 0; i < 4; i++) {
+        const ang = (i / 4) * TAU + Math.PI / 4;
+        star4(ctx, x + Math.cos(ang) * rr * 1.1, y + Math.sin(ang) * rr * 1.1, 5 * sc, al(a, fade));
+      }
+      break;
+    default:
+      ctx.beginPath();
+      ctx.arc(x, y, rr, 0, TAU);
+      ctx.stroke();
+  }
+}
+
+let moveOwner: Map<string, { id: Power; a: string; b: string }> | null = null;
+function ownerOf(moveId: string) {
+  if (!moveOwner) {
+    moveOwner = new Map();
+    for (const f of FIGHTERS) if (ROSTER_LOOK.has(f.id)) for (const m of f.moves) moveOwner.set(m.id, { id: f.id, a: f.color, b: f.glow });
+  }
+  return moveOwner.get(moveId);
+}
+
+/** On a hit by one of the 17 starting fighters' moves, its element's mark on top of the move's usual hit effect. */
+export function drawRosterImpact(ctx: CanvasRenderingContext2D, fx: Fx) {
+  if (!fx.hit) return;
+  const o = ownerOf(fx.id);
+  if (!o) return;
+  const k = clamp(1 - fx.life / fx.max, 0, 1);
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  mark(ctx, o.id, fx.x, fx.y, 44 * fx.size, k, fx.tint?.a ?? o.a, fx.tint?.b ?? o.b, fx.dir, fx.seed);
+  ctx.restore();
 }
 
 // ---------- entrances: a floor sigil before the landing and a flourish of the element on it ----------

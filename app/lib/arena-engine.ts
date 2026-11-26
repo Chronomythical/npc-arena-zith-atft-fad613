@@ -9,7 +9,7 @@ import { drawNovaLook, drawQuestDesign, type QuestAct } from "./quest-designs";
 import { FORMS, formShout, formsOf, type Form, type FormKind } from "./forms";
 import { BOSS_PHASES } from "./bosses";
 import { preFightFor, type PreFight, type PrePose } from "./pre-fight";
-import { ROSTER_LOOK, drawRosterLook, drawCharge, arrivalOf, type Arrival } from "./roster-looks";
+import { ROSTER_LOOK, drawRosterLook, drawCharge, drawRosterImpact, arrivalOf, type Arrival } from "./roster-looks";
 import { QUEST_LOOK, drawQuestLook, drawQuestCharge, drawQuestImpact, questArrivalOf } from "./quest-looks";
 import { drawBossLook, drawBossCharge, drawBossImpact, bossArrivalOf } from "./boss-looks";
 
@@ -393,15 +393,22 @@ function introOf(def: FighterDef): IntroSpec {
     let sp = fusionCache.get(key);
     if (!sp) {
       const da = DEF_BY_ID[a], db = DEF_BY_ID[b];
-      sp = fusionIntro(a, b, [da.color, da.glow], [db.color, db.glow]);
+      // the first power's floor sign before the two land as one, the second power's flourish when they do
+      const A = powerArrival(a), B = powerArrival(b);
+      const ar: Arrival | undefined = A || B ? { back: A?.back ?? B?.back, front: B?.front ?? A?.front } : undefined;
+      sp = withArrival(fusionIntro(a, b, [da.color, da.glow], [db.color, db.glow]), ar);
       fusionCache.set(key, sp);
     }
     return sp;
   }
   if (isRosterSelf(def)) return arrivalIntro(def.id, arrivalOf(def.id));
   if (isQuestSelf(def)) return arrivalIntro(def.id, questArrivalOf(def.id));
+  // a fighter you made with one power arrives with that power's floor sign and flourish
+  if (def.custom) return arrivalIntro(def.id, powerArrival(def.id));
   return INTROS[def.id];
 }
+/** The floor sign and landing flourish a power brings to an entrance, starting or quest. */
+const powerArrival = (p: Power): Arrival | undefined => arrivalOf(p) ?? questArrivalOf(p);
 const bossIntroCache = new Map<BossDesign, IntroSpec>();
 /** A boss's own entrance with its floor sign and landing flourish (boss-looks.ts) laid on top. */
 function bossIntro(design: BossDesign): IntroSpec {
@@ -4034,9 +4041,10 @@ function drawFighterBody(ctx: CanvasRenderingContext2D, g: Game, f: Fighter, o: 
     const release = at >= m.wind ? (at - m.wind) / 0.25 : 0;
     const charged = f.def.boss
       ? !o.solid && drawBossCharge(ctx, f.def.boss, hF, s, g.t, chargeK, face, release)
-      : (questLook
-      ? QUEST_LOOK.has(f.act.power) && drawQuestCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release)
-      : !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release));
+      : QUEST_LOOK.has(f.act.power) && (questLook || !quest)
+      // a quest fighter, or a hybrid or made fighter using a quest fighter's power
+      ? drawQuestCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release)
+      : !quest && ROSTER_LOOK.has(f.act.power) && drawCharge(ctx, f.act.power, hF, s, g.t, chargeK, pc.color, pc.glow, face, release);
     if (!charged) {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
@@ -5166,7 +5174,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, g: Game, backdrop: HTML
   for (const x of g.fx) {
     drawFx(ctx, x, g.t);
     // a quest fighter's own mark where its move lands
-    if (x.hit) { drawQuestImpact(ctx, x); drawBossImpact(ctx, x); }
+    if (x.hit) { drawRosterImpact(ctx, x); drawQuestImpact(ctx, x); drawBossImpact(ctx, x); }
   }
   for (const x of g.impacts) drawImpact(ctx, x);
   for (const w of g.waves) drawWave(ctx, w);
