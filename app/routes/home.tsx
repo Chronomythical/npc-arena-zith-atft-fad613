@@ -16,12 +16,13 @@ import { Slider } from "~/components/ui/slider";
 import { PiSpeakerHighBold, PiSpeakerLowBold, PiSpeakerSlashBold } from "react-icons/pi";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
-import { DEF_BY_ID, FIGHTERS, NEWGEN_IDS, bossRosterId, defOf, isCustomKey, isNewGen, type FighterDef, type Power, type RosterId } from "~/lib/fighters";
+import { DEF_BY_ID, FIGHTERS, FOURTH_IDS, NEWGEN_IDS, bossRosterId, defOf, isCustomKey, isFourthGen, isNewGen, type FighterDef, type Power, type RosterId } from "~/lib/fighters";
+import { ZENITH } from "~/lib/zenith";
 import { useMyFighter } from "~/lib/my-fighter";
 import { BOSSES } from "~/lib/bosses";
 import { UnlockCutscene } from "~/components/quest-scenes";
 import { rememberHybrid, useHybrids } from "~/lib/hybrids";
-import { recordFight, recordTournament, rollNewGen, unlockedNow, useUnlocked } from "~/lib/quests";
+import { breakSeal, recordFight, recordTournament, rollNewGen, unlockedNow, useUnlocked } from "~/lib/quests";
 import { useDevMode } from "~/lib/dev-mode";
 import { loadDevUnlocks, useDevUnlocks } from "~/lib/dev-unlocks";
 import { DevModeSheet } from "~/components/dev-mode-sheet";
@@ -126,8 +127,13 @@ export default function Home() {
   const devUnlocks = useDevUnlocks();
   const permOpen = chaptersOfBooks(devUnlocks.books);
   const earnedAll = useUnlocked();
-  const questers = earnedAll.filter((p) => !isNewGen(p));
+  const questers = earnedAll.filter((p) => !isNewGen(p) && !isFourthGen(p));
   const young = earnedAll.filter(isNewGen);
+  const fourth = earnedAll.filter(isFourthGen);
+  // The secret boss: Zenith comes down when its name is typed on the arena screen, or the arena is knocked on seven
+  // times while it waits; beating it frees the fourth generation. `secret` is set while its fight is on screen.
+  const [secret, setSecret] = useState(false);
+  const [secretOutcome, setSecretOutcome] = useState<"freed" | "won" | "lost" | null>(null);
   const [status, setStatus] = useState<Status>("ready");
   const [speed, setSpeed] = useState<number>(1);
   const [snap, setSnap] = useState<Snapshot>({ alive: [], feed: [] });
@@ -306,6 +312,19 @@ export default function Home() {
   finishRef.current = (g: Game) => {
     statusRef.current = "finished";
     setResult({ name: g.winner, id: g.winnerId, team: g.winnerTeam });
+    if (secret) {
+      if (!dev) recordFight({ kos: g.fighters.filter((f) => !f.alive).length, forms: g.fighters.filter((f) => f.form && f.form.kind !== "phase").length, boss: false });
+      const won = g.winnerTeam === 0;
+      // the first win breaks the seal and the fourth generation joins, one cutscene each (developer mode records nothing)
+      const freed = won && !dev ? breakSeal() : [];
+      setSecretOutcome(!won ? "lost" : freed.length ? "freed" : "won");
+      if (freed.length) {
+        const queued: Unlock[] = freed.map((id) => ({ def: DEF_BY_ID[id], eyebrow: "arena.fourth.unlockEyebrow", joined: "arena.fourth.unlockJoined" }));
+        window.setTimeout(() => setUnlocks((q) => [...q, ...queued]), 1600);
+      }
+      setStatus("finished");
+      return;
+    }
     const at = matchRef.current;
     // the bracket entrant who won: a fighter, or in Team Tournament the team left standing
     const won = teamTour ? (g.winnerTeam != null ? teamId(g.winnerTeam) : null) : g.winnerId;
@@ -525,6 +544,8 @@ export default function Home() {
   };
 
   const restart = () => {
+    setSecret(false);
+    setSecretOutcome(null);
     gameRef.current = null;
     matchRef.current = null;
     setResult(null);
@@ -567,6 +588,50 @@ export default function Home() {
     if (resumeTeams) {
       setFormat(teamBracket.format);
       setTeamSize(teamLineup[0]?.length ?? 2);
+    }
+  };
+
+  /** Zenith answers: up to three of the picked fighters (any three starters when nothing fits) against it. */
+  const summonZenith = () => {
+    if (screen !== "arena" || mode === "story" || scene || statusRef.current === "running" || statusRef.current === "paused") return;
+    const pool = picked.filter((id) => !defOf(id).boss);
+    const challengers = (pool.length ? pool : ALL).slice(0, 3);
+    gameRef.current = null;
+    matchRef.current = null;
+    stageRef.current = null;
+    setFallout(null);
+    setSecretOutcome(null);
+    setSecret(true);
+    begin(newGame([...defsOf(challengers), ZENITH], false, [...challengers.map(() => 0), 1]));
+  };
+  const summonRef = useRef(summonZenith);
+  summonRef.current = summonZenith;
+  // its name typed anywhere on the arena screen, outside a text field
+  useEffect(() => {
+    if (screen !== "arena") return;
+    let typed = "";
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (e.key.length !== 1) return;
+      typed = (typed + e.key.toLowerCase()).slice(-6);
+      if (typed === "zenith") {
+        typed = "";
+        summonRef.current();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [screen]);
+  // seven quick knocks on the waiting arena
+  const knocks = useRef<number[]>([]);
+  const knock = () => {
+    if (statusRef.current === "running" || statusRef.current === "paused") return;
+    const now = performance.now();
+    knocks.current = [...knocks.current.filter((t) => now - t < 3000), now];
+    if (knocks.current.length >= 7) {
+      knocks.current = [];
+      summonRef.current();
     }
   };
 
@@ -700,6 +765,7 @@ export default function Home() {
               <div className="relative">
                 <canvas
                   ref={canvasRef}
+                  onPointerDown={knock}
                   width={W}
                   height={H}
                   aria-label={canvasAria}
@@ -718,7 +784,17 @@ export default function Home() {
                 {status === "finished" && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6">
                     <div className="rounded-2xl border-4 border-foreground bg-card px-8 py-6 text-center">
-                      {mode === "story" ? (
+                      {secret ? (
+                        <div className="flex flex-col items-center gap-4" data-secret-result>
+                          <Text id="arena.secret.eyebrow" as="p" className="text-xs font-extrabold uppercase tracking-[0.08em] text-muted-foreground" />
+                          <Text
+                            id={secretOutcome === "freed" ? "arena.secret.freed" : secretOutcome === "won" ? "arena.secret.won" : "arena.secret.lost"}
+                            as="p"
+                            className="max-w-prose text-balance font-display text-2xl text-foreground"
+                          />
+                          <Button onClick={restart}><Text id="arena.secret.back" /></Button>
+                        </div>
+                      ) : mode === "story" ? (
                         <StoryBanner
                           chapter={stageRef.current?.ch ?? chapter}
                           stage={stageRef.current?.i ?? stage}
@@ -835,7 +911,7 @@ export default function Home() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[...mine, ...ALL, ...questers, ...young, ...bosses, ...hybrids].map((id) => (
+                    {[...mine, ...ALL, ...questers, ...young, ...fourth, ...bosses, ...hybrids].map((id) => (
                       <SelectItem key={id} value={id}>
                         <FighterDot def={defOf(id)} />
                         {defOf(id).name}
@@ -888,6 +964,17 @@ export default function Home() {
             ) : (
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
                 {young.map(chip)}
+              </div>
+            )}
+            <div className="mt-6 flex flex-wrap items-center gap-3" data-arena-fourth>
+              <Text id="arena.fourth.title" as="h3" className="font-display text-xl text-foreground" />
+              {fourth.length > 0 && <Text id="arena.newgen.count" vars={{ count: fourth.length, total: FOURTH_IDS.length }} className="text-sm text-muted-foreground tabular-nums" />}
+            </div>
+            {fourth.length === 0 ? (
+              <Text id="arena.fourth.empty" as="p" className="mt-3 max-w-prose text-sm text-muted-foreground" />
+            ) : (
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                {fourth.map(chip)}
               </div>
             )}
             <div className="mt-6 flex flex-wrap items-center gap-3" data-arena-bosses>

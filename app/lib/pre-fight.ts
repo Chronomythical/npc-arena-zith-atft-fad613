@@ -311,6 +311,9 @@ export const TAUNTS: Record<string, Taunt> = {
   plasma: { open: "raise", reply: "flex", shape: "spark", grav: -60 },
   flora: { open: "wave", reply: "bow", shape: "leaf", grav: 140 },
   chaos: { open: "beckon", reply: "laugh", shape: "star", grav: -40 },
+  // the fourth generation
+  smoke: { open: "shrug", reply: "laugh", shape: "smoke", grav: -60 },
+  aurora: { open: "raise", reply: "bow", shape: "spark", grav: -30 },
   // Story bosses, by design
   antimatter: { open: "fold", reply: "bow", shape: "smoke" },
   maelstrom: { open: "beckon", reply: "point", shape: "drop", grav: 600 },
@@ -338,6 +341,7 @@ export const TAUNTS: Record<string, Taunt> = {
   coilvast: { open: "fold", reply: "laugh", shape: "ember", grav: -80 },
   anvilheart: { open: "flex", reply: "point", shape: "spark", grav: 400 },
   primeva: { open: "beckon", reply: "raise", shape: "drop", grav: 200 },
+  zenith: { open: "raise", reply: "fold", shape: "star", grav: -40 },
   // one of a kind: any fused fighter, and the fighter you made
   hybrid: { open: "flex", reply: "shrug", shape: "spark" },
   own: { open: "wave", reply: "point", shape: "spark" },

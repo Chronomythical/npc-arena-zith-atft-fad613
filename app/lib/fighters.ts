@@ -11,7 +11,8 @@ export type Power =
   // quest fighters, earned on the Quests page
   | "spatio" | "hexizon" | "gamma" | "velo" | "portal" | "sono" | "paper" | "crys" | "sand" | "pastrift" | "merc" | "alch"
   // new generation, a chance to join after any Story boss win
-  | "plasma" | "flora" | "chaos";
+  | "plasma" | "flora" | "chaos"
+  | "smoke" | "aurora";
 
 export type Role = "attacker" | "control" | "tank" | "support" | "trickster";
 
@@ -87,7 +88,7 @@ export type Move = {
 };
 
 /** A Story boss's own body design, drawn by the engine on top of the stickman. */
-export type BossDesign = "antimatter" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollow" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart" | "primeva";
+export type BossDesign = "antimatter" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollow" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart" | "primeva" | "zenith";
 
 export type FighterDef = {
   id: Power;
@@ -626,6 +627,37 @@ export const QUESTERS: FighterDef[] = [
       M({ id: "second-wind", name: "Second Wind", kind: "heal", anim: "raise", range: 2000, cd: 12, dmg: 0, heal: 22, below: 0.55, wind: 0.32, rec: 0.3 }),
     ],
   },
+  // ----- Fourth generation: sealed in Zenith's crown, freed together the first time the secret boss is beaten (app/lib/zenith.ts) -----
+  {
+    id: "smoke", name: "Wisp", power: "Smoke Manipulation", role: "trickster",
+    ability: "One of the four sealed in Zenith's crown. Wisp is never where the hit lands: a cough of smoke and they're behind you, a cloud that blinds whoever walks into it, and a tether of ash that drags the slow ones close.",
+    color: "hsl(210 10% 46%)", glow: "hsl(168 80% 60%)", hp: 290, speed: 122,
+    moves: [
+      M({ id: "smoke-jab", name: "Smoke Jab", kind: "melee", anim: "jab", range: 76, cd: 0.75, dmg: 10, kb: 230 }),
+      M({ id: "cinder-hook", name: "Cinder Hook", kind: "melee", anim: "uppercut", range: 84, cd: 1.3, dmg: 13, kb: 260, lift: -440, status: "burn", statusDur: 1 }),
+      M({ id: "smoke-bomb", name: "Smoke Bomb", kind: "projectile", anim: "thrust", range: 580, minRange: 90, cd: 2.6, dmg: 11, speed: 520, size: 14, shape: "orb", arc: true, status: "blind", statusDur: 1.2 }),
+      M({ id: "smokescreen", name: "Smokescreen", kind: "zone", anim: "raise", range: 400, cd: 8, dmg: 4, radius: 140, dur: 4, status: "blind", statusDur: 0.6, wind: 0.32 }),
+      M({ id: "vanish-step", name: "Vanish Step", kind: "blink", anim: "kick", range: 620, minRange: 100, cd: 3, dmg: 13, kb: 300, lift: -240 }),
+      M({ id: "ash-tether", name: "Ash Tether", kind: "pull", anim: "cast", range: 480, minRange: 110, cd: 3.4, dmg: 9, status: "slow", statusDur: 1 }),
+      M({ id: "chimney-blast", name: "Chimney Blast", kind: "eruption", anim: "slam", range: 520, minRange: 40, cd: 5, dmg: 13, radius: 48, lift: -680, wind: 0.3 }),
+      M({ id: "exhale", name: "Exhale", kind: "burst", anim: "spin", range: 150, cd: 5.5, dmg: 14, radius: 170, kb: 500, lift: -300, status: "blind", statusDur: 0.8, wind: 0.26 }),
+    ],
+  },
+  {
+    id: "aurora", name: "Boreal", power: "Aurora Manipulation", role: "control",
+    ability: "One of the four sealed in Zenith's crown. Boreal pulls the northern lights down to the floor: curtains of light that cut, cold sparks of solar wind and a ring of magnetic field that holds a fighter in place.",
+    color: "hsl(160 72% 42%)", glow: "hsl(292 90% 72%)", hp: 305, speed: 106,
+    moves: [
+      M({ id: "veil-jab", name: "Veil Jab", kind: "melee", anim: "jab", range: 78, cd: 0.85, dmg: 10, kb: 230 }),
+      M({ id: "curtain-ray", name: "Curtain Ray", kind: "beam", anim: "thrust", range: 600, minRange: 70, cd: 3.2, dmg: 15, act: 0.32, kb: 220, status: "slow", statusDur: 0.8, wind: 0.3 }),
+      M({ id: "polar-shards", name: "Polar Shards", kind: "projectile", anim: "cast", range: 580, minRange: 80, cd: 2.2, dmg: 6, speed: 760, size: 9, count: 3, spread: 0.14, shape: "shard", status: "slow", statusDur: 0.8 }),
+      M({ id: "solar-wind", name: "Solar Wind", kind: "rain", anim: "raise", range: 540, cd: 5.5, dmg: 8, count: 6, radius: 160, shape: "orb", status: "blind", statusDur: 0.8, wind: 0.34, rec: 0.3 }),
+      M({ id: "magnetic-halo", name: "Magnetic Halo", kind: "zone", anim: "slam", range: 420, cd: 8.5, dmg: 5, radius: 140, dur: 4, pullIn: 180, status: "slow", statusDur: 0.6, wind: 0.34 }),
+      M({ id: "polar-dash", name: "Polar Dash", kind: "dash", anim: "lunge", range: 380, cd: 3.4, dmg: 14, dist: 380, act: 0.2, kb: 360, lift: -200 }),
+      M({ id: "aurora-flare", name: "Aurora Flare", kind: "burst", anim: "raise", range: 160, cd: 6, dmg: 15, radius: 180, kb: 460, lift: -340, wind: 0.3 }),
+      M({ id: "polar-mend", name: "Polar Mend", kind: "heal", anim: "raise", range: 2000, cd: 12, dmg: 0, heal: 24, below: 0.6, wind: 0.34, rec: 0.3 }),
+    ],
+  },
 ];
 
 export const QUEST_IDS = new Set<Power>(QUESTERS.map((q) => q.id));
@@ -633,6 +665,9 @@ export const isQuester = (id: string) => QUEST_IDS.has(id as Power);
 /** The young new-generation fighters: listed with the quest fighters for the arena, but won by luck after a boss win, not by a quest. */
 export const NEWGEN_IDS: Power[] = ["plasma", "flora", "chaos"];
 export const isNewGen = (id: string) => NEWGEN_IDS.includes(id as Power);
+/** The fourth generation: sealed in the secret boss Zenith's crown, and freed together the first time it is beaten. */
+export const FOURTH_IDS: Power[] = ["smoke", "aurora"];
+export const isFourthGen = (id: string) => FOURTH_IDS.includes(id as Power);
 
 export const DEF_BY_ID = Object.fromEntries([...FIGHTERS, ...QUESTERS].map((f) => [f.id, f])) as Record<Power, FighterDef>;
 
@@ -674,6 +709,8 @@ const WINGS: Record<Power, Wing> = {
   plasma: { word: "Plasma", shape: "orb", status: "burn", statusDur: 1.5 },
   flora: { word: "Thorn", shape: "shard", status: "poison", statusDur: 2, heal: 8 },
   chaos: { word: "Chaos", shape: "shard", status: "stun", statusDur: 0.15 },
+  smoke: { word: "Smog", shape: "orb", status: "blind", statusDur: 1 },
+  aurora: { word: "Aurora", shape: "shard", status: "slow", statusDur: 1 },
 };
 
 export function wingMoves(id: Power): Move[] {
@@ -1171,7 +1208,7 @@ export function fusionOrder(a: Power, b: Power): [Power, Power] {
   return (ROSTER_ORDER.get(a) ?? 0) <= (ROSTER_ORDER.get(b) ?? 0) ? [a, b] : [b, a];
 }
 
-const BOSS_OF_DESIGN = Object.fromEntries(Object.entries(BOSSES).map(([id, d]) => [d.boss, id])) as Record<BossDesign, BossId>;
+const BOSS_OF_DESIGN = Object.fromEntries(Object.entries(BOSSES).map(([id, d]) => [d.boss, id])) as Partial<Record<BossDesign, BossId>>;
 /** The roster id a beaten Story boss is picked by. */
 export const bossRosterId = (id: BossId): RosterId => `boss:${id}`;
 const bossOfRosterId = (id: RosterId): BossId | null => {
@@ -1181,7 +1218,7 @@ const bossOfRosterId = (id: RosterId): BossId | null => {
 
 /** The id a fighter is picked, saved and crowned by. */
 export const rosterIdOf = (d: FighterDef): RosterId =>
-  d.custom ? customKey(d.custom) : d.boss ? bossRosterId(BOSS_OF_DESIGN[d.boss]) : d.parents ? hybridKey(d.parents[0], d.parents[1]) : d.id;
+  d.custom ? customKey(d.custom) : d.boss ? (BOSS_OF_DESIGN[d.boss] ? bossRosterId(BOSS_OF_DESIGN[d.boss]!) : `secret:${d.boss}`) : d.parents ? hybridKey(d.parents[0], d.parents[1]) : d.id;
 
 const isPower = (x: string): x is Power => x in DEF_BY_ID;
 

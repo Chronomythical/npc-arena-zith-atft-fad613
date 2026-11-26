@@ -119,6 +119,8 @@ const BOSS_STANCE: Record<BossDesign, Pose> = {
   anvilheart: { t: 0.1, aF1: 1.1, aF2: 1.5, aB1: -2.4, aB2: -1.6, lF1: 0.32, lF2: 0.02, lB1: -0.3, lB2: 0.02 },
   // Primeva: tall and calm, one open hand held out in front as if feeling for a pulse, the other cupped over her heart
   primeva: { t: -0.03, aF1: 1.3, aF2: 1.75, aB1: 0.5, aB2: 2.3, lF1: 0.18, lF2: -0.02, lB1: -0.18, lB2: -0.02 },
+  // Zenith (the secret boss): upright and serene, one hand raised straight up to the sky it came from, the other open at its side
+  zenith: { t: -0.06, aF1: 2.75, aF2: 3.0, aB1: -0.45, aB2: -0.6, lF1: 0.14, lF2: 0.0, lB1: -0.14, lB2: 0.0 },
 };
 /** How each boss moves at rest: speed, torso sway, arm sway (front, back), knee bob, and its own rhythm (see Idle). */
 const BOSS_IDLE: Record<BossDesign, Idle> = {
@@ -174,6 +176,8 @@ const BOSS_IDLE: Record<BossDesign, Idle> = {
   anvilheart: { hz: 4.2, t: 0.03, aF: 0.04, aB: 0.14, l: 0.02, beat: true },
   // Primeva moves with the world's heartbeat, lub-dub
   primeva: { hz: 6.9, t: 0.03, aF: 0.06, aB: 0.04, l: 0.015, heart: true },
+  // Zenith hangs in the air as if weightless, rising and settling slowly
+  zenith: { hz: 0.9, t: 0.015, aF: 0.03, aB: 0.06, l: 0.02, alt: true },
 };
 /** Hybrids pick one of these by their pair, so the same pair always stands the same way: two powers held ready at once. */
 const HYBRID_STANCES: Pose[] = [
@@ -500,6 +504,8 @@ const ANIMS: Record<Anim, { wind: Partial<Pose>; strike: Partial<Pose> }> = {
 
 // ---------- element looks ----------
 const FX: Record<Power, { shape: PShape; add: boolean; grav: number }> = {
+  smoke: { shape: "smoke", add: false, grav: -60 },
+  aurora: { shape: "spark", add: true, grav: -30 },
   pyro: { shape: "dot", add: true, grav: -260 },
   cryo: { shape: "shard", add: false, grav: 320 },
   electro: { shape: "spark", add: true, grav: 0 },

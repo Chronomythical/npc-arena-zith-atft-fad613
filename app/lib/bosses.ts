@@ -3,6 +3,7 @@
 // voice and entrance it borrows from the roster.
 import type { BossDesign, FighterDef, Move } from "./fighters";
 import type { Form } from "./forms";
+import { ZENITH_PHASES } from "./zenith";
 
 export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart" | "primeva";
 
@@ -1161,4 +1162,6 @@ export const BOSS_PHASES: Partial<Record<BossDesign, Form[]>> = {
       ],
     },
   ],
+  // the secret boss (zenith.ts)
+  zenith: ZENITH_PHASES,
 };

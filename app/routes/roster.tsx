@@ -14,7 +14,7 @@ import {
   EmptyState,
 } from "~/components/design";
 import { cn } from "~/lib/utils";
-import { DEF_BY_ID, FIGHTERS, NEWGEN_IDS, QUESTERS, defOf, isNewGen, type FighterDef, type Role } from "~/lib/fighters";
+import { DEF_BY_ID, FIGHTERS, FOURTH_IDS, NEWGEN_IDS, QUESTERS, defOf, isFourthGen, isNewGen, type FighterDef, type Role } from "~/lib/fighters";
 import { BOSSES, BOSS_PHASES, type BossId } from "~/lib/bosses";
 import { allCleared, bossChapter, bossesBeaten, loadProgress } from "~/lib/story";
 import { useDevMode } from "~/lib/dev-mode";
@@ -72,7 +72,7 @@ function TopBar() {
   );
 }
 
-function FighterCard({ fighter, index, quest = false, newgen = false }: { fighter: Fighter; index: number | null; quest?: boolean; newgen?: boolean }) {
+function FighterCard({ fighter, index, quest = false, newgen = false, fourth = false }: { fighter: Fighter; index: number | null; quest?: boolean; newgen?: boolean; fourth?: boolean }) {
   const boss = fighter.boss;
   const hybrid = !!fighter.parents;
   return (
@@ -89,6 +89,8 @@ function FighterCard({ fighter, index, quest = false, newgen = false }: { fighte
           <div className="min-w-0 flex-1">
             {boss ? (
               <Text id="roster.card.boss" className="text-xs uppercase tracking-widest text-muted-foreground" />
+            ) : fourth ? (
+              <Text id="roster.card.fourth" className="text-xs uppercase tracking-widest text-muted-foreground" />
             ) : newgen ? (
               <Text id="roster.card.newgen" className="text-xs uppercase tracking-widest text-muted-foreground" />
             ) : quest ? (
@@ -220,8 +222,9 @@ export default function Roster() {
   const unlocked = useUnlocked();
   const dev = useDevMode().on;
   const devUnlocks = useDevUnlocks();
-  const earned = unlocked.filter((p) => !isNewGen(p));
+  const earned = unlocked.filter((p) => !isNewGen(p) && !isFourthGen(p));
   const youngEarned = unlocked.filter(isNewGen);
+  const fourthEarned = unlocked.filter(isFourthGen);
   // Story progress lives in this browser, so it is read after the first render
   const [beaten, setBeaten] = useState<BossId[]>([]);
   useEffect(
@@ -299,7 +302,7 @@ export default function Roster() {
           action={<Text id="roster.questCount" vars={{ count: earned.length }} className="text-sm text-muted-foreground tabular-nums" />}
         />
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {QUESTERS.filter((q) => !isNewGen(q.id)).map((q) => (
+          {QUESTERS.filter((q) => !isNewGen(q.id) && !isFourthGen(q.id)).map((q) => (
             <li key={q.id}>
               {earned.includes(q.id) ? (
                 <FighterCard fighter={q} index={null} quest />
@@ -345,6 +348,39 @@ export default function Roster() {
                       <Text id="roster.card.newgen" className="text-xs uppercase tracking-widest text-muted-foreground" />
                       <Text id="roster.newGenLocked.title" as="h3" className="font-display text-xl text-foreground" />
                       <Text id="roster.newGenLocked.body" vars={{ name: y.name }} as="p" className="text-sm text-foreground-secondary" />
+                      <Button asChild variant="outline" size="sm" className="self-start">
+                        <Link to="/"><Text id="roster.cta" /></Link>
+                      </Button>
+                    </PanelBody>
+                  </Panel>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="mt-12" data-roster-fourth>
+        <SectionHeading
+          title={<Text id="roster.sectionFourth" />}
+          action={<Text id="roster.newGenCount" vars={{ count: fourthEarned.length, total: FOURTH_IDS.length }} className="text-sm text-muted-foreground tabular-nums" />}
+        />
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {FOURTH_IDS.map((id) => {
+            const y = DEF_BY_ID[id];
+            return (
+              <li key={id}>
+                {fourthEarned.includes(id) ? (
+                  <FighterCard fighter={y} index={null} fourth />
+                ) : (
+                  <Panel className="h-full overflow-hidden">
+                    <div className="border-b-2 border-border-subtle bg-[hsl(250_32%_10%)]">
+                      <FighterPortrait def={y} locked />
+                    </div>
+                    <PanelBody className="flex flex-col gap-3">
+                      <Text id="roster.card.fourth" className="text-xs uppercase tracking-widest text-muted-foreground" />
+                      <Text id="roster.fourthLocked.title" as="h3" className="font-display text-xl text-foreground" />
+                      <Text id="roster.fourthLocked.body" as="p" className="max-w-prose text-sm text-foreground-secondary" />
                       <Button asChild variant="outline" size="sm" className="self-start">
                         <Link to="/"><Text id="roster.cta" /></Link>
                       </Button>

@@ -1,9 +1,10 @@
 // Quests: 12 long goals, each earning a quest fighter for good once it is complete and claimed.
 // Progress is counted from finished fights and saved in this browser (localStorage), like Story progress.
 // The arena screen reports each finished fight with `recordFight` and each crowned champion with `recordTournament`.
-// The same save keeps the new-generation fighters won by luck after a Story boss win (`rollNewGen`).
+// The same save keeps the new-generation fighters won by luck after a Story boss win (`rollNewGen`), and whether the
+// secret boss Zenith has been beaten (`breakSeal`), which frees the whole fourth generation.
 import { useEffect, useState } from "react";
-import { NEWGEN_IDS, QUESTERS, type Power } from "./fighters";
+import { FOURTH_IDS, NEWGEN_IDS, QUESTERS, type Power } from "./fighters";
 import { isDevMode, useDevMode } from "./dev-mode";
 import { loadDevUnlocks, useDevUnlocks } from "./dev-unlocks";
 
@@ -37,8 +38,8 @@ export const QUESTS: Quest[] = [
 const KEY = "npc-arena-quests";
 const CHANGED = "npc-arena-quests-changed";
 
-export type QuestSave = { stats: Stats; claimed: string[]; newgen: Power[] };
-const EMPTY: QuestSave = { stats: { fights: 0, kos: 0, tournaments: 0, bosses: 0, forms: 0 }, claimed: [], newgen: [] };
+export type QuestSave = { stats: Stats; claimed: string[]; newgen: Power[]; sealBroken: boolean };
+const EMPTY: QuestSave = { stats: { fights: 0, kos: 0, tournaments: 0, bosses: 0, forms: 0 }, claimed: [], newgen: [], sealBroken: false };
 
 export function loadQuests(): QuestSave {
   try {
@@ -48,7 +49,7 @@ export function loadQuests(): QuestSave {
     for (const k of Object.keys(stats) as Stat[]) stats[k] = Math.max(0, Math.floor(Number(raw.stats?.[k]) || 0));
     const claimed = Array.isArray(raw.claimed) ? raw.claimed.filter((x: unknown): x is string => typeof x === "string" && QUESTS.some((q) => q.id === x)) : [];
     const newgen = Array.isArray(raw.newgen) ? NEWGEN_IDS.filter((p) => raw.newgen.includes(p)) : [];
-    return { stats, claimed: [...new Set<string>(claimed)], newgen };
+    return { stats, claimed: [...new Set<string>(claimed)], newgen, sealBroken: raw.sealBroken === true };
   } catch {
     return EMPTY;
   }
@@ -100,14 +101,24 @@ export function rollNewGen(): Power | null {
   return won;
 }
 
-/** Quest fighters this browser has earned, in quest order, then the new-generation fighters it has unlocked. */
+/** The secret boss Zenith has just been beaten: the fourth generation is freed for good. Returns who joined (none the second time). */
+export function breakSeal(): Power[] {
+  const q = loadQuests();
+  if (q.sealBroken) return [];
+  q.sealBroken = true;
+  save(q);
+  return [...FOURTH_IDS];
+}
+
+/** Quest fighters this browser has earned, in quest order, then the new-generation fighters it has unlocked, then the fourth generation once freed. */
 export const unlockedOf = (q: QuestSave): Power[] => [
   ...QUESTS.filter((x) => x.reward && q.claimed.includes(x.id)).map((x) => x.reward!).filter((p) => QUESTERS.some((d) => d.id === p)),
   ...NEWGEN_IDS.filter((p) => q.newgen.includes(p)),
+  ...(q.sealBroken ? FOURTH_IDS : []),
 ];
 
 /** Every quest fighter and every new-generation fighter: what developer mode opens. */
-export const everyUnlock = (): Power[] => unlockedOf({ stats: EMPTY.stats, claimed: QUESTS.map((x) => x.id), newgen: [...NEWGEN_IDS] });
+export const everyUnlock = (): Power[] => unlockedOf({ stats: EMPTY.stats, claimed: QUESTS.map((x) => x.id), newgen: [...NEWGEN_IDS], sealBroken: true });
 
 /** The fighters this browser can pick right now: everything in developer mode, otherwise what it has earned plus any picked to stay unlocked for good. */
 export const unlockedNow = (): Power[] =>

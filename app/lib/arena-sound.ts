@@ -117,6 +117,18 @@ class Synth {
 type Voice = (s: Synth, p: number, len: number, v: number) => void;
 
 const CAST: Record<Power, Voice> = {
+  // Wisp: a soft breathy puff, then a low hiss of smoke unrolling
+  smoke: (s, p, len, v) => {
+    s.noise(600 * p, 220 * p, 0.3 * len, 0.4, { type: "lowpass", q: 1.2, attack: 0.04 * len });
+    s.noise(2600 * p, 1400 * p, 0.22 * len, 0.18, { type: "bandpass", q: 0.8, delay: 0.08 * len });
+    s.tone((v === 1 ? 196 : v === 2 ? 220 : 175) * p, 140 * p, 0.28 * len, 0.06, { type: "sine", delay: 0.05 * len });
+  },
+  // Boreal: a cold glassy shimmer that rises and wavers like the lights themselves
+  aurora: (s, p, len, v) => {
+    s.fm((v === 1 ? 988 : v === 2 ? 1109 : 880) * p, 2.01, 1.2, 0.5 * len, 0.1, 0.06 * len);
+    s.tone(440 * p, 660 * p, 0.4 * len, 0.06, { type: "sine", vib: [6, 8] });
+    s.noise(9000, 6000, 0.3 * len, 0.08, { type: "highpass", delay: 0.1 * len });
+  },
   pyro: (s, p, len, v) => {
     s.noise(380 * p, 2600 * p, 0.12 * len, 0.5, { type: "lowpass", q: 2, attack: 0.03 });
     s.noise(2400 * p, 500 * p, 0.38 * len, 0.45, { type: "lowpass", q: 1.5, delay: 0.1 * len });
@@ -308,6 +320,16 @@ const CAST: Record<Power, Voice> = {
 };
 
 const IMPACT: Record<Power, Voice> = {
+  // a muffled thump in a puff of smoke
+  smoke: (s, p) => {
+    s.tone(140 * p, 60, 0.14, 0.4, { type: "sine" });
+    s.noise(900 * p, 300, 0.22, 0.35, { type: "lowpass", q: 1 });
+  },
+  // a crisp cold snap and a ringing chime
+  aurora: (s, p) => {
+    s.noise(4200, 2000, 0.08, 0.4, { type: "bandpass", q: 2 });
+    s.fm(1318 * p, 2, 1, 0.3, 0.1, 0.04);
+  },
   pyro: (s, p) => { s.noise(2200 * p, 300, 0.25, 0.6, { type: "lowpass", q: 1 }); s.tone(130, 50, 0.15, 0.4); },
   cryo: (s, p) => {
     for (let i = 0; i < 4; i++) s.tone((2400 + Math.random() * 2400) * p, 2000 * p, 0.12, 0.13, { type: "triangle", delay: i * 0.02 });

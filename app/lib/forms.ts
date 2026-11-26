@@ -486,5 +486,33 @@ export const HYPER_FORM: Form = {
   ],
 };
 
+// ----- the fourth generation's own forms (Surge Mode, like the new generation's) -----
+FORMS.smoke = {
+  power: "smoke", kind: "surge", title: "BLACK SMOG", ...SURGE,
+  blurb: "Wisp's smoke turns thick and black, shot through with embers. The arena goes dark around them and the cloud starts to choke.",
+  body: "hsl(220 10% 12%)", glow: "hsl(24 100% 58%)", a: "hsl(220 8% 20%)", b: "hsl(24 100% 60%)", dark: "hsl(220 20% 4%)",
+  dmg: 1.3, kb: 1.2, cd: 0.72, speed: 1.25, act: 1.2,
+  moves: [
+    M({ id: "smog-cyclone", name: "Smog Cyclone", kind: "zone", anim: "spin", range: 440, cd: 8.5, dmg: 7, radius: 170, dur: 4.2, pullIn: 240, status: "blind", statusDur: 0.6, wind: 0.32 }),
+    M({ id: "ember-cloud", name: "Ember Cloud", kind: "rain", anim: "raise", range: 560, cd: 5.5, dmg: 9, count: 8, radius: 180, shape: "rock", status: "burn", statusDur: 1.5, wind: 0.34 }),
+    M({ id: "phantom-rush", name: "Phantom Rush", kind: "dash", anim: "lunge", range: 440, cd: 3.4, dmg: 16, dist: 440, act: 0.22, kb: 380, lift: -200, status: "blind", statusDur: 0.8 }),
+    M({ id: "choking-cloud", name: "Choking Cloud", kind: "burst", anim: "raise", range: 190, cd: 7, dmg: 18, radius: 220, kb: 480, lift: -320, status: "poison", statusDur: 2, wind: 0.38, rec: 0.35 }),
+    M({ id: "soot-lance", name: "Soot Lance", kind: "beam", anim: "thrust", range: 760, minRange: 70, cd: 4.4, dmg: 19, act: 0.36, kb: 360, status: "burn", statusDur: 1.5, wind: 0.34 }),
+  ],
+};
+FORMS.aurora = {
+  power: "aurora", kind: "surge", title: "SOLAR STORM", ...SURGE,
+  blurb: "A storm from the sun hits the sky over the arena. Boreal's lights flare red and violet and the whole field turns magnetic.",
+  body: "hsl(300 40% 16%)", glow: "hsl(350 100% 66%)", a: "hsl(300 80% 56%)", b: "hsl(140 100% 70%)", dark: "hsl(280 60% 4%)",
+  dmg: 1.3, kb: 1.2, cd: 0.72, speed: 1.2, act: 1.2,
+  moves: [
+    M({ id: "coronal-sky", name: "Coronal Sky", kind: "rain", anim: "raise", range: 600, cd: 6, dmg: 10, count: 10, radius: 210, shape: "shard", status: "slow", statusDur: 1, wind: 0.36, rec: 0.3 }),
+    M({ id: "polar-vortex", name: "Polar Vortex", kind: "pull", anim: "cast", range: 540, minRange: 110, cd: 3.8, dmg: 12, status: "stun", statusDur: 0.4 }),
+    M({ id: "northern-step", name: "Northern Step", kind: "blink", anim: "uppercut", range: 660, minRange: 100, cd: 3.4, dmg: 16, lift: -580, kb: 240 }),
+    M({ id: "magnetosphere", name: "Magnetosphere", kind: "burst", anim: "raise", range: 200, cd: 7.5, dmg: 19, radius: 230, kb: 560, lift: -380, wind: 0.4, rec: 0.35 }),
+    M({ id: "ion-spire", name: "Ion Spire", kind: "eruption", anim: "slam", range: 580, minRange: 40, cd: 5.4, dmg: 15, radius: 48, count: 3, lift: -700, status: "slow", statusDur: 0.8, wind: 0.36 }),
+  ],
+};
+
 /** Every form a power has, in the order they come. */
 export const formsOf = (p: Power): Form[] => (p === "pyro" ? [FORMS.pyro, PERFECTED_FLAME] : p === "chaos" ? [FORMS.chaos, HYPER_FORM] : [FORMS[p]]);

@@ -21,6 +21,7 @@
 // alchemy circle turning slowly behind the shoulders.
 // Past Riftmaker: magenta-purple with yellow eyes and a long yellow-orange scarf; the Axiom's third eye in Nightmare Mode.
 // Nova (an original fighter) also draws her hair and scarf from here: drawNovaLook.
+import { drawFourthDesign } from "./fourth-gen";
 import type { Power } from "./fighters";
 import { drawCrane } from "./move-looks";
 import type { BossRig } from "./boss-designs";
@@ -1760,6 +1761,7 @@ export function drawQuestDesign(
   ctx: CanvasRenderingContext2D, id: Power, layer: "back" | "front", r: BossRig, s: number, face: number, t: number,
   alive: boolean, act: QuestAct | undefined, p: QuestPaint, vx = 0,
 ) {
+  if (drawFourthDesign(ctx, id, layer, r, s, face, t, alive, act, p)) return;
   if (id === "hexizon") return layer === "back" ? hexizonBack(ctx, r, s, t, alive, p) : hexizonFront(ctx, r, s, face, t, alive, act, p);
   if (id === "spatio") return layer === "back" ? parallaxBack(ctx, r, s, t, alive, act, p) : parallaxFront(ctx, r, s, face, t, alive, p);
   if (id === "gamma") return layer === "back" ? halflifeBack(ctx, r, s, t, alive, act, p) : halflifeFront(ctx, r, s, face, t, alive, p);

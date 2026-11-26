@@ -14,9 +14,11 @@ import type { IntroDraw } from "./spawn-intros";
 import { clamp, seg, sigilK, type Arrival } from "./roster-looks";
 import { LOOKS_A } from "./boss-looks-a";
 import { LOOKS_B } from "./boss-looks-b";
+import { ZENITH } from "./zenith";
+import { ZENITH_LOOK } from "./zenith-look";
 import type { BossLook, Pt } from "./boss-looks-kit";
 
-const LOOKS: Partial<Record<BossDesign, BossLook>> = { ...LOOKS_A, ...LOOKS_B };
+const LOOKS: Partial<Record<BossDesign, BossLook>> = { ...LOOKS_A, ...LOOKS_B, zenith: ZENITH_LOOK };
 
 /** Draw a boss's new look in one layer: "back" goes under its design, "front" over it. */
 export function drawBossLook(ctx: CanvasRenderingContext2D, design: BossDesign, layer: "back" | "front", r: BossRig, s: number, face: number, t: number, alive: boolean, vx: number) {
@@ -53,7 +55,7 @@ let moveOwner: Map<string, BossDesign> | null = null;
 function ownerOf(moveId: string) {
   if (!moveOwner) {
     moveOwner = new Map();
-    for (const b of Object.values(BOSSES)) if (b.boss) for (const m of b.moves) moveOwner.set(m.id, b.boss);
+    for (const b of [...Object.values(BOSSES), ZENITH]) if (b.boss) for (const m of b.moves) moveOwner.set(m.id, b.boss);
   }
   return moveOwner.get(moveId);
 }

@@ -11,7 +11,7 @@ import { Sheet, SheetBody, SheetContent, SheetDescription, SheetHeader, SheetTit
 import { PageHeader, Panel, PanelBody, SectionHeading, StatusBadge } from "~/components/design";
 import { FighterDot } from "~/components/fighter-dot";
 import { cn } from "~/lib/utils";
-import { FIGHTERS, bossRosterId, defOf, isCustomKey, isNewGen, type FighterDef, type RosterId } from "~/lib/fighters";
+import { FIGHTERS, bossRosterId, defOf, isCustomKey, isFourthGen, isNewGen, type FighterDef, type RosterId } from "~/lib/fighters";
 import { useMyFighter } from "~/lib/my-fighter";
 import { CharacterCreator } from "~/components/character-creator";
 import { BOSSES, type BossId } from "~/lib/bosses";
@@ -161,8 +161,9 @@ export function FreeWorld({ music, onExit }: { music?: ReactNode; onExit?: () =>
   const quests = useUnlocked();
   const dev = useDevMode().on;
   const devUnlocks = useDevUnlocks();
-  const questers = quests.filter((p) => !isNewGen(p));
+  const questers = quests.filter((p) => !isNewGen(p) && !isFourthGen(p));
   const young = quests.filter(isNewGen);
+  const fourth = quests.filter(isFourthGen);
   const rehab = useRehab();
   const hybrids = useHybrids();
   const [beaten, setBeaten] = useState<BossId[]>([]);
@@ -175,7 +176,7 @@ export function FreeWorld({ music, onExit }: { music?: ReactNode; onExit?: () =>
   const me = useMyFighter();
   const mine = me.id ? [me.id] : [];
   /** Everyone who can walk with you: your own character, the fighters, quest fighters, new gens and rehabilitated bosses. */
-  const roster = useMemo(() => [...mine, ...ORIGINALS, ...questers, ...young, ...reformedIds], [me.id, questers.join(), young.join(), reformedIds.join()]);
+  const roster = useMemo(() => [...mine, ...ORIGINALS, ...questers, ...young, ...fourth, ...reformedIds], [me.id, questers.join(), young.join(), fourth.join(), reformedIds.join()]);
   const [creatorOpen, setCreatorOpen] = useState(false);
 
   const [place, setPlace] = useState<PlaceId>("house");
@@ -434,7 +435,7 @@ export function FreeWorld({ music, onExit }: { music?: ReactNode; onExit?: () =>
 
   const partyIds = [okYou, ...okMates];
   /** Opponents can be anyone you've met: every fighter, hybrids, and every boss you've beaten. */
-  const foePool = [...ORIGINALS, ...questers, ...young, ...hybrids, ...beaten.map(bossRosterId)];
+  const foePool = [...ORIGINALS, ...questers, ...young, ...fourth, ...hybrids, ...beaten.map(bossRosterId)];
   const okFoes = foes.filter((f) => foePool.includes(f)).slice(0, MAX_FOES);
   const surprise = () => {
     const pool = foePool.filter((id) => !partyIds.includes(id)).sort(() => Math.random() - 0.5);
@@ -497,6 +498,7 @@ export function FreeWorld({ music, onExit }: { music?: ReactNode; onExit?: () =>
     { title: "free.groups.originals", ids: ORIGINALS },
     { title: "free.groups.quest", ids: questers },
     { title: "free.groups.newgen", ids: young },
+    { title: "free.groups.fourth", ids: fourth },
     { title: "free.groups.bosses", ids: reformedIds },
   ];
   const fighting = phase === "fight";
@@ -775,6 +777,7 @@ export function FreeWorld({ music, onExit }: { music?: ReactNode; onExit?: () =>
               { title: "free.groups.originals" as StringKey, ids: ORIGINALS },
               { title: "free.groups.quest" as StringKey, ids: questers },
               { title: "free.groups.newgen" as StringKey, ids: young },
+              { title: "free.groups.fourth" as StringKey, ids: fourth },
               { title: "free.groups.hybrids" as StringKey, ids: hybrids },
               { title: "free.groups.beaten" as StringKey, ids: beaten.map(bossRosterId) },
             ].map((grp) => grp.ids.length > 0 && (

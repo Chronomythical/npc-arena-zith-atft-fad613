@@ -139,6 +139,10 @@
       "floraReply": "My roots run deep.",
       "chaosOpen": "Try to keep up. Nobody does.",
       "chaosReply": "Was that it? I barely moved.",
+      "smokeOpen": "Blink and you'll miss me. You'll blink.",
+      "smokeReply": "Funny. I was about to say the same thing.",
+      "auroraOpen": "Look up. That's the last light you'll see tonight.",
+      "auroraReply": "Pretty. Now hold still.",
       "antimatterOpen": "Everything you are cancels out.",
       "antimatterReply": "Nothing will remain.",
       "maelstromOpen": "The tide always wins.",
@@ -191,6 +195,8 @@
       "anvilheartReply": "Bad work goes back in the forge. You're bad work.",
       "primevaOpen": "Hush. Listen to my heart. It's the last thing you'll hear.",
       "primevaReply": "My children are tired. You won't tire them any more.",
+      "zenithOpen": "You called me down from the top of the sky. Make it worth the trip.",
+      "zenithReply": "Nothing stands higher than I do.",
       "hybridOpen": "Two powers. Twice the trouble.",
       "hybridReply": "Just one power? Adorable.",
       "ownOpen": "I made myself for this fight.",
@@ -324,6 +330,19 @@
       "unlockEyebrow": "New generation",
       "unlockJoined": "{{name}} has joined your roster. Young, and every bit as dangerous as the veterans. Pick them in any mode except Story."
     },
+    "fourth": {
+      "title": "Fourth generation",
+      "empty": "Sealed in a crown at the highest point of the sky. Call whatever wears it by that name on this screen, or knock seven times on the waiting arena, and it comes down to fight.",
+      "unlockEyebrow": "Fourth generation",
+      "unlockJoined": "{{name}} is free of Zenith's crown and has joined your roster. Pick them in any mode except Story."
+    },
+    "secret": {
+      "eyebrow": "Zenith",
+      "freed": "Zenith falls and its crown breaks open. The fourth generation is free.",
+      "won": "Zenith falls again. The crown is already empty.",
+      "lost": "Zenith rises back to the top of the sky. Call it again when you're ready.",
+      "back": "Back to the arena"
+    },
     "me": {
       "title": "Your character",
       "empty": "You haven't made a character yet. Make one in Free World and it shows up here, ready to pick.",
@@ -439,7 +458,8 @@
       "formAt": "Below {{at}}% health",
       "quest": "Quest fighter",
       "boss": "Boss",
-      "newgen": "New generation"
+      "newgen": "New generation",
+      "fourth": "Fourth generation"
     },
     "forms": {
       "title": "Forms",
@@ -510,6 +530,11 @@
     "newGenLocked": {
       "title": "Not unlocked yet",
       "body": "Every Story boss you beat gives a 2 in 5 chance that a new-generation fighter joins you. {{name}} could be next."
+    },
+    "sectionFourth": "Fourth generation",
+    "fourthLocked": {
+      "title": "Sealed",
+      "body": "Locked in the crown of a secret boss at the highest point of the sky. Beat it in the arena to free the whole generation at once."
     }
   },
   "story": {
@@ -2422,6 +2447,7 @@
       "originals": "Fighters",
       "quest": "Quest fighters",
       "newgen": "New generation",
+      "fourth": "Fourth generation",
       "bosses": "Rehabilitated bosses",
       "hybrids": "Hybrids",
       "beaten": "Bosses you've beaten",

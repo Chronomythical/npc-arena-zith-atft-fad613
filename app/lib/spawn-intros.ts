@@ -96,6 +96,78 @@ function jag(ctx: CanvasRenderingContext2D, x0: number, y0: number, x1: number, 
 
 // ---------- the entrances ----------
 export const INTROS: Record<Power, IntroSpec> = {
+  // Wisp: a ball of smoke rolls in along the floor, swells on the spot, and blows apart to leave Wisp standing in it,
+  // a last curl of smoke still sliding off their shoulders.
+  smoke: {
+    len: 1.6, hit: 0.52, shake: 5,
+    body: (u, s) => base(u < 0.52 ? "crouch" : settle(u, "rise", 0.7), {
+      alpha: seg(u, 0.4, 0.6),
+      dy: (1 - easeOut(seg(u, 0.42, 0.62))) * 10 * s,
+      solid: "hsl(210 10% 30%)", solidA: 1 - seg(u, 0.5, 0.86),
+    }),
+    bursts: [
+      { at: 0.52, n: 30, spd: 260, shape: "smoke", a: "hsl(210 8% 36%)", b: "hsl(210 8% 62%)", grav: -60, add: false, from: "body", dir: "out", size: [10, 22], life: 1.1 },
+      { at: 0.54, n: 14, spd: 300, shape: "spark", a: "hsl(168 80% 60%)", b: "hsl(168 80% 86%)", grav: -40, add: true, from: "body", dir: "out" },
+    ],
+    trickle: { rate: 40, until: 0.5, spd: 40, shape: "smoke", a: "hsl(210 8% 38%)", b: "hsl(210 8% 58%)", grav: -40, add: false, from: "feet", dir: "flat", spread: 40, life: 0.9 },
+    back: ({ ctx, x, ground, s, u }) => {
+      if (u >= 0.6) return;
+      // the rolling ball of smoke, coming in from the side and swelling on the spot
+      const roll = easeOut(seg(u, 0, 0.36));
+      const cx = lerp(x - 220 * s, x, roll);
+      const r = (24 + 26 * seg(u, 0.3, 0.52)) * s * (1 - seg(u, 0.52, 0.6) * 0.6);
+      ctx.save();
+      for (let i = 0; i < 5; i++) {
+        const a = u * 9 + i * 1.3;
+        glow(ctx, cx + Math.cos(a) * r * 0.5, ground - r + Math.sin(a) * r * 0.4, r, r, hsla(210, 8, 40 + i * 4, 0.55), hsla(210, 8, 40, 0));
+      }
+      ctx.restore();
+    },
+  },
+  // Boreal: curtains of green and violet light ripple down out of the sky onto the spot, fold together into a figure
+  // and set, leaving Boreal standing in a fading shimmer.
+  aurora: {
+    len: 1.7, hit: 0.56, shake: 6, wave: ["hsl(160 80% 56%)", "hsl(292 90% 72%)"],
+    body: (u, s) => base(u < 0.56 ? "float" : settle(u, "rise", 0.74), {
+      alpha: seg(u, 0.36, 0.56),
+      sy: 0.6 + 0.4 * easeOut(seg(u, 0.36, 0.6)),
+      solid: "hsl(160 90% 76%)", solidA: 1 - seg(u, 0.54, 0.86),
+    }),
+    bursts: [
+      { at: 0.56, n: 28, spd: 360, shape: "spark", a: "hsl(160 80% 60%)", b: "hsl(292 90% 80%)", grav: -30, add: true, from: "body", dir: "out" },
+      { at: 0.58, n: 12, spd: 200, shape: "star", a: "hsl(292 90% 72%)", b: "hsl(0 0% 100%)", grav: -60, add: true, from: "feet", dir: "up" },
+    ],
+    back: ({ ctx, x, ground, s, u, t }) => {
+      const k = easeOut(seg(u, 0, 0.4)) * (1 - seg(u, 0.56, 0.9));
+      if (k <= 0.01) return;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      // three curtains, waving, closing in on the spot
+      for (let i = 0; i < 3; i++) {
+        const off = (i - 1) * 70 * s * (1 - seg(u, 0.3, 0.56));
+        const hue = i === 1 ? 292 : 160;
+        const g = ctx.createLinearGradient(0, ground - 260 * s, 0, ground);
+        g.addColorStop(0, hsla(hue, 90, 70, 0));
+        g.addColorStop(0.6, hsla(hue, 90, 66, 0.35 * k));
+        g.addColorStop(1, hsla(hue, 90, 66, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        for (let j = 0; j <= 10; j++) {
+          const yy = ground - 260 * s + j * 26 * s;
+          const xx = x + off + Math.sin(t * 3 + j * 0.6 + i) * 14 * s;
+          j ? ctx.lineTo(xx - 12 * s, yy) : ctx.moveTo(xx - 12 * s, yy);
+        }
+        for (let j = 10; j >= 0; j--) {
+          const yy = ground - 260 * s + j * 26 * s;
+          const xx = x + off + Math.sin(t * 3 + j * 0.6 + i) * 14 * s;
+          ctx.lineTo(xx + 12 * s, yy);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    },
+  },
   // Pyro: a column of fire roars up and Pyro steps out of it, still white-hot.
   pyro: {
     hit: 0.45, shake: 7, wave: ["hsl(14 95% 55%)", "hsl(45 100% 65%)"],
@@ -3323,6 +3395,43 @@ export const BOSS_INTROS: Record<BossDesign, IntroSpec> = {
         ctx.stroke();
       }
       ctx.globalCompositeOperation = "source-over";
+      ctx.restore();
+    },
+  },
+  // Zenith: the sky opens straight overhead. A column of gold light drops onto the spot, four stars fall down it one
+  // after another, and Zenith sinks slowly down the column after them, weightless, until its feet touch the floor.
+  zenith: {
+    len: BOSS_LEN, hit: 0.62, shake: 12, wave: ["hsl(46 100% 72%)", "hsl(232 70% 60%)"],
+    body: (u, s) => base(u < 0.62 ? "float" : settle(u, "rise", 0.78), {
+      alpha: seg(u, 0.3, 0.46),
+      dy: -(1 - easeOut(seg(u, 0.3, 0.62))) * 220 * s,
+      solid: "hsl(46 100% 86%)", solidA: 1 - seg(u, 0.6, 0.88),
+    }),
+    bursts: [
+      { at: 0.62, n: 36, spd: 480, shape: "star", a: "hsl(46 100% 72%)", b: "hsl(0 0% 100%)", grav: 60, add: true, from: "feet", dir: "out" },
+      { at: 0.64, n: 18, spd: 300, shape: "spark", a: "hsl(232 80% 72%)", b: "hsl(46 100% 80%)", grav: -80, add: true, from: "feet", dir: "up" },
+    ],
+    trickle: { rate: 40, until: 0.6, spd: 60, shape: "dot", a: "hsl(46 100% 76%)", b: "hsl(0 0% 100%)", grav: 180, add: true, from: "sky", dir: "up", spread: 24, life: 0.8 },
+    back: ({ ctx, x, ground, s, u }) => {
+      const open = easeOut(seg(u, 0, 0.22)) * (1 - seg(u, 0.7, 1));
+      if (open <= 0.01) return;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      // the column of light from the top of the sky
+      const w = 30 * s * open;
+      const g = ctx.createLinearGradient(0, 0, 0, ground);
+      g.addColorStop(0, hsla(46, 100, 80, 0.05));
+      g.addColorStop(1, hsla(46, 100, 80, 0.45 * open));
+      ctx.fillStyle = g;
+      ctx.fillRect(x - w, 0, w * 2, ground);
+      glow(ctx, x, ground, 110 * s * open, 26 * s * open, hsla(46, 100, 80, 0.6 * open), hsla(46, 100, 80, 0));
+      // four stars falling down the column, one after another
+      for (let i = 0; i < 4; i++) {
+        const k = seg(u, 0.06 + i * 0.08, 0.3 + i * 0.08);
+        if (k <= 0 || k >= 1) continue;
+        const y = lerp(-20 * s, ground - 150 * s + i * 20 * s, easeIn(k));
+        glow(ctx, x, y, 14 * s, 14 * s, hsla(i % 2 ? 232 : 46, 100, 82, 0.9), hsla(46, 100, 70, 0));
+      }
       ctx.restore();
     },
   },
