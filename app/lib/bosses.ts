@@ -4,7 +4,7 @@
 import type { BossDesign, FighterDef, Move } from "./fighters";
 import type { Form } from "./forms";
 
-export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart";
+export type BossId = "nullshade" | "maelstrom" | "magmaw" | "everwinter" | "riftmaker" | "hollowking" | "blacksun" | "axiom" | "lanternmaw" | "sporemother" | "mnemovore" | "dustmoth" | "somnarch" | "hush" | "elderdark" | "perihelion" | "asterion" | "carina" | "vela" | "aeon" | "orogen" | "gnarlroot" | "ambrel" | "coilvast" | "anvilheart" | "primeva";
 
 const M = (m: Omit<Move, "wind" | "act" | "rec"> & Partial<Pick<Move, "wind" | "act" | "rec">>): Move => ({
   wind: 0.2,
@@ -378,6 +378,21 @@ export const BOSSES: Record<BossId, FighterDef> = {
       M({ id: "white-heat", name: "White Heat", kind: "beam", anim: "thrust", range: 580, minRange: 70, cd: 4.4, dmg: 13, act: 0.34, status: "burn", statusDur: 1, wind: 0.32 }),
       M({ id: "anvil-drop", name: "Anvil Drop", kind: "rain", anim: "raise", range: 560, cd: 5.6, dmg: 10, count: 5, radius: 170, size: 14, shape: "rock", status: "stun", statusDur: 0.3, wind: 0.36, rec: 0.3 }),
       M({ id: "slag-geyser", name: "Slag Geyser", kind: "eruption", anim: "slam", range: 600, minRange: 40, cd: 5.8, dmg: 12, radius: 46, count: 3, lift: -640, status: "burn", statusDur: 1, wind: 0.38 }),
+    ],
+  },
+  // Book 4, chapter 6, the book's finale. The last Titan and the first: Primeva, mother of the other five, curled round
+  // the heartbeat at the middle of the world. She has woken to find her children beaten and tired, and means to call them home.
+  primeva: {
+    id: "vita", boss: "primeva", name: "Primeva", power: "The World's Heart", role: "control",
+    ability: "The last Titan and the first: the mother of the other five, curled round the heartbeat at the middle of the world. Every pulse knocks you back, the world's blood runs where she points, and she can call on stone, root, amber, coil and fire.",
+    color: "hsl(286 22% 20%)", glow: "hsl(350 100% 66%)", hp: 840, speed: 94,
+    moves: [
+      M({ id: "heartbeat-palm", name: "Heartbeat Palm", kind: "melee", anim: "thrust", range: 108, cd: 1.1, dmg: 14, kb: 300, status: "stun", statusDur: 0.25 }),
+      M({ id: "five-gifts", name: "Five Gifts", kind: "projectile", anim: "cast", range: 620, minRange: 80, cd: 2.6, dmg: 6, speed: 580, size: 10, count: 5, spread: 0.42, shape: "shard", status: "slow", statusDur: 0.8 }),
+      M({ id: "lifeline", name: "Lifeline", kind: "pull", anim: "cast", range: 520, minRange: 110, cd: 4.6, dmg: 10, status: "slow", statusDur: 0.8, wind: 0.28 }),
+      M({ id: "world-blood", name: "World Blood", kind: "beam", anim: "thrust", range: 600, minRange: 70, cd: 3.6, dmg: 14, act: 0.36, status: "burn", statusDur: 1, wind: 0.32 }),
+      M({ id: "mother-lode", name: "Mother Lode", kind: "eruption", anim: "slam", range: 600, minRange: 40, cd: 5.8, dmg: 12, radius: 46, count: 4, lift: -660, status: "stun", statusDur: 0.3, wind: 0.38 }),
+      M({ id: "the-pulse", name: "The Pulse", kind: "burst", anim: "raise", range: 180, cd: 6.4, dmg: 14, radius: 210, kb: 460, lift: -280, status: "stun", statusDur: 0.3, wind: 0.36, rec: 0.34 }),
     ],
   },
 };
@@ -1114,6 +1129,35 @@ export const BOSS_PHASES: Partial<Record<BossDesign, Form[]>> = {
       moves: [
         M({ id: "hot-iron-rush", name: "Hot Iron Rush", kind: "dash", anim: "lunge", range: 580, minRange: 90, cd: 4.6, dmg: 16, kb: 460, lift: -260, status: "burn", statusDur: 0.8, wind: 0.32 }),
         M({ id: "the-last-strike", name: "The Last Strike", kind: "burst", anim: "slam", range: 480, cd: 12, dmg: 18, radius: 430, kb: 500, lift: -440, status: "stun", statusDur: 0.7, wind: 0.6, rec: 0.36 }),
+      ],
+    },
+  ],
+  primeva: [
+    {
+      ...P2, power: "vita", title: "THE CHILDREN CALLED", dodge: 0.12,
+      blurb: "She calls to her five children, and a stone of each one comes spinning to her: jade, leaf, amber, coil and fire. Their gifts fall from above, and she slips through the veins of the world to come up behind you.",
+      body: "hsl(300 22% 24%)", glow: "hsl(340 100% 70%)", a: "hsl(150 80% 52%)", b: "hsl(38 100% 64%)",
+      moves: [
+        M({ id: "call-of-the-five", name: "Call of the Five", kind: "rain", anim: "raise", range: 560, cd: 5.4, dmg: 9, count: 5, radius: 190, size: 13, shape: "rock", status: "slow", statusDur: 0.8, wind: 0.34 }),
+        M({ id: "through-the-veins", name: "Through the Veins", kind: "blink", anim: "kick", range: 560, minRange: 130, cd: 4.2, dmg: 13, kb: 300, lift: -240, status: "stun", statusDur: 0.3 }),
+      ],
+    },
+    {
+      ...P3, power: "vita", title: "THE OPEN HEART", drain: 0.12,
+      blurb: "The crystal over her heart splits open and its red light floods the chamber. The world's blood rises round her feet in a tide, and every beat of her heart closes her wounds.",
+      body: "hsl(340 30% 26%)", glow: "hsl(350 100% 72%)", a: "hsl(350 90% 50%)", b: "hsl(20 100% 84%)",
+      moves: [
+        M({ id: "heartmend", name: "Heartmend", kind: "heal", anim: "raise", range: 2000, cd: 13, dmg: 0, heal: 30, below: 0.6, wind: 0.4, act: 0.3 }),
+        M({ id: "blood-tide", name: "Blood Tide", kind: "zone", anim: "slam", range: 420, cd: 9, dmg: 7, radius: 160, dur: 4.5, pullIn: 160, status: "burn", statusDur: 0.8, wind: 0.36 }),
+      ],
+    },
+    {
+      ...P4, power: "vita", title: "THE FIRST HEARTBEAT", guard: 0.84, regen: 1.4,
+      blurb: "She curls the whole chamber round herself like a shell. World Embrace draws everything into her arms, and The First Heartbeat is the beat that started the world, loud enough to stop it.",
+      body: "hsl(290 30% 10%)", glow: "hsl(350 100% 78%)", a: "hsl(286 22% 20%)", b: "hsl(350 100% 74%)", dark: "hsl(290 30% 4%)",
+      moves: [
+        M({ id: "world-embrace", name: "World Embrace", kind: "zone", anim: "raise", range: 440, cd: 10, dmg: 7, radius: 210, dur: 5, pullIn: 250, status: "slow", statusDur: 0.8, wind: 0.4 }),
+        M({ id: "first-heartbeat", name: "The First Heartbeat", kind: "burst", anim: "raise", range: 480, cd: 12, dmg: 18, radius: 440, kb: 500, lift: -440, status: "stun", statusDur: 0.7, wind: 0.6, rec: 0.36 }),
       ],
     },
   ],

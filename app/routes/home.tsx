@@ -388,7 +388,7 @@ export default function Home() {
     if (!done) return;
     if (done.kind === "intro") markIntroSeen(done.ch);
     else if (done.kind === "stage") startStage(done.stage, done.ch);
-    // the last boss of Book 2 or Book 3 falls: its last words lead into the book's ending before any unlocks
+    // the last boss of Book 2, 3 or 4 falls: its last words lead into the book's ending before any unlocks
     else if (done.kind === "outro" && endsBook(done.ch) && bookOf(done.ch) >= 1) setScene({ kind: "ending", ch: done.ch, stage: done.stage });
     else if (afterOutro.current.length) {
       const queued = afterOutro.current;
@@ -1008,7 +1008,7 @@ function StoryBanner({ chapter, stage, won, onRetry, onNext, onNextChapter, onBa
   return (
     <>
       {finale ? (
-        <Text id={bookOf(chapter) === 2 ? "arena.winner.book3Complete" : bookOf(chapter) === 1 ? "arena.winner.book2Complete" : "arena.winner.storyComplete"} as="p" className={cn(title, "max-w-sm text-balance")} />
+        <Text id={bookOf(chapter) === 3 ? "arena.winner.book4Complete" : bookOf(chapter) === 2 ? "arena.winner.book3Complete" : bookOf(chapter) === 1 ? "arena.winner.book2Complete" : "arena.winner.storyComplete"} as="p" className={cn(title, "max-w-sm text-balance")} />
       ) : (
         <Text id={last ? "arena.winner.chapterCleared" : "arena.winner.stageCleared"} vars={{ n: last ? chapterInBook(chapter) : stage + 1 }} as="p" className={title} />
       )}

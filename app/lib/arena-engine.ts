@@ -114,6 +114,8 @@ const BOSS_STANCE: Record<BossDesign, Pose> = {
   coilvast: { t: 0.3, aF1: 0.7, aF2: 1.2, aB1: -0.9, aB2: -0.6, lF1: 0.42, lF2: -0.3, lB1: -0.4, lB2: -0.3 },
   // Anvilheart: broad and planted like a smith at the anvil, the hammer arm cocked high behind, the other hand low and ready
   anvilheart: { t: 0.1, aF1: 1.1, aF2: 1.5, aB1: -2.4, aB2: -1.6, lF1: 0.32, lF2: 0.02, lB1: -0.3, lB2: 0.02 },
+  // Primeva: tall and calm, one open hand held out in front as if feeling for a pulse, the other cupped over her heart
+  primeva: { t: -0.03, aF1: 1.3, aF2: 1.75, aB1: 0.5, aB2: 2.3, lF1: 0.18, lF2: -0.02, lB1: -0.18, lB2: -0.02 },
 };
 /** How each boss breathes at rest: speed, torso sway, arm sway (front, back) and knee bob. */
 const BOSS_IDLE: Record<BossDesign, { hz: number; t: number; aF: number; aB: number; l: number }> = {
@@ -142,6 +144,7 @@ const BOSS_IDLE: Record<BossDesign, { hz: number; t: number; aF: number; aB: num
   ambrel: { hz: 0.9, t: 0.02, aF: 0.04, aB: 0.04, l: 0.01 },
   coilvast: { hz: 1.5, t: 0.06, aF: 0.1, aB: 0.08, l: 0.03 },
   anvilheart: { hz: 0.8, t: 0.04, aF: 0.06, aB: 0.12, l: 0.02 },
+  primeva: { hz: 1.1, t: 0.03, aF: 0.06, aB: 0.03, l: 0.015 },
 };
 /** Hybrids pick one of these by their pair, so the same pair always stands the same way: two powers held ready at once. */
 const HYBRID_STANCES: Pose[] = [

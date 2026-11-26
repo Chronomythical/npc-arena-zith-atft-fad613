@@ -770,4 +770,31 @@ export const MINIONS: Crew[] = [
       surge: { from: "world-hammer", name: "Small Hammer" },
     }),
   },
+  // Book 4, chapter 6: the keepers of the world's heart, things grown in its veins and crystal
+  {
+    grunt: minion("grunt", "primeva", {
+      base: "electro", name: "Pulseling", color: "hsl(344 40% 26%)", mark: "hsl(350 100% 70%)",
+      power: "Little Beat", ability: "One tiny piece of the world's heartbeat that came loose and started hopping about on its own. It keeps perfect time and will not stop telling you so.",
+      tone: ["hsl(350 90% 56%)", "hsl(10 100% 84%)"], moves: ["Thump", "Skipped Beat", "Flutter"],
+      surge: { from: "five-gifts", name: "Two Gifts" },
+    }),
+    caster: minion("caster", "primeva", {
+      base: "vita", name: "Vein Weaver", color: "hsl(300 22% 30%)", mark: "hsl(350 100% 70%)",
+      power: "Vein Thread", ability: "A spidery mender that lives in the walls and stitches the world's veins shut when they crack. It has never met a problem it could not tie a knot in.",
+      tone: ["hsl(330 60% 50%)", "hsl(350 100% 84%)"], moves: ["Needle Jab", "Red Thread", "Stitch Up", "Knot"],
+      surge: { from: "world-blood", name: "Thin Vein" },
+    }),
+    brute: minion("brute", "primeva", {
+      base: "terra", name: "Geode Golem", color: "hsl(280 18% 28%)", mark: "hsl(350 100% 70%)",
+      power: "Hollow Stone", ability: "A round lump of grey rock, plain on the outside, packed with purple crystal on the inside. It rolls the halls round the heart, and it is very proud of its insides.",
+      tone: ["hsl(280 40% 50%)", "hsl(300 80% 82%)"], moves: ["Crystal Fist", "Rolling Rock", "Crack Open"],
+      surge: { from: "mother-lode", name: "Small Lode" },
+    }),
+    elite: minion("elite", "primeva", {
+      base: "psy", name: "The Last Warden", color: "hsl(290 20% 16%)", mark: "hsl(350 100% 74%)",
+      power: "Old Dream", ability: "Before the five Titans, there was the Warden. It kept Primeva's door when the world was only a dream, and it still half believes none of you are real.",
+      tone: ["hsl(286 40% 46%)", "hsl(350 100% 82%)"], moves: ["Waking Palm", "Dream Lift", "Faded Voice", "Door Shut"],
+      surge: { from: "the-pulse", name: "Echo Pulse" },
+    }),
+  },
 ];

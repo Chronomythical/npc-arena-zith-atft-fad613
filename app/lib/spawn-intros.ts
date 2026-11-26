@@ -3140,6 +3140,58 @@ export const BOSS_INTROS: Record<BossDesign, IntroSpec> = {
       ctx.restore();
     },
   },
+  // Primeva: the dark beats. Three heartbeats roll out as red rings from the floor, each louder than the last, and
+  // five coloured lights (one from each Titan) fly in from the edges and meet. On the third beat she is there.
+  primeva: {
+    len: BOSS_LEN, hit: 0.68, shake: 16, wave: ["hsl(350 100% 70%)", "hsl(286 22% 24%)"],
+    body: (u) => base(u < 0.68 ? "float" : settle(u, "rise", 0.8), {
+      alpha: seg(u, 0.58, 0.68),
+      solid: "hsl(350 100% 80%)", solidA: 1 - seg(u, 0.66, 0.9),
+    }),
+    bursts: [
+      { at: 0.68, n: 34, spd: 460, shape: "spark", a: "hsl(350 100% 66%)", b: "hsl(10 100% 88%)", grav: 200, add: true, from: "body", dir: "out" },
+      { at: 0.68, n: 20, spd: 340, shape: "chunk", a: "hsl(286 30% 40%)", b: "hsl(300 70% 70%)", grav: 1000, add: false, from: "feet", dir: "up" },
+      { at: 0.7, n: 16, spd: 200, shape: "dust", a: "hsl(340 30% 40%)", b: "hsl(350 40% 60%)", grav: -20, add: false, from: "feet", dir: "flat" },
+    ],
+    back: ({ ctx, x, y, s, u }) => {
+      const on = seg(u, 0, 0.1) * (1 - seg(u, 0.86, 1));
+      if (on <= 0) return;
+      ctx.save();
+      ctx.fillStyle = hsla(300, 30, 4, 0.62 * on);
+      ctx.fillRect(-400, -400, 2000, 1200);
+      // three heartbeats, each a pair of red rings, bigger and brighter every time
+      for (let k = 0; k < 3; k++) {
+        for (let d = 0; d < 2; d++) {
+          const at = 0.08 + k * 0.2 + d * 0.06;
+          const v = seg(u, at, at + 0.22);
+          if (v <= 0 || v >= 1) continue;
+          const a = (1 - v) * (0.5 + k * 0.2) * (d ? 0.7 : 1);
+          ctx.globalCompositeOperation = "lighter";
+          glow(ctx, x, y - 40 * s, (40 + k * 30) * s * (1 - v), (40 + k * 30) * s * (1 - v), hsla(350, 100, 66, a), hsla(340, 100, 50, 0));
+          ctx.strokeStyle = hsla(350, 100, 70, a);
+          ctx.lineWidth = (3 + k) * s;
+          ctx.beginPath();
+          ctx.ellipse(x, y - 40 * s, (30 + v * (160 + k * 60)) * s, (30 + v * (160 + k * 60)) * s * 0.8, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.globalCompositeOperation = "source-over";
+        }
+      }
+      // five lights flying in from the edges, one for each child, meeting where she will stand
+      const kids = [150, 110, 40, 232, 24];
+      const fly = easeOut(seg(u, 0.24, 0.68));
+      if (fly > 0 && u < 0.72) {
+        ctx.globalCompositeOperation = "lighter";
+        kids.forEach((h, i) => {
+          const a = -Math.PI / 2 + (i - 2) * 0.7;
+          const r = (1 - fly) * 340 * s;
+          const lx = x + Math.cos(a) * r, ly = y - 40 * s + Math.sin(a) * r * 0.7;
+          glow(ctx, lx, ly, 14 * s, 14 * s, hsla(h, 100, 66, 0.9), hsla(h, 100, 50, 0));
+        });
+        ctx.globalCompositeOperation = "source-over";
+      }
+      ctx.restore();
+    },
+  },
   // Vela: everything goes dark, and far off a point of light starts to spin, two beams sweeping the arena like a
   // lighthouse, faster and faster. The beams fold in, the pulsar drops, and the floor rings with one huge beat.
   vela: {

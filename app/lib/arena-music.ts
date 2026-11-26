@@ -897,6 +897,37 @@ const CHAPTER_SONGS: Song[] = [
     fill: { kick: "x...x...x.x.x.x.", snare: "....x...x.xxxxxx" },
     drums: 0.8,
   }),
+  // Book 4, 6. Primeva: the finale, in D minor like the title theme. Warm triangle chords, a kick that beats like a
+  // heart (lub-dub, rest), a bass that follows it, and a lead that climbs, the whole book's journey down in one tune.
+  song({
+    bpm: 100,
+    pad: ["D3 F3 A3", "A#2 D3 F3", "G2 A#2 D3", "A2 C#3 E3", "D3 F3 A3", "F2 A2 C3", "G2 A#2 D3", "A2 C#3 E3"],
+    padWave: "triangle",
+    padCut: 1100,
+    padAttack: 0.5,
+    bass: ["D2", "A#1", "G1", "A1", "D2", "F1", "G1", "A1"],
+    bassPat: "x.x.....x.x.....",
+    bassMax: 4,
+    bassCut: 460,
+    lead: [
+      "A4 - - - D5 - F5 -",
+      "F5 - E5 - D5 - - -",
+      "D5 - - A#4 G4 - - -",
+      "A4 - C#5 - E5 - - -",
+      "A5 - - - F5 - D5 -",
+      "C5 - - - A4 - F5 -",
+      "G5 - F5 - D5 - A#4 -",
+      "C#5 - - - E5 - A5 -",
+    ],
+    leadWave: "triangle",
+    leadVol: 0.06,
+    arp: "0.1.2.3.2.1.0.1.",
+    kick: "x.x.....x.x.....",
+    snare: "....x.......x...",
+    hat: "..x...x...x...x.",
+    fill: { kick: "x.x.....x.x.x.x.", snare: "....x...x.x.xxxx" },
+    drums: 0.75,
+  }),
 ];
 
 /** The theme for a Story chapter (0-based). */

@@ -18,8 +18,10 @@ import { BOOKS, CHAPTERS, bookOf, enemySide, lairOf, playerSide, stageLineup, ty
 import { storyBackdrop } from "~/lib/story-backdrops";
 import { sceneLines, type Scene } from "~/lib/story-script";
 
-export const CHAPTER_TITLES: StringKey[] = ["story.chapterTitle", "story.ch2.title", "story.ch3.title", "story.ch4.title", "story.ch5.title", "story.ch6.title", "story.ch7.title", "story.ch8.title", "story.ch9.title", "story.ch10.title", "story.ch11.title", "story.ch12.title", "story.ch13.title", "story.ch14.title", "story.ch15.title", "story.ch16.title", "story.ch17.title", "story.ch18.title", "story.ch19.title", "story.ch20.title", "story.ch21.title", "story.ch22.title", "story.ch23.title", "story.ch24.title", "story.ch25.title"];
-const STAGE_PREFIX = ["story.stages", "story.ch2.stages", "story.ch3.stages", "story.ch4.stages", "story.ch5.stages", "story.ch6.stages", "story.ch7.stages", "story.ch8.stages", "story.ch9.stages", "story.ch10.stages", "story.ch11.stages", "story.ch12.stages", "story.ch13.stages", "story.ch14.stages", "story.ch15.stages", "story.ch16.stages", "story.ch17.stages", "story.ch18.stages", "story.ch19.stages", "story.ch20.stages", "story.ch21.stages", "story.ch22.stages", "story.ch23.stages", "story.ch24.stages", "story.ch25.stages"];
+export const CHAPTER_TITLES: StringKey[] = ["story.chapterTitle", "story.ch2.title", "story.ch3.title", "story.ch4.title", "story.ch5.title", "story.ch6.title", "story.ch7.title", "story.ch8.title", "story.ch9.title", "story.ch10.title", "story.ch11.title", "story.ch12.title", "story.ch13.title", "story.ch14.title", "story.ch15.title", "story.ch16.title", "story.ch17.title", "story.ch18.title", "story.ch19.title", "story.ch20.title", "story.ch21.title", "story.ch22.title", "story.ch23.title", "story.ch24.title", "story.ch25.title", "story.ch26.title"];
+const STAGE_PREFIX = ["story.stages", "story.ch2.stages", "story.ch3.stages", "story.ch4.stages", "story.ch5.stages", "story.ch6.stages", "story.ch7.stages", "story.ch8.stages", "story.ch9.stages", "story.ch10.stages", "story.ch11.stages", "story.ch12.stages", "story.ch13.stages", "story.ch14.stages", "story.ch15.stages", "story.ch16.stages", "story.ch17.stages", "story.ch18.stages", "story.ch19.stages", "story.ch20.stages", "story.ch21.stages", "story.ch22.stages", "story.ch23.stages", "story.ch24.stages", "story.ch25.stages", "story.ch26.stages"];
+/** Each book's epilogue title (Book 1 has none; it ends on the winner screen). */
+const ENDING_TITLES: StringKey[] = ["story.ending.title", "story.ending.title", "story.ending3.title", "story.ending4.title"];
 export const stageNameKey = (ch: number, i: number) => `${STAGE_PREFIX[ch]}.s${i + 1}` as StringKey;
 
 /** The title card over black, the boss arriving, or the words. */
@@ -214,7 +216,7 @@ export function StoryScene({ scene, pair, onDone }: { scene: Scene; pair: Pair; 
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     arenaSound.unlock();
-    // an ending goes back to where its book began (Book 2's harbour, Book 3's snowfields), with only the player's pair left standing
+    // an ending goes back to where its book began (Book 2's harbour, Book 3's snowfields, Book 4's highlands), with only the player's pair left standing
     const backdrop = scene.kind === "ending" ? storyBackdrop(BOOKS[book].first, 0) : storyBackdrop(scene.ch, stage);
     const g = newGame(cast.defs, true, cast.teams);
     gameRef.current = g;
@@ -337,7 +339,7 @@ export function StoryScene({ scene, pair, onDone }: { scene: Scene; pair: Pair; 
                 <Text id={stageNameKey(scene.ch, scene.stage)} as="h2" className="font-display text-xl text-white text-balance sm:text-3xl" />
               </>
             ) : scene.kind === "ending" ? (
-              <Text id={book === 2 ? "story.ending3.title" : "story.ending.title"} as="h2" className="font-display text-xl text-white text-balance sm:text-3xl" />
+              <Text id={ENDING_TITLES[book] ?? "story.ending.title"} as="h2" className="font-display text-xl text-white text-balance sm:text-3xl" />
             ) : (
               <Text id={CHAPTER_TITLES[scene.ch]} as="h2" className="font-display text-xl text-white text-balance sm:text-3xl" />
             )}
@@ -367,7 +369,7 @@ export function StoryScene({ scene, pair, onDone }: { scene: Scene; pair: Pair; 
                   )}
                   <span className="h-0.5 w-40 rounded-full motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-0 motion-safe:duration-700 sm:w-64" style={{ ...accent, ...enter(firstOfBook ? 1300 : 500) }} aria-hidden />
                   <Text
-                    id={scene.kind === "stage" ? stageNameKey(scene.ch, scene.stage) : scene.kind === "ending" ? (book === 2 ? "story.ending3.title" : "story.ending.title") : CHAPTER_TITLES[scene.ch]}
+                    id={scene.kind === "stage" ? stageNameKey(scene.ch, scene.stage) : scene.kind === "ending" ? (ENDING_TITLES[book] ?? "story.ending.title") : CHAPTER_TITLES[scene.ch]}
                     as="h2"
                     className={cn("max-w-2xl font-display text-3xl text-white text-balance sm:text-5xl", cardIn, "motion-safe:duration-1000")}
                     style={enter(firstOfBook ? 1700 : scene.kind === "stage" ? 350 : 750)}

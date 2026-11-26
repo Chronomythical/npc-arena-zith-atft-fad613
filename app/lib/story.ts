@@ -372,6 +372,18 @@ export const CHAPTERS: Chapter[] = [
       { foes: [], boss: "anvilheart" },
     ],
   },
+  {
+    // Book 4, chapter 6: The Heart of the World, the book's finale
+    stages: [
+      st("gc", 0.8),
+      st("bcg", 0.48),
+      st("gbc", 0.42),
+      st("cbgb", 0.24),
+      st("egbcg", 0.15),
+      st("ebcgcb", 0.12),
+      { foes: [], boss: "primeva" },
+    ],
+  },
 ];
 
 /** The books of Story mode: where each starts in CHAPTERS and how many chapters it will have once it is all written. */

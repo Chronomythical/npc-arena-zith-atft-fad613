@@ -30,10 +30,20 @@ const ENDING3: Line[] = [
   { who: "narrator", key: "story.ending3.l6" },
 ];
 
+/** Book 4's epilogue, after Primeva lets her children stay: the same shape, the narrator, the player's pair, then the closing line. */
+const ENDING4: Line[] = [
+  { who: "narrator", key: "story.ending4.l1" },
+  { who: "narrator", key: "story.ending4.l2" },
+  { who: "narrator", key: "story.ending4.l3" },
+  { who: "narrator", key: "story.ending4.l4" },
+  { who: "you", key: "story.ending4.l5" },
+  { who: "narrator", key: "story.ending4.l6" },
+];
+
 /** The lines of one scene: a chapter's opening, the words before a stage, the boss's last words, or a book's ending. */
 export function sceneLines(scene: Scene): Line[] {
   const { kind, ch, stage } = scene;
-  if (kind === "ending") return bookOf(ch) === 2 ? ENDING3 : ENDING;
+  if (kind === "ending") return bookOf(ch) === 3 ? ENDING4 : bookOf(ch) === 2 ? ENDING3 : ENDING;
   if (kind === "intro") return [1, 2, 3].map((n) => ({ who: "narrator", key: k(ch, "intro", n) }));
   if (kind === "outro") return [{ who: "boss", key: k(ch, "outro", 1) }, { who: "you", key: k(ch, "outro", 2) }, { who: "narrator", key: k(ch, "outro", 3) }];
   // the boss's stage: the last of the chapter (s10 in Book 1, s9 in Book 2, s8 in Book 3)

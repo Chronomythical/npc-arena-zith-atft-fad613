@@ -1866,6 +1866,73 @@ const LOOKS: Look[] = [
       if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 280, "hsl(40 100% 60%)", 0.42);
     },
   },
+  {
+    // Book 4, 6. The Heart of the World: a round chamber of grey stone lined with purple crystal, red veins running
+    // up its walls to a great heart of light at the middle, nearer and redder every stage
+    sky: [
+      ["hsl(290 30% 6%)", "hsl(300 30% 12%)", "hsl(330 40% 22%)"],
+      ["hsl(290 34% 5%)", "hsl(310 34% 12%)", "hsl(340 50% 26%)"],
+      ["hsl(290 36% 4%)", "hsl(320 40% 12%)", "hsl(346 64% 30%)"],
+      ["hsl(290 40% 3%)", "hsl(330 50% 14%)", "hsl(350 80% 40%)"],
+    ],
+    far: "hsl(296 20% 10%)",
+    near: "hsl(296 22% 7%)",
+    floor: ["hsl(300 14% 18%)", "hsl(296 22% 6%)"],
+    line: "hsl(350 100% 70% / 0.22)",
+    starsFrom: 9,
+    flat: true,
+    scene(ctx, stage, phase, rnd) {
+      // the heart itself, far off at the middle of everything, bigger as you get closer
+      const hr = 50 + stage * 9 + phase * 16;
+      glow(ctx, W * 0.5, 230, hr * 3, "hsl(346 100% 56%)", 0.3 + phase * 0.1);
+      glow(ctx, W * 0.5, 230, hr, "hsl(354 100% 80%)", 0.6);
+      // red veins running up the walls toward it, branching as they go
+      for (let i = 0; i < 6 + stage; i++) {
+        let x = rnd() * W, y = 400;
+        const toward = (W * 0.5 - x) * 0.004;
+        ctx.strokeStyle = `hsl(350 90% ${36 + rnd() * 14}% / ${0.35 + phase * 0.1})`;
+        ctx.lineWidth = 2 + rnd() * 3;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let k = 0; k < 6; k++) {
+          x += (rnd() - 0.5) * 40 + toward * 40;
+          y -= 30 + rnd() * 30;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      // crystal clusters along the far floor, purple against the glow
+      for (let i = 0; i < 6; i++) {
+        const cx = (i + 0.2 + rnd() * 0.6) * (W / 6), n = 3 + Math.floor(rnd() * 3);
+        for (let k = 0; k < n; k++) {
+          const w = 10 + rnd() * 14, h = 40 + rnd() * 80, x = cx + (k - n / 2) * 14, lean = (rnd() - 0.5) * 20;
+          ctx.fillStyle = k % 2 ? "hsl(290 40% 22%)" : "hsl(286 50% 30%)";
+          ctx.beginPath();
+          ctx.moveTo(x - w / 2, 384);
+          ctx.lineTo(x + lean, 384 - h);
+          ctx.lineTo(x + w / 2, 384);
+          ctx.closePath();
+          ctx.fill();
+        }
+        glow(ctx, cx, 380, 40, "hsl(300 80% 60%)", 0.12 + phase * 0.04);
+      }
+    },
+    front(ctx, stage, phase, rnd) {
+      // veins across the floor, glowing with every beat, more of them nearer the heart
+      const veins = 2 + phase + (stage % 2);
+      for (let i = 0; i < veins; i++) {
+        const x = rnd() * W, w = 90 + rnd() * 160, y = FLOOR + 6 + rnd() * 24;
+        glow(ctx, x + w / 2, y, w * 0.6, "hsl(350 100% 56%)", 0.24 + phase * 0.06);
+        ctx.strokeStyle = "hsl(350 100% 66%)";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + w / 2, y + 6 - rnd() * 12, x + w, y);
+        ctx.stroke();
+      }
+      if (phase === 3) glow(ctx, W / 2, FLOOR - 30, 280, "hsl(350 100% 62%)", 0.4);
+    },
+  },
 ];
 
 /** What moves over each chapter's painting, by part of the chapter (0 dawn to 3 the lair). Indexed by global chapter. */
@@ -1920,6 +1987,8 @@ const AIRS: ((phase: number) => Air)[] = [
   (p) => ({ mist: p >= 1 ? "hsl(232 30% 20%)" : undefined, motes: "embers", hue: 18, heat: p >= 2, amount: 0.5 + p * 0.25 }),
   // Book 4, 5. The Forge at the Core: sparks flying up from the anvils, heat haze everywhere, smoke rolling in near the lair
   (p) => ({ mist: p >= 2 ? "hsl(16 14% 18%)" : undefined, motes: "sparks", hue: 34, heat: true, amount: 0.6 + p * 0.25 }),
+  // Book 4, 6. The Heart of the World: red motes drifting up toward the heart, crystal dust twinkling, a warm mist near the end
+  (p) => ({ mist: p >= 2 ? "hsl(340 30% 20%)" : undefined, motes: "spores", hue: 350, twinkle: true, heat: p >= 3, amount: 0.6 + p * 0.2 }),
 ];
 
 function paint(ch: number, stage: number): HTMLCanvasElement {

@@ -189,6 +189,8 @@
       "coilvastReply": "Come closer. I only squeeze a little.",
       "anvilheartOpen": "Hold still. I'm measuring you for the fire.",
       "anvilheartReply": "Bad work goes back in the forge. You're bad work.",
+      "primevaOpen": "Hush. Listen to my heart. It's the last thing you'll hear.",
+      "primevaReply": "My children are tired. You won't tire them any more.",
       "hybridOpen": "Two powers. Twice the trouble.",
       "hybridReply": "Just one power? Adorable.",
       "ownOpen": "I made myself for this fight.",
@@ -242,7 +244,8 @@
       "teamResetNeeded": "{{name}} team forces a reset match!",
       "nextBook": "Start Book {{n}}",
       "book2Complete": "Book 2 complete! The Elder Dark is sealed beyond the stars.",
-      "book3Complete": "Book 3 complete! The Celestials are back in the sky, and the light down here is ours."
+      "book3Complete": "Book 3 complete! The Celestials are back in the sky, and the light down here is ours.",
+      "book4Complete": "Book 4 complete! The Titans sleep again, and the heart of the world beats steady."
     },
     "idle": "Press Start to begin the battle",
     "teams": {
@@ -1843,6 +1846,47 @@
           "l2": "It's lumpy. We like it lumpy.",
           "l3": "Anvilheart lays down its hammer, and the ringing in the deep slowly fades. In the quiet, your fighters hear what the forge had been drowning out all along: a heartbeat, slow and enormous, from the very middle of the world. The Titans were never the only ones down here. They were its guards."
         }
+      },
+      "c26": {
+        "intro": {
+          "l1": "Past the forge the tunnels turn warm and soft, and the walls are lined with veins of red crystal that brighten and dim in time with a heartbeat.",
+          "l2": "At the very middle of the world lies Primeva, the first Titan and the mother of the other five. She dreamed the world, set her children to guard her sleep, and has slept ever since, her heartbeat keeping everything alive.",
+          "l3": "Now she is awake, and she has found her children beaten and tired. She means to call all five of them home into her heart, and without them the world above will come apart. To stop her, your fighters will have to reach the heart of the world."
+        },
+        "s1": {
+          "l1": "Ba-dum. Ba-dum. I'm a little piece of the heartbeat. Ba-dum. Do you like my rhythm?",
+          "l2": "It's catchy. Please move."
+        },
+        "s2": {
+          "l1": "Every vein in the world runs through here, and I stitch them shut when they crack. You two I think I'll tie in a knot.",
+          "l2": "We've just been through five Titans. A knot won't hold us."
+        },
+        "s3": {
+          "l1": "Crack me open. Go on. There's nothing inside but more crystal, and all of it is very, very hard.",
+          "l2": "We've cracked harder."
+        },
+        "s4": {
+          "l1": "Hear how fast it beats now? She's angry. She heard what you did to her children.",
+          "l2": "We didn't hurt them. We asked them to stay."
+        },
+        "s5": {
+          "l1": "Five gates, one for each child: stone, root, amber, coil and fire. They're all open now. Her children are coming home.",
+          "l2": "Not if we get there first."
+        },
+        "s6": {
+          "l1": "Before the five, there was me. I kept her door when the world was only a dream. Nobody has ever walked past me.",
+          "l2": "Then today's a first."
+        },
+        "s7": {
+          "l1": "Five children I made. Stone and root, amber and coil and fire. I gave them to the world, and the world sent you to knock them down.",
+          "l2": "We didn't come to hurt them. We came to ask them to stay.",
+          "l3": "They are tired. I can feel it in my heart. So I will call them home, every one, and the world can fall apart without them. It was only ever a dream."
+        },
+        "outro": {
+          "l1": "You fight the way they do... holding on and on, for things that were never yours to hold. Is that what they learned up there?",
+          "l2": "No. That's what they taught us.",
+          "l3": "Primeva's heart slows. Far above, five great shapes stir in their places, and not one of them comes home. Stone holds, roots grip, amber glows, coils tighten and the forge burns low and steady. The mother of the Titans listens to her children choosing the world, and closes her eyes."
+        }
       }
     },
     "skip": {
@@ -2061,6 +2105,15 @@
       "l5": "Look up. They're still there. Good. Somebody has to watch the sky.",
       "l6": "The end of Book 3: The Celestials."
     },
+    "ending4": {
+      "title": "Epilogue: The Steady Heart",
+      "l1": "Deep under everything, Primeva curls back round her heart, and the beat settles into something slow and even, the way it was before anyone was here to hear it.",
+      "l2": "One by one her children lie down again. Coilvast loosens its coils just enough to breathe. Anvilheart banks the forge to a glow. Ambrel keeps the first leaf and lets the rest go, and Gnarlroot's roots settle back under the fields.",
+      "l3": "Up in the highlands, Orogen sinks into its range, and the shepherds on the pass swear the hills hum now, very softly, on still nights.",
+      "l4": "Nobody up top will ever see the Titans. But every road, every wall and every town is standing on someone who decided to let it stay.",
+      "l5": "Hear that? That's the world's heart. Let's tread lightly.",
+      "l6": "The end of Book 4: The Titans."
+    },
     "ch21": {
       "title": "Chapter 1: The Waking Mountain",
       "stages": {
@@ -2119,6 +2172,18 @@
         "s5": "Slag Rivers",
         "s6": "The Quenching Pool",
         "s7": "The World Anvil"
+      }
+    },
+    "ch26": {
+      "title": "Chapter 6: The Heart of the World",
+      "stages": {
+        "s1": "Below the Forge",
+        "s2": "The Vein Roads",
+        "s3": "The Geode Halls",
+        "s4": "The Quickening",
+        "s5": "The Five Gates",
+        "s6": "The Warden's Door",
+        "s7": "The Heart of the World"
       }
     }
   },

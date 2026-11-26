@@ -2224,6 +2224,122 @@ export function drawBossDesign(
       }
       break;
     }
+    // ----- Primeva: the Titan Mother, a geode shell at her back, a crown of five stones, and the world's heart in her chest -----
+    case "primeva": {
+      // the heartbeat: a double pulse, lub-dub, then a rest
+      const beatT = (t * 1.1) % 1;
+      const beat = alive ? Math.max(Math.exp(-((beatT - 0.05) ** 2) / 0.002), 0.7 * Math.exp(-((beatT - 0.22) ** 2) / 0.002)) : 0;
+      const rose = alive ? `hsl(350 100% ${58 + beat * 18}%)` : "hsl(0 0% 50%)";
+      const shell = alive ? "hsl(286 22% 22%)" : "hsl(286 4% 30%)";
+      if (layer === "back") {
+        // the open geode behind her: a broken ring of grey stone, purple crystal teeth pointing in toward her
+        const gx = neck.x - face * 4 * s, gy = lerp(neck.y, hip.y, 0.3);
+        const R = 46 * s;
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          glow(ctx, gx, gy, R * 1.3, `hsl(320 80% 60% / ${0.18 + beat * 0.2})`, "hsl(300 80% 40% / 0)");
+          ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.fillStyle = shell;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 2 * s;
+        ctx.beginPath();
+        ctx.arc(gx, gy, R, Math.PI * 0.85, Math.PI * 2.15);
+        ctx.arc(gx, gy, R - 9 * s, Math.PI * 2.15, Math.PI * 0.85, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = alive ? "hsl(290 60% 56%)" : "hsl(290 4% 44%)";
+        for (let i = 0; i <= 10; i++) {
+          const a = Math.PI * 0.9 + (i / 10) * Math.PI * 1.2;
+          const r0 = R - 8 * s, r1 = R - (16 + (i % 3) * 5) * s;
+          ctx.beginPath();
+          ctx.moveTo(gx + Math.cos(a - 0.08) * r0, gy + Math.sin(a - 0.08) * r0);
+          ctx.lineTo(gx + Math.cos(a) * r1, gy + Math.sin(a) * r1);
+          ctx.lineTo(gx + Math.cos(a + 0.08) * r0, gy + Math.sin(a + 0.08) * r0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+        // long veins hanging from the back of her head like hair, pulsing red down their length
+        ctx.strokeStyle = alive ? "hsl(346 60% 30%)" : "hsl(0 0% 34%)";
+        ctx.lineWidth = 2.4 * s;
+        for (let i = 0; i < 4; i++) {
+          const sw = Math.sin(t * 1.4 + i) * 4 * s;
+          ctx.beginPath();
+          ctx.moveTo(head.x - face * (4 + i * 2) * s, head.y - 6 * s);
+          ctx.quadraticCurveTo(head.x - face * (16 + i * 3) * s + sw, head.y + 14 * s, neck.x - face * (12 + i * 4) * s + sw, hip.y - (4 + i * 6) * s);
+          ctx.stroke();
+        }
+      } else {
+        // veins of red light from the heart out along both arms
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          ctx.strokeStyle = `hsl(350 100% 66% / ${0.35 + beat * 0.5})`;
+          ctx.lineWidth = 1.6 * s;
+          for (const [e, h] of [[p.eF, p.hF], [p.eB, p.hB]] as const) {
+            ctx.beginPath();
+            ctx.moveTo(shoulder.x, shoulder.y + 6 * s);
+            ctx.lineTo(e.x, e.y);
+            ctx.lineTo(h.x, h.y);
+            ctx.stroke();
+          }
+          ctx.globalCompositeOperation = "source-over";
+        }
+        // the world's heart in her chest: a crystal heart, beating
+        const hx = lerp(shoulder.x, hip.x, 0.24) + face * 2 * s, hy = lerp(shoulder.y, hip.y, 0.24);
+        const hs = (7 + beat * 2.4) * s;
+        if (alive) {
+          ctx.globalCompositeOperation = "lighter";
+          glow(ctx, hx, hy, (18 + beat * 14) * s, `hsl(350 100% 66% / ${0.6 + beat * 0.35})`, "hsl(340 100% 50% / 0)");
+          ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.fillStyle = rose;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.6 * s;
+        ctx.beginPath();
+        ctx.moveTo(hx, hy + hs);
+        ctx.bezierCurveTo(hx - hs * 1.4, hy, hx - hs * 0.9, hy - hs * 1.1, hx, hy - hs * 0.4);
+        ctx.bezierCurveTo(hx + hs * 0.9, hy - hs * 1.1, hx + hs * 1.4, hy, hx, hy + hs);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // a facet line across it, catching the light
+        ctx.strokeStyle = alive ? "hsl(10 100% 90% / 0.8)" : "hsl(0 0% 70%)";
+        ctx.lineWidth = 1 * s;
+        ctx.beginPath();
+        ctx.moveTo(hx - hs * 0.6, hy - hs * 0.3);
+        ctx.lineTo(hx + hs * 0.1, hy + hs * 0.2);
+        ctx.lineTo(hx + hs * 0.6, hy - hs * 0.3);
+        ctx.stroke();
+        // a crown of five stones, one for each child: jade, leaf, amber, coil and fire
+        const crown = ["hsl(150 90% 60%)", "hsl(110 70% 48%)", "hsl(40 100% 60%)", "hsl(232 50% 50%)", "hsl(24 100% 58%)"];
+        for (let i = 0; i < 5; i++) {
+          const a = -Math.PI / 2 + (i - 2) * 0.42;
+          const r0 = HEAD * 0.9 * s, r1 = (HEAD + 7 + (i === 2 ? 4 : 0)) * s;
+          const bx = head.x + Math.cos(a) * r0, by = head.y + Math.sin(a) * r0;
+          const tx = head.x + Math.cos(a) * r1, ty = head.y + Math.sin(a) * r1;
+          ctx.fillStyle = alive ? crown[i] : "hsl(0 0% 56%)";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 1.4 * s;
+          ctx.beginPath();
+          ctx.moveTo(bx + Math.cos(a + Math.PI / 2) * 2.6 * s, by + Math.sin(a + Math.PI / 2) * 2.6 * s);
+          ctx.lineTo(tx, ty);
+          ctx.lineTo(bx - Math.cos(a + Math.PI / 2) * 2.6 * s, by - Math.sin(a + Math.PI / 2) * 2.6 * s);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+        // two soft rose eyes, half closed, as if she is still listening to something far off
+        for (const dx of [2, 7]) {
+          const ex = head.x + face * dx * s, ey = head.y - 0.5 * s;
+          if (alive) glow(ctx, ex, ey, 4.5 * s, "hsl(350 100% 76% / 0.8)", "hsl(350 100% 60% / 0)");
+          ctx.fillStyle = alive ? "hsl(354 100% 88%)" : "hsl(0 0% 62%)";
+          ctx.fillRect(ex - 2 * s, ey - 0.7 * s, 4 * s, 1.4 * s);
+        }
+      }
+      break;
+    }
     // ----- Vela: a pulsar, a burnt-out star spinning in its chest, two beams sweeping from it like a lighthouse -----
     case "vela": {
       const spin = alive ? t * 2.2 : 0;
@@ -3983,6 +4099,60 @@ function drawBossPhase(
       }
       break;
     }
+    case "primeva": {
+      // 2: a stone from each of her five children, circling her: jade, leaf, amber, coil and fire
+      const kids = ["hsl(150 90% 60%)", "hsl(110 70% 50%)", "hsl(40 100% 62%)", "hsl(232 60% 58%)", "hsl(24 100% 60%)"];
+      orbit(5, 48, 12, mid.y, 1.2, (x, y, i) => {
+        ctx.globalCompositeOperation = "lighter";
+        glow(ctx, x, y, 9 * s, kids[i].replace(")", " / 0.8)"), "hsl(0 0% 0% / 0)");
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = kids[i];
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 1.2 * s;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 5 * s);
+        ctx.lineTo(x + 4 * s, y);
+        ctx.lineTo(x, y + 5 * s);
+        ctx.lineTo(x - 4 * s, y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      });
+      if (phase >= 3 && front) {
+        // 3: the heart split open, red light pouring out of her chest in rays
+        const hx = lerp(shoulder.x, hip.x, 0.24) + face * 2 * s, hy = lerp(shoulder.y, hip.y, 0.24);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = `hsl(350 100% 72% / ${0.4 + 0.25 * Math.sin(t * 7)})`;
+        ctx.lineWidth = 2 * s;
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * TAU + t * 0.4;
+          ctx.moveTo(hx + Math.cos(a) * 10 * s, hy + Math.sin(a) * 10 * s);
+          ctx.lineTo(hx + Math.cos(a) * (26 + (i % 2) * 10) * s, hy + Math.sin(a) * (26 + (i % 2) * 10) * s);
+        }
+        ctx.stroke();
+        ctx.globalCompositeOperation = "source-over";
+      }
+      if (phase >= 4 && !front) {
+        // 4: the beat of the world made visible, great red rings rolling out from her heart, and a pool of the world's blood underfoot
+        const ay = Math.max(p.fF.y, p.fB.y) + 3 * s;
+        ctx.fillStyle = "hsl(350 70% 22% / 0.85)";
+        ctx.beginPath();
+        ctx.ellipse(mid.x, ay, 110 * s, 12 * s, 0, 0, TAU);
+        ctx.fill();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < 3; i++) {
+          const k = (t * 0.55 + i / 3) % 1;
+          ctx.strokeStyle = `hsl(350 100% 66% / ${0.5 * (1 - k)})`;
+          ctx.lineWidth = (3 - k * 2) * s;
+          ctx.beginPath();
+          ctx.arc(mid.x, shoulder.y + 10 * s, (30 + k * 180) * s, 0, TAU);
+          ctx.stroke();
+        }
+        ctx.globalCompositeOperation = "source-over";
+      }
+      break;
+    }
     case "vela": {
       // 2: splinters of glass flung round it by its spin
       orbit(6, 40, 10, mid.y, 3.2, (x, y, i) => {
@@ -4480,6 +4650,14 @@ function drawBossExtras(
         if (alive) motes(ctx, mid.x, hip.y + 20 * s, 90 * s, 140 * s, t * 0.7, 12, "hsl(36 100% 62%)", 1.6 * s);
       } else {
         fists("hsl(40 100% 72%)", "hsl(24 100% 50% / 0)");
+      }
+      break;
+    case "primeva":
+      if (layer === "back") {
+        // little red motes drifting up off her like warmth off a sleeper
+        if (alive) motes(ctx, mid.x, hip.y + 20 * s, 80 * s, 140 * s, t * 0.4, 10, "hsl(350 100% 70%)", 1.6 * s);
+      } else {
+        fists("hsl(354 100% 78%)", "hsl(340 100% 50% / 0)");
       }
       break;
     case "vela":

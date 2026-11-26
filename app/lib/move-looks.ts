@@ -772,6 +772,19 @@ const QUEST_LOOKS: Record<string, Look> = {
   "molten-pour": F("fallout-zone", "hsl(22 100% 46%)", "hsl(44 100% 74%)", "drop", true, -40, "splash"),
   "hot-iron-rush": F("reactor-charge", "hsl(14 90% 44%)", "hsl(40 100% 74%)", "ember", true, 200, "crater"),
   "the-last-strike": F("nova-burst", "hsl(18 22% 12%)", "hsl(44 100% 76%)", "chunk", false, 400, "crater"),
+  // Primeva (Book 4 finale): geode violet, and the deep rose-red of the world's heart
+  "heartbeat-palm": F("hammer-fist", "hsl(346 70% 40%)", "hsl(354 100% 80%)", "drop", true, 100, "flare"),
+  "five-gifts": F("spread-shot", "hsl(300 50% 50%)", "hsl(40 100% 80%)", "spark", true, 200, "sparks"),
+  "lifeline": F("gold-chain", "hsl(350 80% 42%)", "hsl(354 100% 78%)", "drop", true, 100, "implode"),
+  "world-blood": F("calcine-ray", "hsl(350 90% 52%)", "hsl(10 100% 88%)", "drop", true, -60, "flare"),
+  "mother-lode": F("flame-pillar", "hsl(286 40% 40%)", "hsl(310 100% 84%)", "chunk", true, -200, "crater"),
+  "the-pulse": F("inferno-ring", "hsl(350 100% 56%)", "hsl(20 100% 86%)", "drop", true, -80, "flare"),
+  "call-of-the-five": F("meteor-drop", "hsl(286 22% 26%)", "hsl(150 90% 70%)", "chunk", false, 700, "crater"),
+  "through-the-veins": F("afterimage", "hsl(346 70% 46%)", "hsl(354 100% 82%)", "drop", true, -80, "slash"),
+  "heartmend": F("mend", "hsl(350 90% 56%)", "hsl(20 100% 88%)", "spark", true, -80, "sprout"),
+  "blood-tide": F("fallout-zone", "hsl(350 90% 40%)", "hsl(354 100% 72%)", "drop", true, -40, "splash"),
+  "world-embrace": F("singularity", "hsl(290 30% 10%)", "hsl(350 100% 72%)", "dust", false, 80, "implode"),
+  "first-heartbeat": F("nova-burst", "hsl(290 30% 10%)", "hsl(350 100% 78%)", "drop", true, 300, "flare"),
 };
 for (const [id, lk] of Object.entries(QUEST_LOOKS)) FORM_LOOKS[id] = lk;
 for (const [id, lk] of Object.entries(FORM_LOOKS)) {
